@@ -1,0 +1,33 @@
+<div>
+    <div class="rowBody">
+        <div class="genericCont">
+            <pep-top-bar [title]="'Uom_Table_Title' | translate" >
+                <div header-start-content>
+         
+                </div>
+                <div header-end-content>
+                    <pep-button [styleType]="'weak'" [sizeType]="'sm'" 
+                        [value]="'Uom_Table_AddAction' | translate" [iconName]="'number_plus'" [iconPosition]="'start'" (buttonClick)="addButtonClicked()">
+                    </pep-button>                    
+                </div>
+                <pep-list-actions [actions]="listActions" [sizeType]="'sm'" (actionClick)="onActionClicked($event)"></pep-list-actions>
+            </pep-top-bar>
+        </div>
+        <div id="mainContent" class="main-content">
+            <div class="content">
+                <div #pepperiListCont class="list-wrapper" id="listContainer">
+                    <pep-list
+                        [firstFieldAsLink]="false"
+                        [isReport]="true"
+                        [supportSorting]="false"
+                        [supportResizing]="false"
+                        [selectionTypeForActions]="'single'"
+                        [noDataFoundMsg]="'Uom_Table_NoItems' | translate "
+                        [parentScroll]="pepperiListCont"
+                        (selectedItemsChange)="selectedRowsChanged($event)">
+                    </pep-list>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

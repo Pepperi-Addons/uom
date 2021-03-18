@@ -1,0 +1,10 @@
+<div>
+    <pep-select [value]="AllowedUomsTSA"
+        [options]="TSAfields" [label]="'Uom_AtdConfig_AllowedUomsTitle' | translate" 
+        (valueChange)="onValueChanged('AllowedUoms', $event)"></pep-select>
+</div>
+<div>
+    <pep-select [value]="InventoryTSA"
+        [options]="TSAfields" [label]="'Uom_AtdConfig_InventoryTitle' | translate" 
+        (valueChange)="onValueChanged('Inventory', $event)"></pep-select>
+</div>

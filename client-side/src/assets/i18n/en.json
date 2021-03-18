@@ -1,0 +1,26 @@
+{
+    "Components_Example_Title": "@pep-addons/ngx-lib : Pepperi Components - Library components written with Angular10",
+    "List_Example_Title": "Pep list example",
+    "Uom_Table_Title":"UOM configutration list",
+    "Uom_Table_AddAction":"Add UOM",
+    "Uom_Table_KeyTitle":"ID",
+    "Uom_Table_NameTitle":"Name",
+    "Uom_Table_MultiplierTitle":"Multiplier",
+    "Uom_Table_BaseUomTitle":"Base Uom",
+    "Uom_Table_EditAction":"Edit",
+    "Uom_Table_DeleteAction":"Delete",
+    "Uom_Table_NoItems":"click Add UOM to configure list of UOMs",
+    "Uom_ConfigModalTitle_Add":"Add new UOM",
+    "Uom_ConfigModalTitle_Update":"Update existing UOM",
+    "Uom_ConfigModal_IdTitle":"Uom ID",
+    "Uom_ConfigModal_NameTitle":"Uom name",
+    "Uom_ConfigModal_MultiplierTitle":"Uom multiplier",
+    "Uom_ConfigModal_BaseUomTitle":"Base Uom",
+    "Uom_Cancel":"Cancel",
+    "Uom_Add":"Add",
+    "Uom_Update":"Update",
+    "Uom_Confirm":"Confirm",
+    "Uom_DeleteModal_Title":"Delete Uom",
+    "Uom_DeleteModal_Paragraph":"Are you sure you want to delete this UOM?"
+
+}

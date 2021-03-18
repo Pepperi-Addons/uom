@@ -1,0 +1,47 @@
+<div class="dialog">
+    <h2 mat-dialog-title class="mat-dialog-title pepperi-border-bottom">
+        <span *ngIf="title?.length">{{ title }}</span>
+    </h2>
+    <div mat-dialog-content class="mat-dialog-content">
+        <div>
+            <pep-textbox [label]="'Uom_ConfigModal_IdTitle' | translate" [value]="dialogData.Key" [disabled]="mode == 'Edit'"
+            [type]="'text'" [required]="true" (valueChange)="onValueChanged('ID', $event)"></pep-textbox>
+            
+        </div>
+        <div>
+            <pep-textbox [label]="'Uom_ConfigModal_NameTitle' | translate" [value]="dialogData.Name"
+            [type]="'text'" [required]="true" (valueChange)="onValueChanged('Name', $event)"></pep-textbox>
+            
+        </div>
+        <div>
+            <pep-textbox [label]="'Uom_ConfigModal_MultiplierTitle' | translate" [value]="dialogData.Multiplier"
+            [type]="'int'" [required]="true" (valueChange)="onValueChanged('Multiplier', $event)"></pep-textbox>
+            
+        </div>
+        <div>
+            <pep-select [value]="dialogData.BaseUOM"
+                [options]="baseUoms" [label]="'Uom_ConfigModal_BaseUomTitle' | translate" 
+                (valueChange)="onValueChanged('BaseUom', $event)"></pep-select>
+        </div>
+    </div>
+    <div mat-dialog-actions class="pepperi-border-top mat-dialog-actions split-actions"
+        style="justify-content: flex-end;">
+        <div class="spacing-element-negative">
+            <button class="spacing-element pepperi-button md weak mat-button" mat-button [mat-dialog-close]>
+                <span class="mat-button-wrapper">
+                    {{ 'Uom_Cancel' | translate }}
+                </span>
+                <div class="mat-button-ripple mat-ripple" matripple></div>
+                <div class="mat-button-focus-overlay"></div>
+            </button>
+            <button class="spacing-element pepperi-button md strong mat-button" mat-button
+                [mat-dialog-close]="dialogData">
+                <span class="mat-button-wrapper">
+                    {{ (mode == 'Add' ? 'Uom_Add' : 'Uom_Update') | translate }}
+                </span>
+                <div class="mat-button-ripple mat-ripple" matripple></div>
+                <div class="mat-button-focus-overlay"></div>
+            </button>
+        </div>
+    </div>
+</div>
