@@ -2,6 +2,6 @@ import { Component } from '@angular/core';
 
 @Component({
     selector: 'app-empty-route',
-    template: '',
+    template: '<div>Empty</div>',
 })
 export class EmptyRouteComponent {}

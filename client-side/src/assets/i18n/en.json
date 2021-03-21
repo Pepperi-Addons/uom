@@ -21,6 +21,8 @@
     "Uom_Update":"Update",
     "Uom_Confirm":"Confirm",
     "Uom_DeleteModal_Title":"Delete Uom",
-    "Uom_DeleteModal_Paragraph":"Are you sure you want to delete this UOM?"
+    "Uom_DeleteModal_Paragraph":"Are you sure you want to delete this UOM?",
+    "Uom_AtdConfig_AllowedUomsTitle": "Allowed OUMs field",
+    "Uom_AtdConfig_InventoryTitle": "Inventory field"
 
 }

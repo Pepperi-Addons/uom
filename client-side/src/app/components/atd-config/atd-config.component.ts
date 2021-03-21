@@ -1,5 +1,5 @@
 import { KeyValuePair } from '@pepperi-addons/ngx-lib';
-import { Component, OnInit } from "@angular/core";
+import { Component, Input, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { AtdConfigService } from "./atd-config.service";
 
@@ -15,19 +15,23 @@ export class AtdConfigComponent implements OnInit {
     TSAfields: KeyValuePair<string>[] = [];
     AllowedUomsTSA: string = '';
     InventoryTSA: string = '';
+
+    @Input() options: any;
+    
     constructor(
         public pluginService: AtdConfigService,
         public routeParams: ActivatedRoute,
     ) {
-        this.pluginService.pluginUUID = this.routeParams.snapshot.params['addon_uuid'];
-    }
 
+        this.pluginService.pluginUUID = this.options?.UUID || this.routeParams?.snapshot?.params['addon_uuid'];
+    }
+    
     ngOnInit() {
         this.pluginService.getAtdFields(303772).then(fields => {
             this.TSAfields = fields.map(field => {
                 return {
-                    Key: field.SubTypeID,
-                    Value: field.SubTypeName
+                    Key: field.FieldID,
+                    Value: field.Label
                 }
             });
         });
