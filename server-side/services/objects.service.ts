@@ -35,10 +35,21 @@ export class ObjectsService {
         const atd = await this.getAtd(atdId);
         if (atd) {
             if (!this.fields[atdId]) {
-                this.fields[atdId] = await this.papiClient.metaData.type(atd.Type).fields.get();
+                this.fields[atdId] = await this.papiClient.metaData.type("transaction_lines").types.subtype(atd.SubTypeID).fields.get();
             }
         }
 
         return this.fields[atdId];
+    }
+
+    async getAtdTransactionLinesFields(atdId: number): Promise<ApiFieldObject[] | undefined> {
+        const atd = await this.getAtd(atdId);
+        if (atd) {
+            if (!this.fields[atdId + '_lines']) {
+                this.fields[atdId + '_lines'] = await this.papiClient.metaData.type("transaction_lines").types.subtype(atd.SubTypeID).fields.get();
+            }
+        }
+
+        return this.fields[atdId + '_lines'];
     }
 }

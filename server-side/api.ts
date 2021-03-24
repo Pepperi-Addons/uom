@@ -34,7 +34,7 @@ export async function getAtdFields(client: Client, request: Request) {
         }        
     }
 
-    return await service.getAtdFields(atdID);
+    return await service.getAtdTransactionLinesFields(atdID);
 };
 
 // add functions here
