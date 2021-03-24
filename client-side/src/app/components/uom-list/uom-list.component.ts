@@ -147,14 +147,8 @@ export class UomListComponent implements OnInit {
             return res;
             });
 
-            let pepperiListObj = rows.length > 0 ? this.pluginService.pepperiDataConverter.convertListData(rows) : new ObjectsData();
-            let uiControl = rows.length > 0 ? pepperiListObj.UIControl: new UIControl();
-            let l = rows.length > 0 ? pepperiListObj.Rows.map((row, i) => {
-                row.UID = this.list[i].UUID || row.UID;
-                const osd = new ObjectSingleData(uiControl, row);
-                osd.IsEditable = false;
-                return osd;
-            }) : [];
+            const uiControl = this.pluginService.pepperiDataConverter.getUiControl(rows[0]);
+            const l = this.pluginService.pepperiDataConverter.convertListData(rows);
             
             this.pepperiListComp.initListData(uiControl, l.length, l, 'table', '', true);
         });

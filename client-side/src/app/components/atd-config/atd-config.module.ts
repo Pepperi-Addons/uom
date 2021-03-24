@@ -1,4 +1,4 @@
-import { AtdConfigComponent } from './atd-config.component';
+import { AtdConfigComponent } from './index';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { PepUIModule } from '../../modules/pepperi.module';
@@ -13,7 +13,8 @@ import { MaterialModule } from '../../modules/material.module';
         PepUIModule,
         MaterialModule,
     ],
-    providers: []
+    providers: [],
+    exports:[AtdConfigComponent]
 })
 export class AtdConfigModule {
 }

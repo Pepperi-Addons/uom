@@ -4,9 +4,9 @@
   "scripts": {
     "ng": "ng",
     "build": "ng build",
-    "single-spa": "ng serve --port 4400 --configuration SingleSpa",
-    "standalone": "ng serve --port 4400 --configuration Standalone",
-    "build:single-spa": "ng build client-side --prod",
+    "single-spa": "ng serve --port 4400 --configuration SingleSpa --sourceMap=false",
+    "standalone": "ng serve --port 4400 --configuration Standalone --sourceMap=false",
+    "build:single-spa": "ng build client-side --prod --sourceMap=false",
     "serve:standalone": "ng serve",
     "serve:single-spa": "ng s --project client-side --disable-host-check --port 4400 --deploy-url http://localhost:4400/ --live-reload false",
     "assets-server": "http-server ./src/ -p 4300 -d --cors",
@@ -35,7 +35,7 @@
     "@ngx-gallery/core": "^5.0.0-beta.0",
     "@ngx-translate/core": "^13.0.0",
     "@ngx-translate/http-loader": "^6.0.0",
-    "@pepperi-addons/ngx-lib": "^0.1.65",
+    "@pepperi-addons/ngx-lib": "^0.1.198",
     "@pepperi-addons/papi-sdk": "^1.20.7",
     "@tweenjs/tween.js": "^17.1.1",
     "angular2-signaturepad": "^2.11.0",
@@ -54,11 +54,12 @@
     "rxjs": "^6.6.2",
     "single-spa": "5.4.0",
     "single-spa-angular": "4.2.0",
+    "single-spa-angular-webpack5": "^4.9.3",
     "tslib": "^2.0.0",
     "zone.js": "~0.10.2"
   },
   "devDependencies": {
-    "@angular-builders/custom-webpack": "^9.2.0",
+    "@angular-builders/custom-webpack": "^11.1.1",
     "@angular-devkit/build-angular": "^0.1102.5",
     "@angular/cli": "~11.2.5",
     "@angular/compiler-cli": "~11.2.6",
@@ -82,6 +83,12 @@
     "tslint": "~6.1.0",
     "typescript": "~4.1.5"
   },
+  "resolutions": {
+    "webpack": "^5.0.0"
+  },
+  "browserslist": [
+    "supports es6-module"
+  ],
   "browser": {
     "perf_hooks": false
   }

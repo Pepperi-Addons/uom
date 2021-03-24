@@ -12,7 +12,7 @@ import { AtdConfigService } from "./atd-config.service";
 
 export class AtdConfigComponent implements OnInit {
     
-    TSAfields: KeyValuePair<string>[] = [];
+    TSAfields: {key:string, value:string}[] = [];
     AllowedUomsTSA: string = '';
     InventoryTSA: string = '';
 
@@ -24,14 +24,15 @@ export class AtdConfigComponent implements OnInit {
     ) {
 
         this.pluginService.pluginUUID = this.options?.UUID || this.routeParams?.snapshot?.params['addon_uuid'];
+        console.log(JSON.stringify(this.options));
     }
     
     ngOnInit() {
         this.pluginService.getAtdFields(303772).then(fields => {
             this.TSAfields = fields.map(field => {
                 return {
-                    Key: field.FieldID,
-                    Value: field.Label
+                    key: field.FieldID,
+                    value: field.Label
                 }
             });
         });

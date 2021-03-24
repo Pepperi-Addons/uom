@@ -22,6 +22,7 @@
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.json",
+            "sourceMap": false,
             "aot": true,
             "stylePreprocessorOptions": {
                 "includePaths": [
@@ -49,7 +50,7 @@
               "node_modules/quill/dist/quill.core.js"
             ],
             "customWebpackConfig": {
-              "path": "extra-webpack.config.js",
+              "path": "webpack.config.js",
               "libraryName": "client-side",
               "libraryTarget": "umd"
             }
@@ -58,8 +59,12 @@
             "production": {
               "fileReplacements": [
                 {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.prod.ts"
+                    "replace": "src/environments/environment.ts",
+                    "with": "src/environments/environment.prod.ts"
+                },
+                {
+                    "replace": "./webpack.config.js",
+                    "with": "./webpack.prod.config.js"
                 }
               ],
               "optimization": true,
@@ -67,7 +72,7 @@
               "sourceMap": false,
               "extractCss": true,
               "namedChunks": false,
-              "extractLicenses": true,
+              "extractLicenses": false,
               "vendorChunk": false,
               "buildOptimizer": true,
               "budgets": [
