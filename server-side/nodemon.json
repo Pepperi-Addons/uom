@@ -1,0 +1,7 @@
+{
+  "watch": "**/*.ts",
+  "execMap": {
+    "ts": "./node_modules/.bin/ts-node"
+  },
+  "exec": "./node_modules/.bin/ts-node ./app.local.ts"
+}

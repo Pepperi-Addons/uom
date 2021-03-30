@@ -20,7 +20,7 @@ export default config.Endpoints.map(endpoint => {
          typescript({
              tsconfigOverride: {
                  compilerOptions: {
-                     module: "es2017",
+                     module: "es2015",
                      declaration: false
                  },
              },
