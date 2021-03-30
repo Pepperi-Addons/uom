@@ -1,16 +1,16 @@
 <!-- <div>Component works</div> -->
 <div>
-    <pep-select [value]="AllowedUomsTSA"
-        [options]="TSAfields" [label]="'Uom_AtdConfig_AllowedUomsTitle' | translate" 
+    <pep-select #pepSelect [value]="AllowedUomsTSA"
+        [options]="TSAfields" [label]="'Uom_AtdConfig_AllowedUomsTitle' | translate"
         (valueChange)="onValueChanged('AllowedUoms', $event)"></pep-select>
 </div>
 <div>
-    <pep-select [value]="InventoryTSA"
-        [options]="TSAfields" [label]="'Uom_AtdConfig_InventoryTitle' | translate" 
+    <pep-select #pepSelect [value]="InventoryTSA"
+        [options]="TSAfields" [label]="'Uom_AtdConfig_InventoryTitle' | translate"
         (valueChange)="onValueChanged('Inventory', $event)"></pep-select>
 </div>
 <div>
-    <pep-select [value]="InventoryTSA"
-        [options]="Actions" [label]="'Uom_AtdConfig_InventoryActionTitle' | translate" 
+    <pep-select #pepSelect [value]="InventoryTSA"
+        [options]="Actions" [label]="'Uom_AtdConfig_InventoryActionTitle' | translate"
         (valueChange)="onValueChanged('InventoryAction', $event)"></pep-select>
 </div>

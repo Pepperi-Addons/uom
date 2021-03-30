@@ -13,7 +13,6 @@ import { MaterialModule } from '../../modules/material.module';
         PepUIModule,
         MaterialModule,
     ],
-    providers: [],
     exports:[AtdConfigComponent]
 })
 export class AtdConfigModule {

@@ -1,18 +1,19 @@
 import { InventoryAction } from './../../../../../shared/entities';
 import { KeyValuePair } from '@pepperi-addons/ngx-lib';
-import { Component, Input, OnInit } from "@angular/core";
+import { ChangeDetectorRef, Component, Input, OnInit, ViewChild } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { AtdConfigService } from "./atd-config.service";
+import { PepSelectComponent } from '@pepperi-addons/ngx-lib/select';
 
 @Component({
     selector: 'atd-config-addon',
     templateUrl: './atd-config.component.html',
     styleUrls: ['./atd-config.component.scss'],
-    providers: [AtdConfigService]
+    // providers: [AtdConfigService]
 })
 
 export class AtdConfigComponent implements OnInit {
-    
+
     TSAfields: {key:string, value:string}[] = [];
     Actions: {key:string, value:string}[] = [];
     AllowedUomsTSA: string = '';
@@ -20,18 +21,21 @@ export class AtdConfigComponent implements OnInit {
     InventoryAction: InventoryAction = InventoryAction.DoNothing;
 
     @Input() options: any;
-    
+    @ViewChild('pepSelect') pepSelect: PepSelectComponent;
+
     constructor(
         public pluginService: AtdConfigService,
-        public routeParams: ActivatedRoute,
+        private cd: ChangeDetectorRef
+
+        // public routeParams: ActivatedRoute,
     ) {
 
-        this.pluginService.pluginUUID = this.options?.UUID || this.routeParams?.snapshot?.params['addon_uuid'];
+        this.pluginService.pluginUUID = this.options?.UUID;// || this.routeParams?.snapshot?.params['addon_uuid'];
         console.log(JSON.stringify(this.options));
     }
-    
-    ngOnInit() {        
-        this.Actions = Object.keys(InventoryAction).map(key => {
+
+    ngOnInit() {
+        this.Actions = Object.keys(InventoryAction)?.map(key => {
             return {
                 key: key,
                 value: InventoryAction[key]
@@ -39,14 +43,14 @@ export class AtdConfigComponent implements OnInit {
         })
         this.pluginService.getAtdFields(153438).then(fields => {
             debugger;
-            this.TSAfields = fields.map(field => {
+            this.TSAfields = fields?.map(field => {
                 return {
                     key: field.FieldID,
                     value: field.Label
                 }
             });
         });
-    }    
+    }
 
     onValueChanged(element, $event) {
         switch(element) {
@@ -63,5 +67,14 @@ export class AtdConfigComponent implements OnInit {
                 break;
             }
         }
+    }
+
+    elementClicked(event) {
+        this.pepSelect.select.overlayDir.backdropClick.subscribe( ev => {
+            this.pepSelect.select.close();
+            this.cd.detectChanges();
+        });
+          this.pepSelect.select.close();
+          this.cd.detectChanges();
     }
 }
