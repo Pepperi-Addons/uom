@@ -8,3 +8,16 @@ export interface Uom {
     BaseUOM: string,
     Hidden?: boolean
 }
+
+export interface AtdConfiguration {
+    Key: string, // Id of the atd this configuration belongs to
+    AllowedUomMapping: string,
+    InventoryMapping: string,
+    InventoryAction: InventoryAction
+}
+
+export enum InventoryAction {
+    DoNothing = 'Uom_InventoryAction_DoNothing',
+    Correct = 'Uom_InventoryAction_Correct',
+    Color = 'Uom_InventoryAction_Color',
+}

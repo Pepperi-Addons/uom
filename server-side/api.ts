@@ -3,9 +3,21 @@ import { Client, Request } from '@pepperi-addons/debug-server'
 import { UomsService } from './services/uom.service'
 import { ObjectsService } from './services/objects.service';
 import { PapiClient } from '@pepperi-addons/papi-sdk';
+import { ConfigurationService } from './services/configuration.service';
 
 export async function uoms(client: Client, request: Request) {
     const service = new UomsService(client)
+
+    if (request.method == 'POST') {
+        return service.upsert(request.body);
+    }
+    else if (request.method == 'GET') {
+        return await service.find(request.query);
+    }
+};
+
+export async function atdConfiguration(client: Client, request: Request) {
+    const service = new ConfigurationService(client)
 
     if (request.method == 'POST') {
         return service.upsert(request.body);
