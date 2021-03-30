@@ -9,3 +9,8 @@
         [options]="TSAfields" [label]="'Uom_AtdConfig_InventoryTitle' | translate" 
         (valueChange)="onValueChanged('Inventory', $event)"></pep-select>
 </div>
+<div>
+    <pep-select [value]="InventoryTSA"
+        [options]="Actions" [label]="'Uom_AtdConfig_InventoryActionTitle' | translate" 
+        (valueChange)="onValueChanged('InventoryAction', $event)"></pep-select>
+</div>

@@ -1,3 +1,4 @@
+import { InventoryAction } from './../../../../../shared/entities';
 import { KeyValuePair } from '@pepperi-addons/ngx-lib';
 import { Component, Input, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
@@ -13,8 +14,10 @@ import { AtdConfigService } from "./atd-config.service";
 export class AtdConfigComponent implements OnInit {
     
     TSAfields: {key:string, value:string}[] = [];
+    Actions: {key:string, value:string}[] = [];
     AllowedUomsTSA: string = '';
-    InventoryTSA: string = '';
+    InventoryTSA: string = 'ItemInStockQuantity';
+    InventoryAction: InventoryAction = InventoryAction.DoNothing;
 
     @Input() options: any;
     
@@ -27,8 +30,15 @@ export class AtdConfigComponent implements OnInit {
         console.log(JSON.stringify(this.options));
     }
     
-    ngOnInit() {
-        this.pluginService.getAtdFields(303772).then(fields => {
+    ngOnInit() {        
+        this.Actions = Object.keys(InventoryAction).map(key => {
+            return {
+                key: key,
+                value: InventoryAction[key]
+            }
+        })
+        this.pluginService.getAtdFields(153438).then(fields => {
+            debugger;
             this.TSAfields = fields.map(field => {
                 return {
                     key: field.FieldID,
@@ -46,6 +56,10 @@ export class AtdConfigComponent implements OnInit {
             }
             case 'Inventory': {
                 this.InventoryTSA = $event.value;
+                break;
+            }
+            case 'Inventory': {
+                this.InventoryAction = $event.value;
                 break;
             }
         }
