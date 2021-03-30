@@ -1,3 +1,3 @@
-export { AtdConfigComponent } from './atd-config.component';
-export { AtdConfigService } from './atd-config.service';
-export { AtdConfigModule } from './atd-config.module';
+export * from './atd-config.component';
+export * from './atd-config.service';
+export * from './atd-config.module';

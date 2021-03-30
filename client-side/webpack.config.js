@@ -6,16 +6,16 @@ const webpack = require('webpack');
 const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = (config, options, env) => {
-    // config.plugins.push(
-    //     new webpack.DefinePlugin({
-    //       CLIENT_MODE: JSON.stringify(env.configuration),
-    //     })
-    // )       
+    config.plugins.push(
+        new webpack.DefinePlugin({
+          CLIENT_MODE: JSON.stringify(env.configuration),
+        })
+    )       
     
-    // if (env.configuration === 'Standalone') {
-    //     return config;
-    // }
-    // else {
+    if (env.configuration === 'Standalone') {
+        return config;
+    }
+    else {
         const mfConfig = {
             output: {
               uniqueName: "uom_module"
@@ -23,18 +23,18 @@ module.exports = (config, options, env) => {
             optimization: {
               // Only needed to bypass a temporary bug
               runtimeChunk: false,
-            //   minimize: true,
-            //   minimizer: [
-            //   new TerserPlugin({
-            //     extractComments: false,
-            //     terserOptions: {keep_fnames: /^.$/}
-            //   })]
+              minimize: true,
+              minimizer: [
+              new TerserPlugin({
+                extractComments: false,
+                terserOptions: {keep_fnames: /^.$/}
+              })]
             },
             plugins: [
               new ModuleFederationPlugin({
                 // remotes: {},
-                name: "uom_module",
-                filename: "uom_module.js",
+                name: "atd_config",
+                filename: "atd_config.js",
                 exposes: {
                   './AtdConfigComponent': './src/app/components/atd-config/index.ts',
                   './AtdConfigModule': './src/app/components/atd-config/index.ts',
@@ -51,7 +51,7 @@ module.exports = (config, options, env) => {
         const merged = merge(config, mfConfig);
         const singleSpaWebpackConfig = singleSpaAngularWebpack(merged, options);
         return singleSpaWebpackConfig;
-    // }
+    }
 
 
     // Feel free to modify this webpack config however you'd like to

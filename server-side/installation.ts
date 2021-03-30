@@ -30,7 +30,7 @@ export async function install(client: Client, request: Request): Promise<any> {
 
     const tabs = await upsertDataView(client, "SettingsEditorTransactionsTabs", tab);
 
-    return {success:true,resultObject:{}}
+    return {success:true,tabs}
 }
 
 export async function uninstall(client: Client, request: Request): Promise<any> {
@@ -42,7 +42,7 @@ export async function upgrade(client: Client, request: Request): Promise<any> {
     const papiClient = new PapiClient({
         baseURL: client.BaseURL,
         token: client.OAuthAccessToken,
-    });
+    }); 
 
     await papiClient.addons.api.uuid(CPI_NODE_ADDON_UUID).file('cpi_node').func('files').post({},{
         AddonUUID: config.AddonUUID,
