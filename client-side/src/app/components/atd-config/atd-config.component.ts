@@ -1,6 +1,6 @@
 import { InventoryAction } from './../../../../../shared/entities';
 import { KeyValuePair } from '@pepperi-addons/ngx-lib';
-import { ChangeDetectorRef, Component, Input, OnInit, ViewChild } from "@angular/core";
+import { ChangeDetectorRef, Component, Input, OnInit, ViewChild, ViewChildren } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { AtdConfigService } from "./atd-config.service";
 import { PepSelectComponent } from '@pepperi-addons/ngx-lib/select';
@@ -21,7 +21,7 @@ export class AtdConfigComponent implements OnInit {
     InventoryAction: InventoryAction = InventoryAction.DoNothing;
 
     @Input() options: any;
-    @ViewChild('pepSelect') pepSelect: PepSelectComponent;
+    @ViewChildren('pepSelect') pepSelect: Array<PepSelectComponent>;
 
     constructor(
         public pluginService: AtdConfigService,
@@ -67,14 +67,15 @@ export class AtdConfigComponent implements OnInit {
                 break;
             }
         }
-    }
 
-    elementClicked(event) {
-        this.pepSelect.select.overlayDir.backdropClick.subscribe( ev => {
-            this.pepSelect.select.close();
+        this.pepSelect.forEach(pep => {
+            pep.select.overlayDir.backdropClick.subscribe( ev => {
+                pep.select.close();
+                this.cd.detectChanges();
+            });
+            pep.select.close();
             this.cd.detectChanges();
-        });
-          this.pepSelect.select.close();
-          this.cd.detectChanges();
+        })
+
     }
 }
