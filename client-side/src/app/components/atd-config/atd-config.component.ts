@@ -3,6 +3,7 @@ import { KeyValuePair } from '@pepperi-addons/ngx-lib';
 import { Component, Input, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { AtdConfigService } from "./atd-config.service";
+import { TranslateService } from "@ngx-translate/core";
 
 @Component({
     selector: 'atd-config-addon',
@@ -17,28 +18,35 @@ export class AtdConfigComponent implements OnInit {
     Actions: {key:string, value:string}[] = [];
     AllowedUomsTSA: string = '';
     InventoryTSA: string = 'ItemInStockQuantity';
-    InventoryAction: InventoryAction = InventoryAction.DoNothing;
+    InventoryAction: InventoryAction;
 
     @Input() options: any;
     
     constructor(
         public pluginService: AtdConfigService,
         public routeParams: ActivatedRoute,
+        private translate: TranslateService,
     ) {
 
         this.pluginService.pluginUUID = this.options?.UUID || this.routeParams?.snapshot?.params['addon_uuid'];
-        console.log(JSON.stringify(this.options));
+        console.log('options are:', JSON.stringify(this.options));
     }
+
     
     ngOnInit() {        
-        this.Actions = Object.keys(InventoryAction).map(key => {
-            return {
-                key: key,
-                value: InventoryAction[key]
-            }
-        })
+        this.translate.get([
+            'Uom_AtdConfig_InventoryAction_DoNothingOption', 
+            'Uom_AtdConfig_InventoryAction_CorrectOption', 
+            'Uom_AtdConfig_InventoryAction_ColorOption'
+        ]).subscribe((translates) => {
+            this.Actions = Object.keys(InventoryAction).map(key => {
+                return {
+                    key: key,
+                    value: translates[InventoryAction[key]]
+                }
+            })
+        });
         this.pluginService.getAtdFields(153438).then(fields => {
-            debugger;
             this.TSAfields = fields.map(field => {
                 return {
                     key: field.FieldID,
@@ -58,7 +66,7 @@ export class AtdConfigComponent implements OnInit {
                 this.InventoryTSA = $event.value;
                 break;
             }
-            case 'Inventory': {
+            case 'InventoryAction': {
                 this.InventoryAction = $event.value;
                 break;
             }

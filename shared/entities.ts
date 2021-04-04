@@ -17,7 +17,7 @@ export interface AtdConfiguration {
 }
 
 export enum InventoryAction {
-    DoNothing = 'Uom_InventoryAction_DoNothing',
-    Correct = 'Uom_InventoryAction_Correct',
-    Color = 'Uom_InventoryAction_Color',
+    DoNothing = 'Uom_AtdConfig_InventoryAction_DoNothingOption',
+    Correct = 'Uom_AtdConfig_InventoryAction_CorrectOption',
+    Color = 'Uom_AtdConfig_InventoryAction_ColorOption',
 }

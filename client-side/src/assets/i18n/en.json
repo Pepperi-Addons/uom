@@ -23,6 +23,10 @@
     "Uom_DeleteModal_Title":"Delete Uom",
     "Uom_DeleteModal_Paragraph":"Are you sure you want to delete this UOM?",
     "Uom_AtdConfig_AllowedUomsTitle": "Allowed OUMs field",
-    "Uom_AtdConfig_InventoryTitle": "Inventory field"
+    "Uom_AtdConfig_InventoryTitle": "Inventory field",
+    "Uom_AtdConfig_InventoryActionTitle": "Inventory Action",
+    "Uom_AtdConfig_InventoryAction_DoNothingOption": "Do Nothing",
+    "Uom_AtdConfig_InventoryAction_CorrectOption": "Correct Inventory",
+    "Uom_AtdConfig_InventoryAction_ColorOption" : "Color field in red"
 
 }

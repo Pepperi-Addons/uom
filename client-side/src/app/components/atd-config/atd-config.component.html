@@ -10,7 +10,7 @@
         (valueChange)="onValueChanged('Inventory', $event)"></pep-select>
 </div>
 <div>
-    <pep-select [value]="InventoryTSA"
-        [options]="Actions" [label]="'Uom_AtdConfig_InventoryActionTitle' | translate" 
+    <pep-select [value]="InventoryAction"
+        [options]="Actions" [emptyOption]='false' [label]="'Uom_AtdConfig_InventoryActionTitle' | translate" 
         (valueChange)="onValueChanged('InventoryAction', $event)"></pep-select>
 </div>
