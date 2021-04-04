@@ -1,19 +1,20 @@
 import { InventoryAction } from './../../../../../shared/entities';
 import { KeyValuePair } from '@pepperi-addons/ngx-lib';
-import { Component, Input, OnInit } from "@angular/core";
+import { ChangeDetectorRef, Component, Input, OnInit, ViewChild, ViewChildren } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { AtdConfigService } from "./atd-config.service";
 import { TranslateService } from "@ngx-translate/core";
+import { PepSelectComponent } from '@pepperi-addons/ngx-lib/select';
 
 @Component({
     selector: 'atd-config-addon',
     templateUrl: './atd-config.component.html',
     styleUrls: ['./atd-config.component.scss'],
-    providers: [AtdConfigService]
+    // providers: [AtdConfigService]
 })
 
 export class AtdConfigComponent implements OnInit {
-    
+
     TSAfields: {key:string, value:string}[] = [];
     Actions: {key:string, value:string}[] = [];
     AllowedUomsTSA: string = '';
@@ -21,11 +22,13 @@ export class AtdConfigComponent implements OnInit {
     InventoryAction: InventoryAction;
 
     @Input() options: any;
-    
+    @ViewChildren('pepSelect') pepSelect: Array<PepSelectComponent>;
+
     constructor(
         public pluginService: AtdConfigService,
         public routeParams: ActivatedRoute,
         private translate: TranslateService,
+        private cd: ChangeDetectorRef
     ) {
 
         this.pluginService.pluginUUID = this.options?.UUID || this.routeParams?.snapshot?.params['addon_uuid'];
@@ -54,7 +57,7 @@ export class AtdConfigComponent implements OnInit {
                 }
             });
         });
-    }    
+    }
 
     onValueChanged(element, $event) {
         switch(element) {
@@ -71,5 +74,15 @@ export class AtdConfigComponent implements OnInit {
                 break;
             }
         }
+
+        this.pepSelect.forEach(pep => {
+            pep.select.overlayDir.backdropClick.subscribe( ev => {
+                pep.select.close();
+                this.cd.detectChanges();
+            });
+            pep.select.close();
+            this.cd.detectChanges();
+        })
+
     }
 }
