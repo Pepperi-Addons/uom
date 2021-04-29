@@ -12,6 +12,12 @@ export default config.CPISide.map(endpoint => {
             {
                 dir: '../publish',
                 format: 'cjs',
+                sourcemap: 'inline',
+                sourcemapExcludeSources: true,
+                sourcemapPathTransform: (relativeSourcePath, sourcemapPath) => {
+                  // will replace relative paths with absolute paths
+                  return path.resolve(path.dirname(sourcemapPath), relativeSourcePath)
+                },
             }
         ],
         external: [
