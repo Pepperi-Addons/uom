@@ -26,7 +26,9 @@
     "Uom_AtdConfig_InventoryTitle": "Inventory field",
     "Uom_AtdConfig_InventoryActionTitle": "Inventory Action",
     "Uom_AtdConfig_InventoryAction_DoNothingOption": "Do Nothing",
-    "Uom_AtdConfig_InventoryAction_CorrectOption": "Correct Inventory",
-    "Uom_AtdConfig_InventoryAction_ColorOption" : "Color field in red"
+    "Uom_AtdConfig_InventoryAction_FixOption": "Fix Inventory",
+    "Uom_AtdConfig_InventoryAction_ColorOption" : "Color field in red",
+    "Uom_AtdConfig_Save": "Save",
+    "Uom_AtdConfig_Cancel": "Cancel"
 
 }
