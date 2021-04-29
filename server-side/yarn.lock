@@ -12,10 +12,10 @@
     express "^4.17.1"
     jwt-decode "^2.2.0"
 
-"@pepperi-addons/papi-sdk@^1.20.11":
-  version "1.20.11"
-  resolved "https://registry.yarnpkg.com/@pepperi-addons/papi-sdk/-/papi-sdk-1.20.11.tgz#8c57fc2d8bae5a3284d3bfbc0da15cd7a8674978"
-  integrity sha512-pkoXsqFEMX/WBxL3pvwCP+Sujl287dz+T1sEDckY/SYFFobnayyQgogDwAHgZDRLSmLvEZtg+KSCqDEdalggqQ==
+"@pepperi-addons/papi-sdk@^1.22.1":
+  version "1.22.1"
+  resolved "https://registry.yarnpkg.com/@pepperi-addons/papi-sdk/-/papi-sdk-1.22.1.tgz#b63762cfd3b8cc5c00e4ac7ac930fb60bed84fc9"
+  integrity sha512-8EjehWCkHcEdloLCeOJXkE6N+CrLZ4asX8HrY3cYoVX/9teqSDPGQIFX3IVJcsTqzn9uqpLRwgRppRGZl0ksug==
   dependencies:
     node-fetch "^2.6.0"
 

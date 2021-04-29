@@ -32,6 +32,7 @@ export class ObjectsService {
     }
 
     async getAtdFields(atdId: number): Promise<ApiFieldObject[] | undefined> {
+        debugger;
         const atd = await this.getAtd(atdId);
         if (atd) {
             if (!this.fields[atdId]) {
@@ -51,5 +52,15 @@ export class ObjectsService {
         }
 
         return this.fields[atdId + '_lines'];
+    }
+
+    async createAtdTransactionLinesFields(atdId: number, fields:ApiFieldObject[]): Promise<boolean> {
+        const atd = await this.getAtd(atdId);
+        if(atd) {
+            const bulkURL = `/meta_data/bulk/transaction_lines/types/${atd.SubTypeID}/fields`;
+            const createdFields: ApiFieldObject[] = await this.papiClient.post(bulkURL, fields);
+            return createdFields.length > 0;
+        }
+        return false;
     }
 }

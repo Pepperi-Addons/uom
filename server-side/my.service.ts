@@ -26,13 +26,11 @@ class MyService {
     }
 
     updateDataView(dataView: any) {
-        console.log(dataView);
         var headers = {
             "X-Pepperi-ActionID": uuid(),
             "X-Pepperi-OwnerID": this.client.AddonUUID.toLowerCase(),
             "X-Pepperi-SecretKey": this.client.AddonSecretKey
         };
-        console.log(headers);
         return this.papiClient.post(`/meta_data/data_views`, dataView, headers);
 
         // return this.papiClient.metaData.dataViews.upsert(dataView);
