@@ -2,8 +2,10 @@
 # yarn lockfile v1
 
 
-"@pepperi-addons/scripts@file:../scripts":
-  version "2.0.2"
+"@pepperi-addons/scripts@^2.0.4":
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/@pepperi-addons/scripts/-/scripts-2.0.4.tgz#b3a0dd91d295fa88638aac5183e6d5439fde0859"
+  integrity sha512-OITJIKW+8iJHoCn4BghtbCFUBRhPbDccMM7tDw/Fj62mLnE22FPZ4mjoU80kuZ9xLXxpUpA1g0xZ2oiFJjZYbQ==
   dependencies:
     commander "^5.1.0"
     node-fetch "^2.6.0"
