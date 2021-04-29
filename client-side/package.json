@@ -4,12 +4,13 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve --port 3010",
-    "single-spa": "ng serve --port 4401 --configuration SingleSpa --sourceMap=false",
+    "single-spa": "ng serve --port 4400 --configuration SingleSpa --sourceMap=false",
     "standalone": "ng serve --port 4400 --configuration Standalone --sourceMap=false",
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
+    "build:single-spa": "ng build client-side --prod --sourceMap=false",
     "build:single-spa:client-side": "ng build client-side --prod",
     "serve:single-spa:client-side": "ng s --project client-side --disable-host-check --port 4400 --deploy-url http://localhost:4400/ --live-reload false",
     "assets-server": "http-server ./src/ -p 4300 -d --cors"
@@ -35,7 +36,7 @@
     "@ngx-gallery/core": "^5.0.0-beta.0",
     "@ngx-translate/core": "^13.0.0",
     "@ngx-translate/http-loader": "^6.0.0",
-    "@pepperi-addons/ngx-lib": "^0.1.154",
+    "@pepperi-addons/ngx-lib": "^0.1.214",
     "@pepperi-addons/papi-sdk": "^1.20.11",
     "@tweenjs/tween.js": "^17.1.1",
     "again": "0.0.1",
@@ -87,5 +88,8 @@
   },
   "resolutions": {
     "webpack": "^5.0.0"
-  }
+  },
+  "browserslist": [
+    "supports es6-module"
+  ]
 }
