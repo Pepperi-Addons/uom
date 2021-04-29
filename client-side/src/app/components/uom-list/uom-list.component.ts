@@ -3,7 +3,7 @@ import { AddonService } from '../addon/addon.service';
 
 import {  } from '@pepperi-addons/ngx-lib/top-bar'
 import { PepListComponent, PepListViewType } from '@pepperi-addons/ngx-lib/list';
-import { ObjectsData, ObjectsDataRow, ObjectSingleData, PepGuid, PepRowData, UIControl } from '@pepperi-addons/ngx-lib/';
+import { ObjectsData, ObjectsDataRow, ObjectSingleData, PepGuid, PepRowData, UIControl } from '@pepperi-addons/ngx-lib';
 import { TranslateService } from '@ngx-translate/core';
 
 import { GridDataView, DataViewFieldTypes } from '@pepperi-addons/papi-sdk'
@@ -124,27 +124,27 @@ export class UomListComponent implements OnInit {
             'Uom_Table_Title', 
             'Uom_Table_KeyTitle', 
             'Uom_Table_NameTitle',
-            'Uom_Table_MultiplierTitle',
-            'Uom_Table_BaseUomTitle'
+            'Uom_Table_MultiplierTitle'
         ]).subscribe(async (translates) => {
             const dataView = this.service.getDataView(translates);
             this.list = await this.service.getList();
             const rows: PepRowData[] = this.list.map(x => {
-            const res = new PepRowData();
-            res.Fields = dataView.Fields.map((field, i) => {
-                return {
-                    ApiName: field.FieldID,
-                    Title: field.Title,
-                    XAlignment: 1,
-                    FormattedValue: this.getValue(x, field.FieldID),
-                    Value:  this.getValue(x, field.FieldID),
-                    ColumnWidth: dataView.Columns[i].Width,
-                    AdditionalValue: '',
-                    OptionalValues: [],
-                    FieldType: DataViewFieldTypes[field.Type]
-                }
-            })
-            return res;
+                const res = new PepRowData();
+                res.UUID = x.UUID;
+                res.Fields = dataView.Fields.map((field, i) => {
+                    return {
+                        ApiName: field.FieldID,
+                        Title: field.Title,
+                        XAlignment: 1,
+                        FormattedValue: this.getValue(x, field.FieldID),
+                        Value:  this.getValue(x, field.FieldID),
+                        ColumnWidth: dataView.Columns[i].Width,
+                        AdditionalValue: '',
+                        OptionalValues: [],
+                        FieldType: DataViewFieldTypes[field.Type]
+                    }
+                })
+                return res;
             });
 
             const uiControl = this.pluginService.pepperiDataConverter.getUiControl(rows[0]);
@@ -157,11 +157,11 @@ export class UomListComponent implements OnInit {
     onActionClicked(event) {
         const selectData = this.pepperiListComp.getSelectedItemsData(true);
         if (selectData.rows.length == 1) {
-
-        const uid = selectData.rows[0];
-        const rowData = this.pepperiListComp.getItemDataByID( uid );
-        const obj = rowData ? this.list.find(item => item.UUID === rowData.UID) : undefined;
-        this.actionClicked.emit({ApiName:event.source.key, SelectedItem:obj});
+            debugger;
+            const uid = selectData.rows[0];
+            const rowData = this.pepperiListComp.getItemDataByID( uid );
+            const obj = rowData ? this.list.find(item => item.UUID === rowData.UID) : undefined;
+            this.actionClicked.emit({ApiName:event.source.key, SelectedItem:obj});
         //this.service.getActions().find(action => action.Key === event.source.key).Action(obj);
         }
     }

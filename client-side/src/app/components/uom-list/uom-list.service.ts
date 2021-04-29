@@ -56,7 +56,7 @@ export class UomListService implements PepperiListService {
                     ReadOnly: true
                 },
                 {
-                    FieldID: 'Name',
+                    FieldID: 'Title',
                     Type: 'TextBox',
                     Title: translates ? translates['Uom_Table_NameTitle'] : '',
                     Mandatory: false,
@@ -69,18 +69,8 @@ export class UomListService implements PepperiListService {
                     Mandatory: false,
                     ReadOnly: true
                 },
-                {
-                    FieldID: 'BaseUOM',
-                    Type: 'TextBox',
-                    Title: translates ? translates['Uom_Table_BaseUomTitle'] : '',
-                    Mandatory: false,
-                    ReadOnly: true
-                },
             ],
             Columns: [
-                {
-                    Width: 10
-                },
                 {
                     Width: 10
                 },

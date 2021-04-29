@@ -10,18 +10,13 @@
         </div>
         <div>
             <pep-textbox [label]="'Uom_ConfigModal_NameTitle' | translate" [value]="dialogData.Name"
-            [type]="'text'" [required]="true" (valueChange)="onValueChanged('Name', $event)"></pep-textbox>
+            [type]="'text'" [required]="true" (valueChange)="onValueChanged('Title', $event)"></pep-textbox>
             
         </div>
         <div>
             <pep-textbox [label]="'Uom_ConfigModal_MultiplierTitle' | translate" [value]="dialogData.Multiplier"
             [type]="'int'" [required]="true" (valueChange)="onValueChanged('Multiplier', $event)"></pep-textbox>
             
-        </div>
-        <div>
-            <pep-select [value]="dialogData.BaseUOM"
-                [options]="baseUoms" [label]="'Uom_ConfigModal_BaseUomTitle' | translate" 
-                (valueChange)="onValueChanged('BaseUom', $event)"></pep-select>
         </div>
     </div>
     <div mat-dialog-actions class="pepperi-border-top mat-dialog-actions split-actions"

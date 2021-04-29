@@ -26,20 +26,17 @@ export class AddUomDialogComponent implements OnInit, OnDestroy {
     title: string;
     dialogData: any;
     mode = 'Add';
-    baseUoms: Array<string>;
 
     constructor( public dialogRef: MatDialogRef<AddUomDialogComponent>,
         @Inject(MAT_DIALOG_DATA) public incoming: any) {
 
         this.title = incoming.title;
         this.dialogData = incoming.data;
-        this.baseUoms = incoming.data.baseUoms;
         if (incoming.data.selectedUom){
             let current: Uom = incoming.data.selectedUom;
             this.dialogData.Key = current.Key;
-            this.dialogData.Name = current.Name;
+            this.dialogData.Title = current.Title;
             this.dialogData.Multiplier = current.Multiplier;
-            this.dialogData.BaseUOM = current.BaseUOM;
             this.mode = 'Edit';
         }
     }
@@ -57,16 +54,12 @@ export class AddUomDialogComponent implements OnInit, OnDestroy {
                 this.dialogData.Key = $event.value;
                 break;
             }
-            case 'Name': {
-                this.dialogData.Name = $event.value;
+            case 'Title': {
+                this.dialogData.Title = $event.value;
                 break;
             }
             case 'Multiplier': {
                 this.dialogData.Multiplier = $event.value;
-                break;
-            }
-            case 'BaseUom': {
-                this.dialogData.BaseUOM = $event.value;
                 break;
             }
         }

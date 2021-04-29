@@ -55,52 +55,32 @@ export class AddonComponent implements OnInit {
         
     }
 
-    async getBaseUoms(): Promise<KeyValuePair<string>[]> {
-        return new Promise((resolve, reject) => {
-            this.pluginService.getUoms().then(data => {
-                if(data) {
-                    const values = data.map(item => {
-                        return {
-                            Key: item.Key,
-                            Value: item.Key
-                        };
-                    })
-                    resolve(values);
+    onActionClicked(event) {
+        const self = this;
+            switch (event.ApiName) {
+                case "Add": {
+                    self.openConfigDialog(event.ApiName, event.SelectedItem);
+                    break;
                 }
-            }).catch(error => {
-                console.log('cannot get list of uoms. got error:', JSON.stringify(error));
-                resolve([]);
-            });
-        });
+                case "Edit": {
+                    self.openConfigDialog(event.ApiName, event.SelectedItem);
+                    break;
+                }
+                case "Delete": {
+                    self.deleteConfigDialog(event.SelectedItem);
+                    break;
+                }
+                default: {
+                    alert("not supported");
+                }
+            }
     }
 
-  onActionClicked(event) {
-      console.log(event);
-      const self = this;
-        switch (event.ApiName) {
-            case "Add": {
-                self.openConfigDialog(event.ApiName, event.SelectedItem);
-                break;
-            }
-            case "Edit": {
-                self.openConfigDialog(event.ApiName, event.SelectedItem);
-                break;
-            }
-            case "Delete": {
-                self.deleteConfigDialog(event.SelectedItem);
-                break;
-            }
-            default: {
-                alert("not supported");
-            }
-        }
-  }
-
   
-  openConfigDialog(operation, selectedObj = undefined) {
-    const self = this;
-    const dialogTitle = operation == 'Add' ? this.translate.instant('Uom_ConfigModalTitle_Add') : this.translate.instant('Uom_ConfigModalTitle_Update');
-    this.getBaseUoms().then(baseUoms => {
+    openConfigDialog(operation, selectedObj = undefined) {
+        debugger;
+        const self = this;
+        const dialogTitle = operation == 'Add' ? this.translate.instant('Uom_ConfigModalTitle_Add') : this.translate.instant('Uom_ConfigModalTitle_Update');
         self.pluginService.openDialog(
             dialogTitle,
             AddUomDialogComponent,
@@ -108,7 +88,6 @@ export class AddonComponent implements OnInit {
             {
                 title: dialogTitle,
                 data: {
-                    baseUoms: baseUoms,
                     selectedUom: selectedObj,
                 }
             },
@@ -119,52 +98,50 @@ export class AddonComponent implements OnInit {
                 }
             }
         );
-    })
-}
-
-modalCallback(data) {
-    const uomObj: Uom = {
-        Key: data.Key,
-        Name: data.Name,
-        Multiplier: data.Multiplier,
-        BaseUOM: data.BaseUOM
     }
-    this.pluginService.updateUoms(uomObj).then((() => {
-        this.uomListComp ? this.uomListComp.loadlist() : null;
-    }));
-}
 
-deleteConfigDialog(selectedObj) {
-    const self = this;
-    const actionButton = [
-        new PepDialogActionButton(
-            this.translate.instant("Uom_Cancel"),
-            "",
-            () => {
-            }), 
-        new PepDialogActionButton(
-            this.translate.instant("Uom_Confirm"),
-            "pepperi-button md strong caution",
-            () => {
-                this.deleteUomConfig(selectedObj);
-            })];
-    const title = this.translate.instant("Uom_DeleteModal_Title");
-    const content = this.translate.instant("Uom_DeleteModal_Paragraph");
-    this.pluginService.openTextDialog(title, content, actionButton, 'custom');
-}
-
-deleteUomConfig(selectedObj) {
-    if (selectedObj) {
-        selectedObj.Hidden = true;
-        this.pluginService.updateUoms(selectedObj).then((()=> {
+    modalCallback(data) {
+        const uomObj: Uom = {
+            Key: data.Key,
+            Title: data.Title,
+            Multiplier: data.Multiplier
+        }
+        this.pluginService.updateUoms(uomObj).then((() => {
             this.uomListComp ? this.uomListComp.loadlist() : null;
         }));
     }
-}
+
+    deleteConfigDialog(selectedObj) {
+        const self = this;
+        const actionButton = [
+            new PepDialogActionButton(
+                this.translate.instant("Uom_Cancel"),
+                "",
+                () => {
+                }), 
+            new PepDialogActionButton(
+                this.translate.instant("Uom_Confirm"),
+                "pepperi-button md strong caution",
+                () => {
+                    this.deleteUomConfig(selectedObj);
+                })];
+        const title = this.translate.instant("Uom_DeleteModal_Title");
+        const content = this.translate.instant("Uom_DeleteModal_Paragraph");
+        this.pluginService.openTextDialog(title, content, actionButton, 'custom');
+    }
+
+    deleteUomConfig(selectedObj) {
+        if (selectedObj) {
+            selectedObj.Hidden = true;
+            this.pluginService.updateUoms(selectedObj).then((()=> {
+                this.uomListComp ? this.uomListComp.loadlist() : null;
+            }));
+        }
+    }
 
 
-  selectedRowsChanged(event) {
-      
-  }
+    selectedRowsChanged(event) {
+        
+    }
 
 }
