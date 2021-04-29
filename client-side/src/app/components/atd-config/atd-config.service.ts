@@ -31,12 +31,16 @@ export class AtdConfigService {
         this.papiBaseURL = this.parsedToken["pepperi.baseurl"]
     }
 
-    async getConfiguration(atdID: Number): Promise<AtdConfiguration> {
+    async getConfiguration(atdID: Number): Promise<AtdConfiguration[]> {
         return await this.papiClient.addons.api.uuid(this.pluginUUID).file('api').func('atdConfiguration').get({where:'Key=' + atdID});
     }
 
     async updateConfiguration(config: AtdConfiguration) {
         return await this.papiClient.addons.api.uuid(this.pluginUUID).file('api').func('atdConfiguration').post(undefined, config);
+    }
+
+    async createTSAFields(atdID: Number): Promise<Boolean> {
+        return await this.papiClient.addons.api.uuid(this.pluginUUID).file('api').func('createTSAFields').post(undefined, {'atdID': atdID});
     }
 
     async getAtdFields(atdID: Number): Promise<ApiFieldObject[]> {

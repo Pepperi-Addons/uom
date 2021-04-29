@@ -1,16 +1,23 @@
 <!-- <div>Component works</div> -->
 <div>
-    <pep-select #pepSelect [value]="AllowedUomsTSA"
-        [options]="TSAfields" [label]="'Uom_AtdConfig_AllowedUomsTitle' | translate"
+    <pep-select #pepSelect [value]="Configuration?.UOMFieldID"
+        [options]="TSAStringfields" [label]="'Uom_AtdConfig_AllowedUomsTitle' | translate"
         (valueChange)="onValueChanged('AllowedUoms', $event)"></pep-select>
 </div>
 <div>
-    <pep-select #pepSelect [value]="InventoryTSA"
-        [options]="TSAfields" [label]="'Uom_AtdConfig_InventoryTitle' | translate"
+    <pep-select #pepSelect [value]="Configuration?.InventoryFieldID"
+        [options]="TSANumberfields" [label]="'Uom_AtdConfig_InventoryTitle' | translate"
         (valueChange)="onValueChanged('Inventory', $event)"></pep-select>
 </div>
 <div>
-    <pep-select #pepSelect [value]="InventoryAction"
+    <pep-select #pepSelect [value]="Configuration?.InventoryType"
         [options]="Actions" [emptyOption]='false' [label]="'Uom_AtdConfig_InventoryActionTitle' | translate" 
         (valueChange)="onValueChanged('InventoryAction', $event)"></pep-select>
 </div>
+<div>
+    <pep-button [value]="'Uom_AtdConfig_Save' | translate" [sizeType]="'lg'" [styleType]="'regular'"
+        [classNames]="'pep-spacing-element '" (click)="SaveConfig()"></pep-button>
+    <pep-button [value]="'Uom_AtdConfig_Cancel' | translate" [sizeType]="'lg'" [styleType]="'regular'"
+        [classNames]="'pep-spacing-element '" (click)="Cancel()"></pep-button>
+</div>
+

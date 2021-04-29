@@ -1,10 +1,11 @@
-import { InventoryAction } from './../../../../../shared/entities';
-import { KeyValuePair } from '@pepperi-addons/ngx-lib';
-import { ChangeDetectorRef, Component, Input, OnInit, ViewChild, ViewChildren } from "@angular/core";
+import { AtdConfiguration, InventoryAction } from './../../../../../shared/entities';
+import { KeyValuePair, PepGuid } from '@pepperi-addons/ngx-lib';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild, ViewChildren } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { AtdConfigService } from "./atd-config.service";
 import { TranslateService } from "@ngx-translate/core";
 import { PepSelectComponent } from '@pepperi-addons/ngx-lib/select';
+import { Observable } from 'rxjs';
 
 @Component({
     selector: 'atd-config-addon',
@@ -15,62 +16,81 @@ import { PepSelectComponent } from '@pepperi-addons/ngx-lib/select';
 
 export class AtdConfigComponent implements OnInit {
 
-    TSAfields: {key:string, value:string}[] = [];
+    TSAStringfields: {key:string, value:string}[] = [];
+    TSANumberfields: {key:string, value:string}[] = [];
     Actions: {key:string, value:string}[] = [];
     AllowedUomsTSA: string = '';
     InventoryTSA: string = 'ItemInStockQuantity';
     InventoryAction: InventoryAction;
-
+    AtdID: number;
+    Configuration: AtdConfiguration;
+    obs$: Observable<any>;
     @Input() options: any;
+    @Output() change: EventEmitter<any> = new EventEmitter<any>();
     @ViewChildren('pepSelect') pepSelect: Array<PepSelectComponent>;
 
     constructor(
         public pluginService: AtdConfigService,
-        public routeParams: ActivatedRoute,
         private translate: TranslateService,
         private cd: ChangeDetectorRef
     ) {
 
-        this.pluginService.pluginUUID = this.options?.UUID || this.routeParams?.snapshot?.params['addon_uuid'];
-        console.log('options are:', JSON.stringify(this.options));
     }
-
+    
     
     ngOnInit() {        
-        this.translate.get([
-            'Uom_AtdConfig_InventoryAction_DoNothingOption', 
-            'Uom_AtdConfig_InventoryAction_CorrectOption', 
-            'Uom_AtdConfig_InventoryAction_ColorOption'
-        ]).subscribe((translates) => {
-            this.Actions = Object.keys(InventoryAction).map(key => {
+        this.pluginService.pluginUUID = this.options?.UUID;
+        this.AtdID = this.options?.addonData.atd.InternalID;
+        this.Actions = Object.keys(InventoryAction)?.map(key => {
+            return {
+                key: key,
+                value: InventoryAction[key]
+            }
+        })
+        this.pluginService.getAtdFields(this.AtdID).then(fields => {
+            this.TSAStringfields = fields?.filter(field=> {
+                //return string fileds that are not 5:Date, 6:DateAndTime, 19:LimitedDate, 20:Image, 24:Attachment, 48:GuidReferenceType
+                return field.Type === "String" && [5,6,19,20,24,48].indexOf(field.UIType.ID) == -1 
+            }).map(field => {
                 return {
-                    key: key,
-                    value: translates[InventoryAction[key]]
+                    key: field.FieldID,
+                    value: field.Label
                 }
-            })
-        });
-        this.pluginService.getAtdFields(153438).then(fields => {
-            this.TSAfields = fields.map(field => {
+            });
+            this.TSANumberfields = fields?.filter(field=> {
+                //return Number fields that are not 9:Currency, 15:Percentage, 40:MapDataReal
+                return (field.Type === "Integer" || field.Type === "Number") && [0,9,15,40].indexOf(field.UIType.ID) == -1
+            }).map(field => {
                 return {
                     key: field.FieldID,
                     value: field.Label
                 }
             });
         });
+        this.pluginService.getConfiguration(this.AtdID).then(config => {
+            this.Configuration = config.length == 1  ? config[0] : {
+                Key: this.AtdID.toString(),
+                UOMFieldID: '',
+                InventoryFieldID: '',
+                InventoryType: 'Fix'
+            }
+        })
+
+        
     }
 
     onValueChanged(element, $event) {
         switch(element) {
             case 'AllowedUoms': {
-                this.AllowedUomsTSA = $event.value;
+                this.Configuration.UOMFieldID = $event.value;
                 break;
             }
             case 'Inventory': {
-                this.InventoryTSA = $event.value;
+                this.Configuration.InventoryFieldID = $event.value;
                 break;
             }
             case 'InventoryAction': {
-                this.InventoryAction = $event.value;
+                this.Configuration.InventoryType = $event.value;
                 break;
             }
         }
@@ -84,5 +104,27 @@ export class AtdConfigComponent implements OnInit {
             this.cd.detectChanges();
         })
 
+    }
+
+    async SaveConfig() {
+        await this.pluginService.updateConfiguration(this.Configuration);
+        const created = await this.pluginService.createTSAFields(this.AtdID);
+        this.emitClose();
+    }
+    
+    emitClose() {
+        this.change.emit({closeDialog:true});
+    }
+    
+    Cancel() {
+        this.pluginService.getConfiguration(this.AtdID).then(config => {
+            this.Configuration = config.length == 1  ? config[0] : {
+                Key: this.AtdID.toString(),
+                UOMFieldID: '',
+                InventoryFieldID: '',
+                InventoryType: 'Fix',
+            }
+        })
+        this.emitClose();
     }
 }
