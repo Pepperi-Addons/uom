@@ -20,6 +20,8 @@ export async function install(client: Client, request: Request): Promise<any> {
     const papiClient = new PapiClient({
         baseURL: client.BaseURL,
         token: client.OAuthAccessToken,
+        addonUUID: client.AddonUUID,
+        addonSecretKey: client.AddonSecretKey
     });
 
     await papiClient.addons.api.uuid(CPI_NODE_ADDON_UUID).file('cpi_node').func('files').post({},{
@@ -28,7 +30,7 @@ export async function install(client: Client, request: Request): Promise<any> {
         Version: request.body.ToVersion
     })
 
-    const tabs = await upsertDataView(client, "SettingsEditorTransactionsTabs", tab);
+    const tabs = await upsertDataView(client, "SettingsEditorTransactionsMenu", tab);
 
     return {success:true,tabs}
 }
@@ -50,7 +52,7 @@ export async function upgrade(client: Client, request: Request): Promise<any> {
         Version: request.body.ToVersion
     })
 
-    const tabs = await upsertDataView(client, "SettingsEditorTransactionsTabs", tab);
+    const tabs = await upsertDataView(client, "SettingsEditorTransactionsMenu", tab);
 
     return {success:true, tabs}
 }
