@@ -7,6 +7,11 @@
 			"script": "build",
 			"group": "build",
 			"problemMatcher": []
-		}
+		},
+        {
+            "label": "Publish cpi side",
+            "type": "npm",
+            "script": "cpi-publish-addon"
+        }
 	]
 }
