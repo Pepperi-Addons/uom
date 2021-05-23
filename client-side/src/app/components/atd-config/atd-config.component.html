@@ -14,10 +14,10 @@
         [options]="Actions" [emptyOption]='false' [label]="'Uom_AtdConfig_InventoryActionTitle' | translate" 
         (valueChange)="onValueChanged('InventoryAction', $event)"></pep-select>
 </div>
-<div>
-    <pep-button [value]="'Uom_AtdConfig_Save' | translate" [sizeType]="'lg'" [styleType]="'regular'"
-        [classNames]="'pep-spacing-element '" (click)="SaveConfig()"></pep-button>
-    <pep-button [value]="'Uom_AtdConfig_Cancel' | translate" [sizeType]="'lg'" [styleType]="'regular'"
+<div class="mat-dialog-actions pep-spacing-element-negative">
+    <pep-button [value]="'Uom_AtdConfig_Cancel' | translate" [sizeType]="'md'" [styleType]="'weak'"
         [classNames]="'pep-spacing-element '" (click)="Cancel()"></pep-button>
+    <pep-button [value]="'Uom_AtdConfig_Save' | translate" [sizeType]="'md'" [styleType]="'strong'"
+        [classNames]="'pep-spacing-element '" (click)="SaveConfig()"></pep-button>
 </div>
 
