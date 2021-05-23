@@ -2,7 +2,7 @@ import jwt from 'jwt-decode';
 import { PapiClient } from '@pepperi-addons/papi-sdk';
 import { Injectable } from '@angular/core';
 
-import {PepAddonService, PepHttpService, PepDataConvertorService, PepSessionService} from '@pepperi-addons/ngx-lib';
+import {PepHttpService, PepDataConvertorService, PepSessionService} from '@pepperi-addons/ngx-lib';
 
 import { PepDialogActionsType, PepDialogData, PepDialogService } from '@pepperi-addons/ngx-lib/dialog';
 import { Uom } from '../../../../../shared/entities';
