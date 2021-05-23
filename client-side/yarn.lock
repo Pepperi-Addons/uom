@@ -1345,10 +1345,10 @@
   dependencies:
     tslib "^2.0.0"
 
-"@pepperi-addons/papi-sdk@^1.20.11":
-  version "1.20.11"
-  resolved "https://registry.yarnpkg.com/@pepperi-addons/papi-sdk/-/papi-sdk-1.20.11.tgz#8c57fc2d8bae5a3284d3bfbc0da15cd7a8674978"
-  integrity sha512-pkoXsqFEMX/WBxL3pvwCP+Sujl287dz+T1sEDckY/SYFFobnayyQgogDwAHgZDRLSmLvEZtg+KSCqDEdalggqQ==
+"@pepperi-addons/papi-sdk@^1.24.0":
+  version "1.24.0"
+  resolved "https://registry.yarnpkg.com/@pepperi-addons/papi-sdk/-/papi-sdk-1.24.0.tgz#32d89f0b891ce9d3c76a963b820d1b6dcf6ba51d"
+  integrity sha512-fSsSmOo8mvmzd6UIPW8XWQqEDpsmA+9QmoNe1++ncLRS6zDsF3cBKVd9dbnRq9K9wETIKA4kYgloXU2jzd0xZQ==
   dependencies:
     node-fetch "^2.6.0"
 
