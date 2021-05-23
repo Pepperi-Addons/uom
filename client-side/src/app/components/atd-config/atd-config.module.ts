@@ -1,19 +1,27 @@
 import { AtdConfigComponent } from './index';
 import { CommonModule } from '@angular/common';
-import { NgModule } from '@angular/core';
+import { Injectable, NgModule } from '@angular/core';
 import { PepUIModule } from '../../modules/pepperi.module';
 import { MaterialModule } from '../../modules/material.module';
 
 import { TranslateModule, TranslateLoader, TranslateService } from '@ngx-translate/core';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { MultiTranslateHttpLoader } from 'ngx-translate-multi-http-loader';
-import { HttpClient } from '@angular/common/http';
+import { HttpBackend, HttpClient } from '@angular/common/http';
 import { PepAddonService, PepFileService } from '@pepperi-addons/ngx-lib';
 
 // export function createTranslateLoader(http: HttpClient) {
 //    return new TranslateHttpLoader(http, '/assets/i18n/', '.json');
 // }
 
-export function createTranslateLoader(http: HttpClient, fileService: PepFileService, addonService: PepAddonService) {
+@Injectable({providedIn: 'root'})
+export class HttpClientTrans extends HttpClient {
+  constructor(handler: HttpBackend) {
+    super(handler);
+  }
+}
+
+export function createSubAddonTranslateLoader(http: HttpClientTrans, fileService: PepFileService) {
     const addonStaticFolder = getAddonStaticFolder();
     const translationsPath: string = fileService.getAssetsTranslationsPath();
     const translationsSuffix: string = fileService.getAssetsTranslationsSuffix();
@@ -22,7 +30,7 @@ export function createTranslateLoader(http: HttpClient, fileService: PepFileServ
         {
             prefix:
                 addonStaticFolder.length > 0
-                    ? addonStaticFolder + translationsPath 
+                    ? addonStaticFolder + '/' + translationsPath 
                     : translationsPath,
             suffix: translationsSuffix,
         },
@@ -34,6 +42,7 @@ export function createTranslateLoader(http: HttpClient, fileService: PepFileServ
             suffix: ".json",
         },
     ]);
+    //return new TranslateHttpLoader(http, '/assets/i18n/', '.json')
 }
 
 function getAddonStaticFolder() {
@@ -54,8 +63,8 @@ function getAddonStaticFolder() {
         TranslateModule.forRoot({
             loader: {
                 provide: TranslateLoader,
-                useFactory: createTranslateLoader,
-                deps: [HttpClient, PepFileService, PepAddonService]
+                useFactory: createSubAddonTranslateLoader,
+                deps: [HttpClientTrans, PepFileService]
             }
         })
     ],
