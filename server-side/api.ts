@@ -5,6 +5,8 @@ import { ObjectsService } from './services/objects.service';
 import { PapiClient } from '@pepperi-addons/papi-sdk';
 import { ConfigurationService } from './services/configuration.service';
 import { UomTSAFields } from './metadata';
+import { AtdConfiguration } from '../shared/entities';
+import { config } from 'process';
 
 export async function uoms(client: Client, request: Request) {
     const service = new UomsService(client)
@@ -79,6 +81,57 @@ export async function createTSAFields(client: Client, request:Request) {
     }
 
     return created;
+}
+
+export async function importUom(client: Client, request:Request) {
+    const service = new ConfigurationService(client);
+
+    try {
+        console.log('importUOM is called, data got from call:', request.body);
+        if (request.body && request.body.Resource == 'transactions') {
+            const config:AtdConfiguration = {
+                Key:request.body.InternalID,
+                ...request.body.DataFromExport 
+            }
+            await service.upsert(config);
+        }
+        return {
+            success:true
+        }
+    }
+    catch(err) {
+        console.log('importUom Failed with error:', err);
+        return {
+            success: false,
+            errorMessage: 'message' in err ? err.message : 'unknown error occured'
+        }
+    }
+}
+
+export async function exportUom(client: Client, request:Request) {
+    const service = new ConfigurationService(client);
+
+    try {
+        let config:AtdConfiguration;
+        console.log('exportUOM is called, data got from call:', request.query);
+        if (request.query && request.query.resource  == 'transactions') {
+            config = await service.find({
+                where: `Key= ${request.query.internal_id}`,
+            });
+            return {
+                success:true,
+                DataForImport: config,
+            }
+        }
+        return {}
+    }
+    catch(err) {
+        console.log('importUom Failed with error:', err);
+        return {
+            success: false,
+            errorMessage: 'message' in err ? err.message : 'unknown error occured'
+        }
+    }
 }
 
 // add functions here

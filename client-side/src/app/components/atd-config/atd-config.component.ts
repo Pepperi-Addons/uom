@@ -25,8 +25,8 @@ export class AtdConfigComponent implements OnInit {
     AtdID: number;
     Configuration: AtdConfiguration;
     obs$: Observable<any>;
-    @Input() options: any;
-    @Output() change: EventEmitter<any> = new EventEmitter<any>();
+    @Input() hostObject: any;
+    @Output() hostEvents: EventEmitter<any> = new EventEmitter<any>();
     @ViewChildren('pepSelect') pepSelect: Array<PepSelectComponent>;
 
     constructor(
@@ -39,8 +39,9 @@ export class AtdConfigComponent implements OnInit {
     
     
     ngOnInit() {        
-        this.pluginService.pluginUUID = this.options?.UUID;
-        this.AtdID = this.options?.addonData.atd.InternalID;
+        console.log('host object is:', this.hostObject);
+        this.pluginService.pluginUUID = this.hostObject?.UUID;
+        this.AtdID = this.hostObject?.addonData.atd.InternalID;
         this.Actions = Object.keys(InventoryAction)?.map(key => {
             return {
                 key: key,
@@ -121,7 +122,7 @@ export class AtdConfigComponent implements OnInit {
     }
     
     emitClose() {
-        this.change.emit({closeDialog:true});
+        this.hostEvents.emit({closeDialog:true});
     }
     
     Cancel() {

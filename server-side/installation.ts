@@ -10,10 +10,8 @@ The error Message is importent! it will be written in the audit log and help the
 
 import { Client, Request } from '@pepperi-addons/debug-server'
 import { MenuDataView, MenuDataViewField, PapiClient } from '@pepperi-addons/papi-sdk'
-import { CPI_NODE_ADDON_UUID } from '../shared/entities';
-import config from '../addon.config.json'
 import MyService from './my.service';
-import { tab } from './metadata';
+import { tab, relations, atdConfigScheme, uomsScheme } from './metadata';
 import { stringify } from 'querystring';
 
 export async function install(client: Client, request: Request): Promise<any> {
@@ -24,19 +22,19 @@ export async function install(client: Client, request: Request): Promise<any> {
         addonSecretKey: client.AddonSecretKey
     });
 
-    await papiClient.addons.api.uuid(CPI_NODE_ADDON_UUID).file('cpi_node').func('files').post({},{
-        AddonUUID: config.AddonUUID,
-        Files: ['uom-app.js'],
-        Version: request.body.ToVersion
-    })
-
-    const tabs = await upsertDataView(client, "SettingsEditorTransactionsMenu", tab);
-
-    return {success:true,tabs}
+    let retVal = await createADALSchemes(papiClient);
+    if(retVal.success) {
+        retVal = await createRelations(papiClient, relations);
+    }
+    if(retVal.success) {
+        retVal['tabs'] = await upsertDataView(client, "SettingsEditorTransactionsMenu", tab);
+    }
+    
+    return retVal;
 }
 
 export async function uninstall(client: Client, request: Request): Promise<any> {
-
+    
     return {success:true,resultObject:{}}
 }
 
@@ -44,17 +42,16 @@ export async function upgrade(client: Client, request: Request): Promise<any> {
     const papiClient = new PapiClient({
         baseURL: client.BaseURL,
         token: client.OAuthAccessToken,
+        addonUUID: client.AddonUUID,
+        addonSecretKey: client.AddonSecretKey,
     }); 
-
-    await papiClient.addons.api.uuid(CPI_NODE_ADDON_UUID).file('cpi_node').func('files').post({},{
-        AddonUUID: config.AddonUUID,
-        Files: ['uom-app.js'],
-        Version: request.body.ToVersion
-    })
-
-    const tabs = await upsertDataView(client, "SettingsEditorTransactionsMenu", tab);
-
-    return {success:true, tabs}
+    
+    let retVal = await createADALSchemes(papiClient);
+    if(retVal.success) {
+        retVal = await createRelations(papiClient, relations);
+    }
+    
+    return retVal;
 }
 
 export async function downgrade(client: Client, request: Request): Promise<any> {
@@ -104,4 +101,39 @@ function updateDataViewFields(menuField: (MenuDataViewField & any), dataView: Me
     }
     // dataView.Fields = [];
     return dataView;
+}
+
+async function createRelations(papiClient: PapiClient, relations) {
+    try {
+        relations.forEach(async (singleRelation) => {
+            await papiClient.post('/addons/data/relations', singleRelation);
+        });
+        return {
+            success: true,
+            errorMessage: ""
+        }
+    }
+    catch (err) {
+        return {
+            success: false,
+            errorMessage: ('message' in err) ? err.message : 'Unknown Error Occured',
+        }
+    }
+}
+
+async function createADALSchemes(papiClient: PapiClient) {
+    try {
+        await papiClient.addons.data.schemes.post(atdConfigScheme);
+        await papiClient.addons.data.schemes.post(uomsScheme);
+        return {
+            success: true,
+            errorMessage: ""
+        }
+    }
+    catch (err) {
+        return {
+            success: false,
+            errorMessage: ('message' in err) ? err.message : 'Unknown Error Occured',
+        }
+    }
 }

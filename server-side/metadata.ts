@@ -1,16 +1,55 @@
-import { ApiFieldObject } from "@pepperi-addons/papi-sdk"
+import { AddonDataScheme, ApiFieldObject } from "@pepperi-addons/papi-sdk"
+
+export interface relation {
+    RelationName: string;
+    AddonUUID: string;
+    Name: string;
+    Description: string;
+    Type: "AddonAPI" | "NgComponent" | "Navigation";
+    [key:string]:string;
+}
 
 export const tab = {
     Title: "Configure UOM",
     FieldID: {
         Type: "Component",
-        SubType: "NG11",
         AddonUUID: "1238582e-9b32-4d21-9567-4e17379f41bb",
         RelativeURL: 'atd_config',
+        SubType: "NG11",
         ModuleName: 'AtdConfigModule',
         ComponentName: 'AtdConfigComponent'
     }
 }
+
+export const relations: relation[] = [
+    {
+        RelationName: "ATDImport",
+        AddonUUID: "1238582e-9b32-4d21-9567-4e17379f41bb",
+        Name:"UomRelations",
+        Description:"Relation from Uom addon to ATD Import addon",
+        Type:"AddonAPI",
+        AddonRelativeURL:"/api/importUom"
+    },
+    {
+        RelationName: "ATDExport",
+        AddonUUID: "1238582e-9b32-4d21-9567-4e17379f41bb",
+        Name:"UomRelations",
+        Description:"Relation from Uom addon to ATD Export addon",
+        Type:"AddonAPI",
+        AddonRelativeURL:"/api/exportUom"
+    },
+    {
+        RelationName: "TransactionTypeListMenu",
+        AddonUUID: "1238582e-9b32-4d21-9567-4e17379f41bb",
+        Name:"UomRelations",
+        Description:"Configure UOM",
+        Type:"NgComponent",
+        AddonRelativeURL:"atd_config",
+        SubType: "NG11",
+        ModuleName: 'AtdConfigModule',
+        ComponentName: 'AtdConfigComponent'
+    },
+]
 
 export const UomTSAFields: ApiFieldObject[] = [
     {
@@ -69,4 +108,12 @@ export const UomTSAFields: ApiFieldObject[] = [
     },
 ]
 
+export const atdConfigScheme: AddonDataScheme = {
+    Name: "AtdConfig",
+    Type: "cpi_meta_data",
+}
 
+export const uomsScheme: AddonDataScheme = {
+    Name: "Uoms",
+    Type: "cpi_meta_data",
+}
