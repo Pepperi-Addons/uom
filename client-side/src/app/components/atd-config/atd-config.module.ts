@@ -7,21 +7,21 @@ import { MaterialModule } from '../../modules/material.module';
 import { TranslateModule, TranslateLoader, TranslateService } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { MultiTranslateHttpLoader } from 'ngx-translate-multi-http-loader';
-import { HttpBackend, HttpClient } from '@angular/common/http';
+import { HttpBackend, HttpClient, HttpClientModule } from '@angular/common/http';
 import { PepAddonService, PepFileService } from '@pepperi-addons/ngx-lib';
 
 // export function createTranslateLoader(http: HttpClient) {
 //    return new TranslateHttpLoader(http, '/assets/i18n/', '.json');
 // }
 
-@Injectable({providedIn: 'root'})
-export class HttpClientTrans extends HttpClient {
-  constructor(handler: HttpBackend) {
-    super(handler);
-  }
-}
+// @Injectable({providedIn: 'root'})
+// export class HttpClientTrans extends HttpClient {
+//   constructor(handler: HttpBackend) {
+//     super(handler);
+//   }
+// }
 
-export function createSubAddonTranslateLoader(http: HttpClientTrans, fileService: PepFileService) {
+export function createSubAddonTranslateLoader(http: HttpClient, fileService: PepFileService) {
     const addonStaticFolder = getAddonStaticFolder();
     const translationsPath: string = fileService.getAssetsTranslationsPath();
     const translationsSuffix: string = fileService.getAssetsTranslationsSuffix();
@@ -60,11 +60,12 @@ function getAddonStaticFolder() {
         CommonModule,
         PepUIModule,
         MaterialModule,
+        HttpClientModule,
         TranslateModule.forRoot({
             loader: {
                 provide: TranslateLoader,
                 useFactory: createSubAddonTranslateLoader,
-                deps: [HttpClientTrans, PepFileService]
+                deps: [HttpClient, PepFileService]
             }
         })
     ],

@@ -51,7 +51,7 @@
     .navbar {
         // border: none !important;
         border-radius: 0;
-        @include box-sizing(border-box);
+        //@include box-sizing(border-box);
         height: inherit;
         width: 100%;
         padding: $spacing-lg $double-content-padding;

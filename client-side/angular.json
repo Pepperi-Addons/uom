@@ -39,13 +39,6 @@
                 "output": "./assets/ngx-lib"
               }
             ],
-            "styles": [
-              "node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
-              "node_modules/quill/dist/quill.snow.css",
-              "node_modules/quill/dist/quill.core.css",
-              "src/theme.scss",
-              "src/styles.scss"
-            ],
             "scripts": [
               "node_modules/quill/dist/quill.core.js"
             ],
@@ -88,7 +81,8 @@
                 }
               ]
             }
-          }
+          },
+          "defaultConfiguration": "production"
         },
         "serve": {
           "builder": "@angular-builders/custom-webpack:dev-server",
@@ -105,7 +99,8 @@
             "production": {
               "browserTarget": "client-side:build:production"
             }
-          }
+          },
+          "defaultConfiguration": "production"
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
@@ -123,9 +118,6 @@
             "assets": [
               "src/favicon.ico",
               "src/assets"
-            ],
-            "styles": [
-              "src/styles.scss"
             ],
             "scripts": []
           }

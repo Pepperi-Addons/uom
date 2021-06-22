@@ -81,14 +81,14 @@ export class AtdConfigComponent implements OnInit {
     }
 
     ngAfterViewInit(){
-        this.pepSelect.forEach(pep => {
-            pep.select.overlayDir.backdropClick.subscribe( ev => {
-                pep.select.close();
-                this.cd.detectChanges();
-            });
-            pep.select.close();
-            this.cd.detectChanges();
-        });
+        // this.pepSelect.forEach(pep => {
+        //     pep.select.overlayDir.backdropClick.subscribe( ev => {
+        //         pep.select.close();
+        //         this.cd.detectChanges();
+        //     });
+        //     pep.select.close();
+        //     this.cd.detectChanges();
+        // });
     }
 
     onValueChanged(element, $event) {

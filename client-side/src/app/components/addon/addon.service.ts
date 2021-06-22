@@ -46,7 +46,7 @@ export class AddonService {
     openDialog(title = 'Modal Test', content, buttons,
         input , callbackFunc = null): void {
         const dialogConfig = this.dialogService.getDialogConfig({disableClose: true, panelClass:'pepperi-standalone'}, 'inline')
-        const data = new PepDialogData({title: title, type:'custom', content:content, actionButtons: buttons})
+        const data = new PepDialogData({title: title, actionsType:'custom', content:content, actionButtons: buttons})
         dialogConfig.data = data;
         
         this.dialogRef = this.dialogService.openDialog(content, input, dialogConfig);
@@ -56,7 +56,7 @@ export class AddonService {
     } 
 
     openTextDialog(title, content, buttons, dialogType: PepDialogActionsType ) {
-        const data = new PepDialogData({title: title, content: content, type: dialogType, actionButtons: buttons});
+        const data = new PepDialogData({title: title, content: content, actionsType: dialogType, actionButtons: buttons});
         const config = this.dialogService.getDialogConfig({}, 'inline')
         this.dialogService.openDefaultDialog(data, config);
     }

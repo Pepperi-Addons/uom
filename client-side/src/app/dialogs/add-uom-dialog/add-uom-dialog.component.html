@@ -5,17 +5,17 @@
     <div mat-dialog-content class="mat-dialog-content">
         <div>
             <pep-textbox [label]="'Uom_ConfigModal_IdTitle' | translate" [value]="dialogData.Key" [disabled]="mode == 'Edit'"
-            [type]="'text'" [required]="true" (valueChange)="onValueChanged('ID', $event)"></pep-textbox>
+            [type]="'text'" [mandatory]="true" (valueChange)="onValueChanged('ID', $event)"></pep-textbox>
             
         </div>
         <div>
             <pep-textbox [label]="'Uom_ConfigModal_NameTitle' | translate" [value]="dialogData.Name"
-            [type]="'text'" [required]="true" (valueChange)="onValueChanged('Title', $event)"></pep-textbox>
+            [type]="'text'" [mandatory]="true" (valueChange)="onValueChanged('Title', $event)"></pep-textbox>
             
         </div>
         <div>
             <pep-textbox [label]="'Uom_ConfigModal_MultiplierTitle' | translate" [value]="dialogData.Multiplier"
-            [type]="'int'" [required]="true" (valueChange)="onValueChanged('Multiplier', $event)"></pep-textbox>
+            [type]="'int'" [mandatory]="true" (valueChange)="onValueChanged('Multiplier', $event)"></pep-textbox>
             
         </div>
     </div>

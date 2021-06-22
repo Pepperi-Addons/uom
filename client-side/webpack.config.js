@@ -22,13 +22,7 @@ module.exports = (config, options, env) => {
             },
             optimization: {
               // Only needed to bypass a temporary bug
-              runtimeChunk: false,
-              minimize: true,
-              minimizer: [
-              new TerserPlugin({
-                extractComments: false,
-                terserOptions: {keep_fnames: /^.$/}
-              })]
+              runtimeChunk: false
             },
             plugins: [
               new ModuleFederationPlugin({
