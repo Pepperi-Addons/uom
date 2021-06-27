@@ -34,6 +34,9 @@ export async function getAtdFields(client: Client, request: Request) {
     const papiClient = new PapiClient({
         baseURL: client.BaseURL,
         token: client.OAuthAccessToken,
+        addonUUID: client.AddonUUID,
+        addonSecretKey: client.AddonSecretKey,
+        actionUUID: client.ActionUUID
     });
     const service = new ObjectsService(papiClient)
     let atdID = -1;
@@ -58,6 +61,9 @@ export async function createTSAFields(client: Client, request:Request) {
     const papiClient = new PapiClient({
         baseURL: client.BaseURL,
         token: client.OAuthAccessToken,
+        addonUUID: client.AddonUUID,
+        addonSecretKey: client.AddonSecretKey,
+        actionUUID: client.ActionUUID
 
     });
     const service = new ObjectsService(papiClient)
@@ -84,7 +90,16 @@ export async function createTSAFields(client: Client, request:Request) {
 }
 
 export async function importUom(client: Client, request:Request) {
+    const papiClient = new PapiClient({
+        baseURL: client.BaseURL,
+        token: client.OAuthAccessToken,
+        actionUUID: client.ActionUUID,
+        addonUUID: client.AddonUUID, 
+        addonSecretKey: client.AddonSecretKey
+    });
+
     const service = new ConfigurationService(client);
+    const objService = new ObjectsService(papiClient);
 
     try {
         console.log('importUOM is called, data got from call:', request.body);
@@ -94,6 +109,7 @@ export async function importUom(client: Client, request:Request) {
                 ...request.body.DataFromExport 
             }
             await service.upsert(config);
+            await objService.createAtdTransactionLinesFields(request.body.InternalID, UomTSAFields);
         }
         return {
             success:true
@@ -112,18 +128,35 @@ export async function exportUom(client: Client, request:Request) {
     const service = new ConfigurationService(client);
 
     try {
-        let config:AtdConfiguration;
+        let config;
         console.log('exportUOM is called, data got from call:', request.query);
         if (request.query && request.query.resource  == 'transactions') {
             config = await service.find({
                 where: `Key= ${request.query.internal_id}`,
             });
-            return {
-                success:true,
-                DataForImport: config,
+            if(config && config.length > 0) {
+                return {
+                    success:true,
+                    DataForImport: {
+                        UOMFieldID: config[0].UOMFieldID,
+                        InventoryFieldID: config[0].InventoryFieldID,
+                        InventoryType: config[0].InventoryType
+                    },
+                }
+            }
+            else {
+                return {
+                    success:true,
+                    DataForImport: {
+                    },
+                }
             }
         }
-        return {}
+        return {
+            success:true,
+            DataForImport: {
+            },
+        }
     }
     catch(err) {
         console.log('importUom Failed with error:', err);
