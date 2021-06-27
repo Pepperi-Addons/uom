@@ -29,6 +29,10 @@
     "Uom_AtdConfig_InventoryAction_FixOption": "Fix Inventory",
     "Uom_AtdConfig_InventoryAction_ColorOption" : "Color field in red",
     "Uom_AtdConfig_Save": "Save",
-    "Uom_AtdConfig_Cancel": "Cancel"
+    "Uom_AtdConfig_Cancel": "Cancel",
+    "Uom_Config_Title": "Configure UOM module",
+    "Uom_AtdConfig_AtdIdTitle": "Transaction Type",
+    "Uom_saveConfig_Title": "Save configuration",
+    "Uom_saveConfig_Paragraph": "Configuration Save successfully"
 
 }

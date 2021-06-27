@@ -6,6 +6,7 @@ import { AtdConfigService } from "./atd-config.service";
 import { TranslateService } from "@ngx-translate/core";
 import { PepSelectComponent } from '@pepperi-addons/ngx-lib/select';
 import { Observable } from 'rxjs';
+import { PepDialogData, PepDialogService } from '@pepperi-addons/ngx-lib/dialog';
 
 @Component({
     selector: 'atd-config-addon',
@@ -18,6 +19,7 @@ export class AtdConfigComponent implements OnInit {
 
     TSAStringfields: {key:string, value:string}[] = [];
     TSANumberfields: {key:string, value:string}[] = [];
+    TransactionTypes: {key:number, value:string}[] = [];
     Actions: {key:string, value:string}[] = [];
     AllowedUomsTSA: string = '';
     InventoryTSA: string = 'ItemInStockQuantity';
@@ -32,7 +34,9 @@ export class AtdConfigComponent implements OnInit {
     constructor(
         public pluginService: AtdConfigService,
         private translate: TranslateService,
-        private cd: ChangeDetectorRef
+        public routeParams: ActivatedRoute,
+        private cd: ChangeDetectorRef,
+        private dialogService: PepDialogService
     ) {
 
     }
@@ -40,14 +44,25 @@ export class AtdConfigComponent implements OnInit {
     
     ngOnInit() {        
         console.log('host object is:', this.hostObject);
-        this.pluginService.pluginUUID = this.hostObject?.UUID;
-        this.AtdID = this.hostObject?.addonData.atd.InternalID;
-        this.Actions = Object.keys(InventoryAction)?.map(key => {
+        this.pluginService.pluginUUID = this.routeParams.snapshot.params['addon_uuid'];
+
+        // this.pluginService.pluginUUID = this.hostObject?.UUID;
+        // this.AtdID = this.hostObject?.addonData.atd.InternalID;
+        this.Actions = Object.keys(InventoryActions)?.map(key => {
             return {
                 key: key,
                 value: InventoryAction[key]
             }
-        })
+        })  
+        
+        this.pluginService.getTransactionTypes().then(types => {
+            this.TransactionTypes = types;
+        });
+
+    }
+
+    loadAtdData() {
+        console.log('inside load Atd data. AtdID:', this.AtdID);
         this.pluginService.getAtdFields(this.AtdID).then(fields => {
             this.TSAStringfields = fields?.filter(field=> {
                 //return string fileds that are not 5:Date, 6:DateAndTime, 19:LimitedDate, 20:Image, 24:Attachment, 48:GuidReferenceType
@@ -76,8 +91,6 @@ export class AtdConfigComponent implements OnInit {
                 InventoryType: 'Fix'
             }
         })
-
-        
     }
 
     ngAfterViewInit(){
@@ -93,16 +106,21 @@ export class AtdConfigComponent implements OnInit {
 
     onValueChanged(element, $event) {
         switch(element) {
+            case 'AtdId': {
+                this.AtdID = $event;
+                this.loadAtdData();
+                break;
+            }
             case 'AllowedUoms': {
-                this.Configuration.UOMFieldID = $event.value;
+                this.Configuration.UOMFieldID = $event;
                 break;
             }
             case 'Inventory': {
-                this.Configuration.InventoryFieldID = $event.value;
+                this.Configuration.InventoryFieldID = $event;
                 break;
             }
             case 'InventoryAction': {
-                this.Configuration.InventoryType = $event.value;
+                this.Configuration.InventoryType = $event;
                 break;
             }
         }
@@ -118,7 +136,12 @@ export class AtdConfigComponent implements OnInit {
     async SaveConfig() {
         await this.pluginService.updateConfiguration(this.Configuration);
         const created = await this.pluginService.createTSAFields(this.AtdID);
-        this.emitClose();
+        const title = this.translate.instant("Uom_saveConfig_Title");
+        const content = this.translate.instant("Uom_saveConfig_Paragraph");
+        const data = new PepDialogData({title: title, content: content, actionsType: 'close'});
+        const config = this.dialogService.getDialogConfig({}, 'inline')
+        this.dialogService.openDefaultDialog(data, config);
+        //this.emitClose();
     }
     
     emitClose() {

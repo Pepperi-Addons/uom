@@ -8,6 +8,7 @@ import { AppComponent } from './app.component';
 import { PepUIModule } from './modules/pepperi.module';
 import { MaterialModule } from './modules/material.module';
 import { AddonModule } from './components/addon/addon.module';
+import { AtdConfigModule } from './components/atd-config';
 
 @NgModule({
     declarations: [
@@ -21,6 +22,7 @@ import { AddonModule } from './components/addon/addon.module';
         PepUIModule,
         MaterialModule,
         AddonModule,
+        AtdConfigModule
     ],
     providers: [],
     bootstrap: [AppComponent]

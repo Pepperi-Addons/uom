@@ -61,13 +61,13 @@ function getAddonStaticFolder() {
         PepUIModule,
         MaterialModule,
         HttpClientModule,
-        TranslateModule.forRoot({
-            loader: {
-                provide: TranslateLoader,
-                useFactory: createSubAddonTranslateLoader,
-                deps: [HttpClient, PepFileService]
-            }
-        })
+        // TranslateModule.forRoot({
+        //     loader: {
+        //         provide: TranslateLoader,
+        //         useFactory: createSubAddonTranslateLoader,
+        //         deps: [HttpClient, PepFileService]
+        //     }
+        // })
     ],
     exports:[AtdConfigComponent]
 })
