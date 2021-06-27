@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --port 3010",
+    "start": "ng serve --port 3010 --live-reload=false",
     "single-spa": "ng serve --port 4400 --configuration SingleSpa --sourceMap=false --live-reload=false",
     "standalone": "ng serve --port 4400 --configuration Standalone --sourceMap=false --live-reload=false",
     "build": "ng build",
@@ -41,6 +41,7 @@
     "@tweenjs/tween.js": "^17.1.1",
     "again": "0.0.1",
     "disable-scroll": "^0.5.1",
+    "dynamic-container-path-webpack-plugin": "^1.1.3",
     "hammerjs": "^2.0.8",
     "jquery": "^3.5.1",
     "jwt-decode": "^3.1.2",

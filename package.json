@@ -6,10 +6,11 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "cd ./client-side && npm run build:single-spa && cd .. && cd ./server-side && npm run build && cd .. && cd ./cpi-side && npm run build && cd ..",
-    "init": "yarn && cd ./server-side && yarn && cd .. && cd ./client-side && yarn && cd .. && cd ./cpi-side && yarn && cd ..",
+    "init": "yarn && cd ./server-side && yarn && cd .. && cd ./client-side && npm i && cd .. && cd ./cpi-side && yarn && cd ..",
     "client:addon": "cd client-side && ng serve --port 4400 --configuration SingleSpa && cd..",
     "client:standalone": "cd client-side && ng serve --port 4400 --configuration Standalone && cd..",
     "publish-addon": "npm run build && publish-addon",
+    "pub-addon": "publish-addon",
     "cpi-publish-addon": "cd ./cpi-side && npm run build:debug && cd .. && cpi-node-debug"
   },
   "keywords": [],
