@@ -7,11 +7,11 @@ import { TransactionLine } from '@pepperi-addons/cpi-node/build/cpi-side/app/ent
 import { isForInStatement } from 'typescript';
 
 /** Holds the quantity in UOM */
-const UNIT_QTY_TSA = 'TSAAOQM_Quantity1';
-const UNIT_QTY_ADDITIONAL_TSA = 'TSAAOQM_Quantity2';
+const UNIT_QTY_TSA = 'TSAAOQMQuantity1';
+const UNIT_QTY_ADDITIONAL_TSA = 'TSAAOQMQuantity2';
 /** Holds the Key of the UOM of the line */
-const UOM_KEY_TSA = 'TSAAOQM_UOM1';
-const UOM_KEY_ADDITIONAL_TSA = 'TSAAOQM_UOM2';
+const UOM_KEY_TSA = 'TSAAOQMUOM1';
+const UOM_KEY_ADDITIONAL_TSA = 'TSAAOQMUOM2';
 /** The Real UQ Field - Holds the quantity in Baseline */
 const UNIT_QUANTITY = 'UnitsQuantity';
 /** A list of Order Center Data Views */
