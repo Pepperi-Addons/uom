@@ -1,4 +1,4 @@
-import { AtdConfiguration, InventoryAction } from './../../../../../shared/entities';
+import { AtdConfiguration, InventoryActions, InventoryAction } from './../../../../../shared/entities';
 import { KeyValuePair, PepGuid } from '@pepperi-addons/ngx-lib';
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild, ViewChildren } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
@@ -51,7 +51,7 @@ export class AtdConfigComponent implements OnInit {
         this.Actions = Object.keys(InventoryActions)?.map(key => {
             return {
                 key: key,
-                value: InventoryAction[key]
+                value: InventoryActions[key]
             }
         })  
         
@@ -88,7 +88,7 @@ export class AtdConfigComponent implements OnInit {
                 Key: this.AtdID.toString(),
                 UOMFieldID: '',
                 InventoryFieldID: '',
-                InventoryType: 'Fix'
+                InventoryType: "Fix"
             }
         })
     }
@@ -108,7 +108,12 @@ export class AtdConfigComponent implements OnInit {
         switch(element) {
             case 'AtdId': {
                 this.AtdID = $event;
-                this.loadAtdData();
+                if (this.AtdID) {
+                    this.loadAtdData();
+                }
+                else {
+                    this.Configuration = undefined;
+                }
                 break;
             }
             case 'AllowedUoms': {
@@ -141,6 +146,7 @@ export class AtdConfigComponent implements OnInit {
         const data = new PepDialogData({title: title, content: content, actionsType: 'close'});
         const config = this.dialogService.getDialogConfig({}, 'inline')
         this.dialogService.openDefaultDialog(data, config);
+        this.AtdID = this.Configuration = undefined
         //this.emitClose();
     }
     

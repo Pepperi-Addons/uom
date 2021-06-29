@@ -9,11 +9,13 @@ export interface AtdConfiguration {
     Key: string, 
     UOMFieldID: string,
     InventoryFieldID: string,
-    InventoryType: string
+    InventoryType: InventoryAction
 }
 
-export enum InventoryAction {
-    DoNothing = 'Do Nothing',
-    Fix = 'Fix Inventory',
-    Color = 'Color',
+export const InventoryActions = {
+    DoNothing: 'Do Nothing',
+    Fix: 'Fix Inventory',
+    Color: 'Color',
 }
+
+export type InventoryAction = keyof typeof InventoryActions;

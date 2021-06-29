@@ -140,7 +140,7 @@ class UOMManager {
                 total += otherQuantity * otherUom.Multiplier;
             }
             // todo - fix inventory
-            if (this.config.InventoryType === InventoryAction.Fix) {
+            if (this.config.InventoryType === "Fix") {
                 // todo: what if there is no inventory from integration
                 const inventory: number = (await dataObject?.getFieldValue(this.config.InventoryFieldID)) || 0;
                 const inventoryLeft = inventory - total;
@@ -156,6 +156,7 @@ class UOMManager {
             // item with just one UOM - just set the UnitsQuantity & total
             await dataObject?.setFieldValue(UNIT_QUANTITY, total.toString(), true);
             await uiObject.setFieldValue(uqField, quantity.toString(), true);
+
             // const t1 = performance.now();
             // console.log(`Set Field took ${t1 - t0}ms`);
         }
@@ -218,7 +219,7 @@ class UOMManager {
                         dd2.readonly = true;
                     }
                 }
-                if (this.config.InventoryType === InventoryAction.Color) {
+                if (this.config.InventoryType === "Color") {
                     const inventory: number = (await dataObject?.getFieldValue(this.config.InventoryFieldID)) || 0;
                     const total: number = (await dataObject?.getFieldValue(UNIT_QUANTITY)) || 0;
                     if(total > inventory) {
