@@ -2,15 +2,21 @@
 <div  class="addon-page-container">
     <pep-top-bar [title]="'Uom_Config_Title' | translate" >
         <div header-start-content>
- 
+            
         </div>
         <div header-end-content>
             <pep-button [value]="'Uom_AtdConfig_Save' | translate" [sizeType]="'md'" [styleType]="'strong'"
-                [classNames]="'pep-spacing-element '" (click)="SaveConfig()"></pep-button>                    
+            [classNames]="'pep-spacing-element '" (click)="SaveConfig()"></pep-button>                    
         </div>
     </pep-top-bar>
     <div id="mainContent" class="main-content">
         <div class="content" style="margin-top: 20px;">
+            <p class="body-md">
+                {{ "Uom_AtdConfig_Paragraph" | translate }}
+            </p>
+            <p class="body-md">
+                {{ "Uom_AtdConfig_Instructions" | translate }}
+            </p>
             <div>
                 <pep-select #pepSelect [value]="AtdID"
                     [options]="TransactionTypes" [label]="'Uom_AtdConfig_AtdIdTitle' | translate"

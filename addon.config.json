@@ -33,12 +33,12 @@
       {
         "ParentPackageName": "UOM",
         "PackageName": "uom",
-        "Description": "UOM Module"
+        "Description": "UOM List"
       },
       {
         "ParentPackageName": "UOM",
         "PackageName": "config",
-        "Description": "Uom Configuration"
+        "Description": "UOM Configuration"
       }
     ],
     "Dependencies": {},

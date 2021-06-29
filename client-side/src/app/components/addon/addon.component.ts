@@ -80,7 +80,7 @@ export class AddonComponent implements OnInit {
     openConfigDialog(operation, selectedObj = undefined) {
         debugger;
         const self = this;
-        const dialogTitle = operation == 'Add' ? this.translate.instant('Uom_ConfigModalTitle_Add') : this.translate.instant('Uom_ConfigModalTitle_Update');
+        const dialogTitle = operation == 'Add' ? this.translate.instant('Uom_ConfigModalTitle_Add') : this.translate.instant('Uom_ConfigModalTitle_Edit');
         self.pluginService.openDialog(
             dialogTitle,
             AddUomDialogComponent,
