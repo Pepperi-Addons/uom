@@ -9,18 +9,6 @@ export interface relation {
     [key:string]:string;
 }
 
-export const tab = {
-    Title: "Configure UOM",
-    FieldID: {
-        Type: "Component",
-        AddonUUID: "1238582e-9b32-4d21-9567-4e17379f41bb",
-        RelativeURL: 'atd_config',
-        SubType: "NG11",
-        ModuleName: 'AtdConfigModule',
-        ComponentName: 'AtdConfigComponent'
-    }
-}
-
 export const relations: relation[] = [
     {
         RelationName: "ATDImport",
