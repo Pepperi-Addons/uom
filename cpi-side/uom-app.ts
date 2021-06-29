@@ -223,8 +223,8 @@ class UOMManager {
                     const inventory: number = (await dataObject?.getFieldValue(this.config.InventoryFieldID)) || 0;
                     const total: number = (await dataObject?.getFieldValue(UNIT_QUANTITY)) || 0;
                     if(total > inventory) {
-                        uq1 ? uq1.textColor = "#00ff00" : null;
-                        uq2 ? uq2.textColor = "#00ff00" : null;
+                        uq1 ? uq1.textColor = "#FF0000" : null;
+                        uq2 ? uq2.textColor = "#FF0000" : null;
                     }
                 }
             }
@@ -233,6 +233,10 @@ class UOMManager {
                 dd2 ? dd2.visible = false : null;
                 uq2 ? uq2.visible = false : null;
 
+            }
+            const realUQ = await uiObject.getUIField(UNIT_QUANTITY);
+            if(realUQ) {
+                realUQ.readonly = true;
             }
         }
         catch (err) {

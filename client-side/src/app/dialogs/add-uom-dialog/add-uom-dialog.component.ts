@@ -51,15 +51,15 @@ export class AddUomDialogComponent implements OnInit, OnDestroy {
     onValueChanged(element, $event) {
         switch(element) {
             case 'ID': {
-                this.dialogData.Key = $event.value;
+                this.dialogData.Key = $event;
                 break;
             }
             case 'Title': {
-                this.dialogData.Title = $event.value;
+                this.dialogData.Title = $event;
                 break;
             }
             case 'Multiplier': {
-                this.dialogData.Multiplier = $event.value;
+                this.dialogData.Multiplier = $event;
                 break;
             }
         }
