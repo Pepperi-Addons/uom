@@ -15,7 +15,7 @@
         </div>
         <div>
             <pep-textbox [label]="'Uom_ConfigModal_MultiplierTitle' | translate" [value]="dialogData.Multiplier"
-            [type]="'int'" [mandatory]="true" (valueChange)="onValueChanged('Multiplier', $event)"></pep-textbox>
+            [type]="'int'" [mandatory]="true" [minValue]=1 (valueChange)="onValueChanged('Multiplier', $event)"></pep-textbox>
             
         </div>
     </div>
