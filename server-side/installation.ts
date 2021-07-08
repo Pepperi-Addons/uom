@@ -10,7 +10,7 @@ The error Message is importent! it will be written in the audit log and help the
 
 import { Client, Request } from '@pepperi-addons/debug-server'
 import { PapiClient } from '@pepperi-addons/papi-sdk'
-import { atdConfigScheme, uomsScheme } from './metadata';
+import { atdConfigScheme, uomsScheme, relations } from './metadata';
 
 export async function install(client: Client, request: Request): Promise<any> {
     const papiClient = new PapiClient({
@@ -21,9 +21,9 @@ export async function install(client: Client, request: Request): Promise<any> {
     });
 
     let retVal = await createADALSchemes(papiClient);
-    // if(retVal.success) {
-    //     retVal = await createRelations(papiClient, relations);
-    // }
+    if(retVal.success) {
+        retVal = await createRelations(papiClient, relations);
+    }
     
     return retVal;
 }
@@ -42,9 +42,9 @@ export async function upgrade(client: Client, request: Request): Promise<any> {
     }); 
     
     let retVal = await createADALSchemes(papiClient);
-    // if(retVal.success) {
-    //     retVal = await createRelations(papiClient, relations);
-    // }
+    if(retVal.success) {
+        retVal = await createRelations(papiClient, relations);
+    }
     
     return retVal;
 }
@@ -53,23 +53,23 @@ export async function downgrade(client: Client, request: Request): Promise<any> 
     return {success:true,resultObject:{}}
 }
 
-// async function createRelations(papiClient: PapiClient, relations) {
-//     try {
-//         relations.forEach(async (singleRelation) => {
-//             await papiClient.post('/addons/data/relations', singleRelation);
-//         });
-//         return {
-//             success: true,
-//             errorMessage: ""
-//         }
-//     }
-//     catch (err) {
-//         return {
-//             success: false,
-//             errorMessage: ('message' in err) ? err.message : 'Unknown Error Occured',
-//         }
-//     }
-// }
+async function createRelations(papiClient: PapiClient, relations) {
+    try {
+        relations.forEach(async (singleRelation) => {
+            await papiClient.post('/addons/data/relations', singleRelation);
+        });
+        return {
+            success: true,
+            errorMessage: ""
+        }
+    }
+    catch (err) {
+        return {
+            success: false,
+            errorMessage: ('message' in err) ? err.message : 'Unknown Error Occured',
+        }
+    }
+}
 
 async function createADALSchemes(papiClient: PapiClient) {
     try {

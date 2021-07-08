@@ -26,17 +26,17 @@ export const relations: relation[] = [
         Type:"AddonAPI",
         AddonRelativeURL:"/api/exportUom"
     },
-    {
-        RelationName: "TransactionTypeListMenu",
-        AddonUUID: "1238582e-9b32-4d21-9567-4e17379f41bb",
-        Name:"UomRelations",
-        Description:"Configure UOM",
-        Type:"NgComponent",
-        AddonRelativeURL:"atd_config",
-        SubType: "NG11",
-        ModuleName: 'AtdConfigModule',
-        ComponentName: 'AtdConfigComponent'
-    },
+    // {
+    //     RelationName: "TransactionTypeListMenu",
+    //     AddonUUID: "1238582e-9b32-4d21-9567-4e17379f41bb",
+    //     Name:"UomRelations",
+    //     Description:"Configure UOM",
+    //     Type:"NgComponent",
+    //     AddonRelativeURL:"atd_config",
+    //     SubType: "NG11",
+    //     ModuleName: 'AtdConfigModule',
+    //     ComponentName: 'AtdConfigComponent'
+    // },
 ]
 
 export const UomTSAFields: ApiFieldObject[] = [
