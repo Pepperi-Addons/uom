@@ -35,7 +35,7 @@
                 </div>
                 <div>
                     <pep-select #pepSelect [value]="Configuration?.InventoryType"
-                        [options]="Actions" [emptyOption]='false' [label]="'Uom_AtdConfig_InventoryActionTitle' | translate" 
+                        [options]="Actions" [disabled]="Configuration?.InventoryFieldID == ''" [emptyOption]='false' [label]="'Uom_AtdConfig_InventoryActionTitle' | translate" 
                         (valueChange)="onValueChanged('InventoryAction', $event)"></pep-select>
                 </div>
                 <!-- <div class="mat-dialog-actions pep-spacing-element-negative">

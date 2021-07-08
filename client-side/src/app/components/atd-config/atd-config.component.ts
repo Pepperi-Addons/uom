@@ -123,6 +123,7 @@ export class AtdConfigComponent implements OnInit {
             }
             case 'Inventory': {
                 this.Configuration.InventoryFieldID = $event;
+                $event == '' ? this.Configuration.InventoryType = 'DoNothing' : null;
                 break;
             }
             case 'InventoryAction': {
