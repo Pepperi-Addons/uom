@@ -9,7 +9,7 @@ import { AtdConfiguration } from '../shared/entities';
 import { config } from 'process';
 
 export async function uoms(client: Client, request: Request) {
-    const service = new UomsService(client)
+    const service = new UomsService(client);
 
     if (request.method == 'POST') {
         return service.upsert(request.body);
@@ -18,6 +18,17 @@ export async function uoms(client: Client, request: Request) {
         return await service.find(request.query);
     }
 };
+
+export async function getUomByKey(client: Client, request: Request) {
+    const service = new UomsService(client);
+    let uomKey = ''
+
+    if (request.method == 'GET' && request?.query) {
+        uomKey = 'uomKey' in request.query ? request.query.uomKey : '';
+    }        
+
+    return await service.getByKey(uomKey);
+}
 
 export async function atdConfiguration(client: Client, request: Request) {
     const service = new ConfigurationService(client)
