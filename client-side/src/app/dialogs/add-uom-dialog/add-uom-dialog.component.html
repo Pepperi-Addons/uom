@@ -30,6 +30,8 @@
                 <div class="mat-button-focus-overlay"></div>
             </button>
             <button class="spacing-element pepperi-button md strong mat-button" mat-button
+                [ngClass]="{ disabled: isKeyValid == false || isTitleValid == false || isMultiplierValid == false }"
+                [disabled]="isKeyValid == false || isTitleValid == false || isMultiplierValid == false"
                 [mat-dialog-close]="dialogData">
                 <span class="mat-button-wrapper">
                     {{ (mode == 'Add' ? 'Uom_Add' : 'Uom_Update') | translate }}
