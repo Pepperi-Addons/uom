@@ -6,7 +6,7 @@
         </div>
         <div header-end-content>
             <pep-button [value]="'Uom_AtdConfig_Save' | translate" [sizeType]="'md'" [styleType]="'strong'"
-            [classNames]="'pep-spacing-element '" (click)="SaveConfig()"></pep-button>                    
+            [classNames]="'pep-spacing-element '" [disabled]='Configuration == undefined' (click)="SaveConfig()"></pep-button>                    
         </div>
     </pep-top-bar>
     <div id="mainContent" class="main-content">
