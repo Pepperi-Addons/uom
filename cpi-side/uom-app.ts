@@ -15,7 +15,7 @@ const UOM_KEY_ADDITIONAL_TSA = 'TSAAOQMUOM2';
 /** The Real UQ Field - Holds the quantity in Baseline */
 const UNIT_QUANTITY = 'UnitsQuantity';
 /** A list of Order Center Data Views */
-const OC_DATA_VIEWS = [ 'OrderCenterGrid', 'OrderCenterView1', 'OrderCenterView2', 'OrderCenterView3', 'OrderCenterItemFullPage', 'OrderCenterVariant', 'OrderCenterBarcodeGridline', 'OrderCenterBarcodeLinesView', 'OrderCenterItemDetails'];
+const OC_DATA_VIEWS = [ 'OrderCenterGrid', 'OrderCenterView1', 'OrderCenterView2', 'OrderCenterView3', 'OrderCenterItemFullPage', 'OrderCenterVariant', 'OrderCenterBarcodeGridline', 'OrderCenterBarcodeLinesView', 'OrderCenterItemDetails', 'OrderCenterMatrix', 'OrderCenterFlatMatrixGrid', 'OrderCenterFlatMatrixLine'];
 /** A list of Cart Data Views */
 const CART_DATA_VIEWS = ['OrderCartGrid', 'OrderCartView1' ];
 /**
