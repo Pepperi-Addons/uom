@@ -63,11 +63,7 @@ class UOMManager {
             }
             // recalc event
             pepperi.events.intercept('RecalculateUIObject', filter, async (data, next, main) => {
-                const uiObject = data.UIObject!;
-                // const realUQ = await uiObject.getUIField(UNIT_QUANTITY);
-                // if(realUQ && (realUQ.type == 'NumberRealQuantitySelector' || realUQ?.type == 'NumberIntegerQuantitySelector')) {
-                    await this.recalculateOrderCenterItem(data);
-                // }
+                await this.recalculateOrderCenterItem(data);
                 await next(main);
             })
             for (const uqField of [UNIT_QTY_TSA, UNIT_QTY_ADDITIONAL_TSA]) {
@@ -168,7 +164,7 @@ class UOMManager {
     async recalculateOrderCenterItem(data: EventData) {
         try {
             const uiObject = data.UIObject!;
-            const dataObject = data.DataObject!;
+            const dataObject = data.DataObject! as TransactionLine;
 
             // Get the keys of the UOM from integration
             let arr: string[] = await this.getItemUOMs(dataObject);
@@ -187,7 +183,7 @@ class UOMManager {
             });
 
             // run uom logic only when current item has available uoms. otherwise, hide uom fields and continue with regular UQ logic
-            if(optionalValues.length > 0) {
+            if(optionalValues.length > 0 && dataObject.children.length == 0) {
 
                 if (dd1 && uq1) {
                     dd1.readonly = false;
