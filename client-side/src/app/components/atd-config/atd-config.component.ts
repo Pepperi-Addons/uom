@@ -21,9 +21,6 @@ export class AtdConfigComponent implements OnInit {
     TSANumberfields: {key:string, value:string}[] = [];
     TransactionTypes: {key:number, value:string}[] = [];
     Actions: {key:string, value:string}[] = [];
-    AllowedUomsTSA: string = '';
-    InventoryTSA: string = 'ItemInStockQuantity';
-    InventoryAction: InventoryAction;
     AtdID: number;
     Configuration: AtdConfiguration;
     obs$: Observable<any>;
@@ -82,12 +79,16 @@ export class AtdConfigComponent implements OnInit {
                     value: field.Label
                 }
             });
+            this.TSANumberfields.push({
+                key: 'ItemInStockQuantity',
+                value: 'ItemInStockQuantity'
+            });
         });
         this.pluginService.getConfiguration(this.AtdID).then(config => {
             this.Configuration = config.length == 1  ? config[0] : {
                 Key: this.AtdID.toString(),
                 UOMFieldID: '',
-                InventoryFieldID: '',
+                InventoryFieldID: 'ItemInStockQuantity',
                 InventoryType: "Fix"
             }
         })
@@ -159,7 +160,7 @@ export class AtdConfigComponent implements OnInit {
             this.Configuration = config.length == 1  ? config[0] : {
                 Key: this.AtdID.toString(),
                 UOMFieldID: '',
-                InventoryFieldID: '',
+                InventoryFieldID: 'ItemInStockQuantity',
                 InventoryType: 'Fix',
             }
         })

@@ -63,7 +63,10 @@ export async function getAtdFields(client: Client, request: Request) {
         }        
     }
 
-    return await service.getAtdTransactionLinesFields(atdID);
+    const items = await service.getItemsFields();
+    items.forEach(item => item['FieldID'] = `Item.${item.FieldID}`);
+
+    return [...await service.getAtdFields(atdID), ...items];
 };
 
 export async function createTSAFields(client: Client, request:Request) {
