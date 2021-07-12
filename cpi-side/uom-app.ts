@@ -202,16 +202,26 @@ class UOMManager {
                     dd2.readonly = false;
                     dd2.visible = true;
                     dd2.optionalValues = optionalValues;
-                    if (dd2.value === '' && optionalValues.length > 1) {
-                        await uiObject.setFieldValue(UOM_KEY_ADDITIONAL_TSA, optionalValues[1].Key, true);
+                    if (dd2.value === '') {
+                        if(dd1 && optionalValues.length > 1) {
+                            await uiObject.setFieldValue(UOM_KEY_ADDITIONAL_TSA, optionalValues[1].Key, true);
+                        }
+                        else {
+                            await uiObject.setFieldValue(UOM_KEY_ADDITIONAL_TSA, optionalValues[0].Key, true);
+                        }
                     }
                     // hide
                     if (optionalValues.length < 2) {
-                        dd2.visible = false;
-                        uq2.visible = false;
+                        if(dd1 && uq1) {
+                            dd2.visible = false;
+                            uq2.visible = false;
+                        }
+                        else { // is this is the only one configured than make it readonly
+                            dd2.readonly = true;
+                        }
                     }
                     // readonly
-                    if (optionalValues.length === 2) {
+                    if (optionalValues.length === 2 && dd1) {
                         dd2.readonly = true;
                     }
                 }
@@ -227,7 +237,7 @@ class UOMManager {
             else {
                 dd1 ? dd1.visible = false : null;
                 dd2 ? dd2.visible = false : null;
-                uq2 ? uq2.visible = false : null;
+                uq1 && uq2 ? uq2.visible = false : null;
 
             }
             const realUQ = await uiObject.getUIField(UNIT_QUANTITY);
