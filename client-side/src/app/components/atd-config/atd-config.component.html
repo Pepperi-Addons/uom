@@ -38,6 +38,16 @@
                         [options]="Actions" [disabled]="Configuration?.InventoryFieldID == ''" [emptyOption]='false' [label]="'Uom_AtdConfig_InventoryActionTitle' | translate" 
                         (valueChange)="onValueChanged('InventoryAction', $event)"></pep-select>
                 </div>
+                <div>
+                    <pep-select #pepSelect [value]="Configuration?.ItemConfigFieldID"
+                        [options]="TSAStringfields" [label]="'Uom_AtdConfig_ItemConfigTitle' | translate"
+                        (valueChange)="onValueChanged('ItemConfig', $event)"></pep-select>
+                </div>
+                <div>
+                    <pep-select #pepSelect [value]="Configuration?.CaseType"
+                        [options]="Actions" [disabled]="Configuration?.InventoryFieldID == '' || Configuration?.ItemConfigFieldID == ''" [emptyOption]='false' [label]="'Uom_AtdConfig_CaseActionTitle' | translate" 
+                        (valueChange)="onValueChanged('CaseAction', $event)"></pep-select>
+                </div>
                 <!-- <div class="mat-dialog-actions pep-spacing-element-negative">
                     <pep-button [value]="'Uom_AtdConfig_Cancel' | translate" [sizeType]="'md'" [styleType]="'weak'"
                         [classNames]="'pep-spacing-element '" (click)="Cancel()"></pep-button>
