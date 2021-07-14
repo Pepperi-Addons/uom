@@ -1,5 +1,5 @@
 import '@pepperi-addons/cpi-node'
-import { AtdConfiguration, InventoryAction, Uom } from './../shared/entities';
+import { AtdConfiguration, InventoryAction, Uom, UomItemConfiguration } from './../shared/entities';
 import { DataObject, EventData, UIObject } from '@pepperi-addons/cpi-node';
 import config from '../addon.config.json';
 import { parse } from 'uuid';
@@ -127,13 +127,15 @@ class UOMManager {
             const uom = uomValue ? uoms.get(uomValue) : undefined;
             const otherUomValue = await dataObject?.getFieldValue(otherUOMField);
             const otherUom = otherUomValue ? uoms.get(otherUomValue) : undefined;
-            const multiplier = uom ? uom.Multiplier : 1;
+            const itemConfig = await this.getItemConfig(dataObject!);
+            const multiplier = getUomMultiplier(uom, itemConfig);
+            const otherMultiplier = getUomMultiplier(otherUom, itemConfig);
             let quantity = value;
             let otherQuantity = 0;
             let total = 0;
             if (otherUom) {
                 otherQuantity = await dataObject?.getFieldValue(otherUQField);
-                total += otherQuantity * otherUom.Multiplier;
+                total += otherQuantity * otherMultiplier;
             }
             // todo - fix inventory
             if (this.config.InventoryType === "Fix") {
@@ -241,7 +243,7 @@ class UOMManager {
 
             }
             const realUQ = await uiObject.getUIField(UNIT_QUANTITY);
-            if(realUQ) {
+            if(realUQ && (uq1 || uq2)) {
                 realUQ.readonly = true;
             }
         }
@@ -252,6 +254,14 @@ class UOMManager {
     }
     async getItemUOMs(dataObject: DataObject): Promise<string[]> {
         let str = await dataObject.getFieldValue(this.config.UOMFieldID);
+        if (!str) {
+            str = '[]';
+        }
+        return JSON.parse(str);
+    }
+
+    async getItemConfig(dataObject: DataObject): Promise<UomItemConfiguration[]> {
+        let str = await dataObject.getFieldValue(this.config.ItemConfigFieldID);
         if (!str) {
             str = '[]';
         }
@@ -280,4 +290,14 @@ export async function load(configuration: any) {
         // load the manager
         manager.load();
     }
+}
+
+function getUomMultiplier(uom: Uom | undefined, itemConfig: UomItemConfiguration[]) : number{
+    let multiplier = 1;
+    if(uom) {
+        const config = itemConfig.find(item => item.UOMKey === uom.Key);
+        multiplier = config ? Number(config.Factor) : uom.Multiplier;
+    }
+
+    return multiplier;
 }
