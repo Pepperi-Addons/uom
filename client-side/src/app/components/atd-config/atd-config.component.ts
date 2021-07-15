@@ -24,6 +24,7 @@ export class AtdConfigComponent implements OnInit {
     AtdID: number;
     Configuration: AtdConfiguration;
     obs$: Observable<any>;
+    isUomFieldValid: boolean = false;
     @Input() hostObject: any;
     @Output() hostEvents: EventEmitter<any> = new EventEmitter<any>();
     @ViewChildren('pepSelect') pepSelect: Array<PepSelectComponent>;
@@ -91,8 +92,10 @@ export class AtdConfigComponent implements OnInit {
                 InventoryFieldID: 'ItemInStockQuantity',
                 InventoryType: "Fix",
                 ItemConfigFieldID: '',
-                CaseType: "DoNothing"
+                CaseQuantityType: "DoNothing",
+                MinQuantityType: "DoNothing"
             }
+            this.isUomFieldValid = this.Configuration.UOMFieldID != '';
         })
     }
 
@@ -116,18 +119,21 @@ export class AtdConfigComponent implements OnInit {
                 }
                 else {
                     this.Configuration = undefined;
+                    this.isUomFieldValid = false;
                 }
                 break;
             }
             case 'AllowedUoms': {
                 this.Configuration.UOMFieldID = $event;
+                this.isUomFieldValid = $event != ''
                 break;
             }
             case 'Inventory': {
                 this.Configuration.InventoryFieldID = $event;
                 if($event == '') {
                     this.Configuration.InventoryType = 'DoNothing'
-                    this.Configuration.CaseType = 'DoNothing';
+                    this.Configuration.CaseQuantityType = 'DoNothing';
+                    this.Configuration.MinQuantityType = 'DoNothing';
                 }
                 break;
             }
@@ -137,11 +143,18 @@ export class AtdConfigComponent implements OnInit {
             }
             case 'ItemConfig': {
                 this.Configuration.ItemConfigFieldID = $event;
-                $event == '' ? this.Configuration.CaseType = 'DoNothing' : null; 
+                if($event == '') {
+                    this.Configuration.CaseQuantityType = 'DoNothing';
+                    this.Configuration.MinQuantityType = 'DoNothing';
+                } 
                 break;
             }
             case 'CaseAction': {
-                this.Configuration.CaseType = $event;
+                this.Configuration.CaseQuantityType = $event;
+                break;
+            }
+            case 'MinAction': {
+                this.Configuration.MinQuantityType = $event;
                 break;
             }
         }
@@ -178,7 +191,8 @@ export class AtdConfigComponent implements OnInit {
                 InventoryFieldID: 'ItemInStockQuantity',
                 InventoryType: 'Fix',
                 ItemConfigFieldID: '',
-                CaseType: "DoNothing"
+                CaseQuantityType: "DoNothing",
+                MinQuantityType: "DoNothing"
             }
         })
         this.emitClose();

@@ -39,6 +39,7 @@
     "Uom_duplicateKey_Title": "Duplicate Key",
     "Uom_duplicateKey_Paragraph": "Cannot add uom that already exist. To edit it, please select it from the list",
     "Uom_AtdConfig_ItemConfigTitle": "Uom config item field",
-    "Uom_AtdConfig_CaseActionTitle": "Case and min quantity action"
+    "Uom_AtdConfig_CaseActionTitle": "Case quantity action",
+    "Uom_AtdConfig_MinActionTitle": "Min quantity action"
 
 }

@@ -11,7 +11,8 @@ export interface AtdConfiguration {
     InventoryFieldID: string,
     InventoryType: InventoryAction,
     ItemConfigFieldID: string,
-    CaseType: InventoryAction
+    CaseQuantityType: InventoryAction
+    MinQuantityType: InventoryAction
 }
 
 export const InventoryActions = {
