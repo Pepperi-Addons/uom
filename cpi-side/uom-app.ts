@@ -1,17 +1,15 @@
 import '@pepperi-addons/cpi-node'
-import { AtdConfiguration, InventoryAction, Uom, UomItemConfiguration } from './../shared/entities';
-import { DataObject, EventData, UIObject } from '@pepperi-addons/cpi-node';
+import { AtdConfiguration,
+        Uom,
+        UomItemConfiguration,
+        UNIT_QTY_FIRST_TSA,
+        UNIT_QTY_SECOND_TSA,
+        UOM_KEY_FIRST_TSA,
+        UOM_KEY_SECOND_TSA } from './../shared/entities';
+import { DataObject, EventData, UIObject, TransactionLines } from '@pepperi-addons/cpi-node';
 import config from '../addon.config.json';
-import { parse } from 'uuid';
-import { TransactionLine } from '@pepperi-addons/cpi-node/build/cpi-side/app/entities';
-import { isForInStatement } from 'typescript';
 
-/** Holds the quantity in UOM */
-const UNIT_QTY_TSA = 'TSAAOQMQuantity1';
-const UNIT_QTY_ADDITIONAL_TSA = 'TSAAOQMQuantity2';
-/** Holds the Key of the UOM of the line */
-const UOM_KEY_TSA = 'TSAAOQMUOM1';
-const UOM_KEY_ADDITIONAL_TSA = 'TSAAOQMUOM2';
+
 /** The Real UQ Field - Holds the quantity in Baseline */
 const UNIT_QUANTITY = 'UnitsQuantity';
 /** A list of Order Center Data Views */
@@ -66,7 +64,7 @@ class UOMManager {
                 await this.recalculateOrderCenterItem(data);
                 await next(main);
             })
-            for (const uqField of [UNIT_QTY_TSA, UNIT_QTY_ADDITIONAL_TSA]) {
+            for (const uqField of [UNIT_QTY_FIRST_TSA, UNIT_QTY_SECOND_TSA]) {
                 // Increment UNIT_QTY_TSA
                 pepperi.events.intercept('IncrementFieldValue', { FieldID: uqField, ...filter }, async (data, next, main) => {
                     await next(async () => {
@@ -97,13 +95,13 @@ class UOMManager {
                     });
                 })
             }
-            for (const ddField of [UOM_KEY_TSA, UOM_KEY_ADDITIONAL_TSA]) {
+            for (const ddField of [UOM_KEY_FIRST_TSA, UOM_KEY_SECOND_TSA]) {
                 // Drop Down Change
                 pepperi.events.intercept('SetFieldValue', { FieldID: ddField, ...filter }, async (data, next, main) => {
                     debugger;
                     await next(main);
                     // update the UQ field
-                    const uqFieldId = data.FieldID === UOM_KEY_TSA ? UNIT_QTY_TSA : UNIT_QTY_ADDITIONAL_TSA;
+                    const uqFieldId = data.FieldID === UOM_KEY_FIRST_TSA ? UNIT_QTY_FIRST_TSA : UNIT_QTY_SECOND_TSA;
                     const quantity = await data.DataObject?.getFieldValue(uqFieldId);
                     await this.setUQField(data.UIObject!, uqFieldId, quantity);
                 })
@@ -112,44 +110,43 @@ class UOMManager {
     }
     async setUQField(uiObject: UIObject, fieldId: string, value: number) {
         try {
-            debugger;
             //const t0 = performance.now();
             
             const dataObject = uiObject.dataObject;
             
             // set the fieldIDs
             const uqField = fieldId;
-            const otherUQField = uqField === UNIT_QTY_TSA ? UNIT_QTY_ADDITIONAL_TSA : UNIT_QTY_TSA;
-            const uomField = fieldId === UNIT_QTY_TSA ? UOM_KEY_TSA : UOM_KEY_ADDITIONAL_TSA;
-            const otherUOMField = otherUQField === UNIT_QTY_ADDITIONAL_TSA ? UOM_KEY_ADDITIONAL_TSA : UOM_KEY_TSA;
+            const otherUQField = uqField === UNIT_QTY_FIRST_TSA ? UNIT_QTY_SECOND_TSA : UNIT_QTY_FIRST_TSA;
+            const uomField = fieldId === UNIT_QTY_FIRST_TSA ? UOM_KEY_FIRST_TSA : UOM_KEY_SECOND_TSA;
+            const otherUOMField = otherUQField === UNIT_QTY_SECOND_TSA ? UOM_KEY_SECOND_TSA : UOM_KEY_FIRST_TSA;
             // get the UOM
             const uomValue = await dataObject?.getFieldValue(uomField);
             const uom = uomValue ? uoms.get(uomValue) : undefined;
             const otherUomValue = await dataObject?.getFieldValue(otherUOMField);
             const otherUom = otherUomValue ? uoms.get(otherUomValue) : undefined;
             const itemConfig = await this.getItemConfig(dataObject!);
-            const multiplier = getUomMultiplier(uom, itemConfig);
-            const otherMultiplier = getUomMultiplier(otherUom, itemConfig);
-            let quantity = value;
+            const uomConfig = this.getUomConfig(uom, itemConfig);
+            const otherUomConfig = this.getUomConfig(otherUom, itemConfig);
+            let quantity = this.config.MinQuantityType === 'Fix' ? (value >= uomConfig.Min ? value : uomConfig.Min) : value;
             let otherQuantity = 0;
             let total = 0;
             if (otherUom) {
                 otherQuantity = await dataObject?.getFieldValue(otherUQField);
-                total += otherQuantity * otherMultiplier;
+                total += otherQuantity * otherUomConfig.Factor;
             }
             // todo - fix inventory
             if (this.config.InventoryType === "Fix") {
                 // todo: what if there is no inventory from integration
                 const inventory: number = (await dataObject?.getFieldValue(this.config.InventoryFieldID)) || 0;
                 const inventoryLeft = inventory - total;
-                const maxInUOM = Math.floor(inventoryLeft / multiplier);
+                const maxInUOM = Math.floor(inventoryLeft / uomConfig.Factor);
                 
                 // if quantity is bigger than the max quantity available in that UOM
                 // set quantity to the max
                 quantity = quantity < maxInUOM ? quantity : maxInUOM;
             }
             // add quantity to total
-            total += quantity * multiplier;
+            total += quantity * uomConfig.Factor;
             
             // item with just one UOM - just set the UnitsQuantity & total
             await dataObject?.setFieldValue(UNIT_QUANTITY, total.toString(), true);
@@ -166,17 +163,17 @@ class UOMManager {
     async recalculateOrderCenterItem(data: EventData) {
         try {
             const uiObject = data.UIObject!;
-            const dataObject = data.DataObject! as TransactionLine;
+            const dataObject = data.DataObject! as TransactionLines;
 
             // Get the keys of the UOM from integration
             let arr: string[] = await this.getItemUOMs(dataObject);
 
             // get the UIFields
-            const dd1 = await uiObject.getUIField(UOM_KEY_TSA);
-            const dd2 = await uiObject.getUIField(UOM_KEY_ADDITIONAL_TSA);
-            const uq1 = await uiObject.getUIField(UNIT_QTY_TSA);
-            const uq2 = await uiObject.getUIField(UNIT_QTY_ADDITIONAL_TSA);
-            
+            const dd1 = await uiObject.getUIField(UOM_KEY_FIRST_TSA);
+            const dd2 = await uiObject.getUIField(UOM_KEY_SECOND_TSA);
+            const uq1 = await uiObject.getUIField(UNIT_QTY_FIRST_TSA);
+            const uq2 = await uiObject.getUIField(UNIT_QTY_SECOND_TSA);
+
             const optionalValues = arr.map(key => uoms.get(key)).filter(Boolean).map(uom => {
                 return {
                     Key: uom!.Key,
@@ -192,7 +189,7 @@ class UOMManager {
                     dd1.visible = true;
                     dd1.optionalValues = optionalValues;
                     if (dd1.value === '') {
-                        await uiObject.setFieldValue(UOM_KEY_TSA, optionalValues[0].Key, true);
+                        await uiObject.setFieldValue(UOM_KEY_FIRST_TSA, optionalValues[0].Key, true);
                     }
 
                     // readonly if there is only one, or if there are 2 and this isn't the only configured
@@ -206,10 +203,10 @@ class UOMManager {
                     dd2.optionalValues = optionalValues;
                     if (dd2.value === '') {
                         if(dd1 && optionalValues.length > 1) {
-                            await uiObject.setFieldValue(UOM_KEY_ADDITIONAL_TSA, optionalValues[1].Key, true);
+                            await uiObject.setFieldValue(UOM_KEY_SECOND_TSA, optionalValues[1].Key, true);
                         }
                         else {
-                            await uiObject.setFieldValue(UOM_KEY_ADDITIONAL_TSA, optionalValues[0].Key, true);
+                            await uiObject.setFieldValue(UOM_KEY_SECOND_TSA, optionalValues[0].Key, true);
                         }
                     }
                     // hide
@@ -233,6 +230,28 @@ class UOMManager {
                     if(total > inventory) {
                         uq1 ? uq1.textColor = "#FF0000" : null;
                         uq2 ? uq2.textColor = "#FF0000" : null;
+                    }
+                }
+                if(this.config.MinQuantityType === 'Color') {
+                    console.log('min quantity action is Color');
+                    const itemConfig = await this.getItemConfig(uiObject.dataObject!)
+                    let uom: Uom | undefined = undefined;
+                    let minQuantity = 0;
+                    if(dd1 && uq1) {
+                        uom = dd1.value ? uoms.get(dd1.value) : undefined;
+                        minQuantity = this.getUomMinQuantity(uom, itemConfig);
+                        console.log('checking uq1. value is:', uq1.value, 'min quantity is:', minQuantity);
+                        if(Number(uq1.value) < minQuantity) {
+                            uq1.textColor = "#FF0000";
+                        }
+                    }
+                    if(dd2 && uq2) {
+                        uom = dd2.value ? uoms.get(dd2.value) : undefined;
+                        minQuantity = this.getUomMinQuantity(uom, itemConfig);
+                        console.log('checking uq1. value is:', uq2.value, 'min quantity is:', minQuantity);
+                        if(Number(uq2.value) < minQuantity) {
+                            uq2.textColor = "#FF0000";
+                        }
                     }
                 }
             }
@@ -268,9 +287,53 @@ class UOMManager {
         return JSON.parse(str);
     }
 
+    getUomConfig(uom: Uom | undefined, itemConfig: UomItemConfiguration[]) : UomItemConfiguration{
+        let retVal: UomItemConfiguration = {
+            UOMKey:"",
+            Factor: 1,
+            Min: 0,
+            Case: 1
+        };
+        if(uom) {
+            const config = itemConfig.find(item => item.UOMKey === uom.Key);
+            if(config) {
+                retVal = {
+                    UOMKey: uom.Key,
+                    Factor: config.Factor,
+                    Min: config.Min,
+                    Case: config.Case
+                };
+            }
+            else {
+                retVal.UOMKey = uom.Key;
+            }
+        }
+    
+        return retVal;
+    }
+    
+    getUomMinQuantity(uom: Uom | undefined, itemConfig: UomItemConfiguration[]) : number{
+        let minQuantity = 0;
+        if(uom) {
+            const config = itemConfig.find(item => item.UOMKey === uom.Key);
+            minQuantity = config ? Number(config.Min) : 0;
+        }
+    
+        return minQuantity;
+    }
+    
+    getUomCaseQuantity(uom: Uom | undefined, itemConfig: UomItemConfiguration[]) : number{
+        let caseQuantity = 1;
+        if(uom) {
+            const config = itemConfig.find(item => item.UOMKey === uom.Key);
+            caseQuantity = config ? Number(config.Case) : 1;
+        }
+    
+        return caseQuantity;
+    }
 }
 
-export async function load(configuration: any) {
+export async function load() {
     // get UOM table
     console.log("Getting the UOM table");
     const list: Uom[] = (await pepperi.api.adal.getList({
@@ -286,18 +349,9 @@ export async function load(configuration: any) {
     })).objects as AtdConfiguration[];
     // create manager for each config
     for (const config of configs) {
+        console.log('Config object:', JSON.stringify(config));
         const manager = new UOMManager(config);
         // load the manager
         manager.load();
     }
-}
-
-function getUomMultiplier(uom: Uom | undefined, itemConfig: UomItemConfiguration[]) : number{
-    let multiplier = 1;
-    if(uom) {
-        const config = itemConfig.find(item => item.UOMKey === uom.Key);
-        multiplier = config ? Number(config.Factor) : uom.Multiplier;
-    }
-
-    return multiplier;
 }

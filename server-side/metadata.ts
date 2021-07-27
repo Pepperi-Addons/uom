@@ -1,4 +1,5 @@
 import { AddonDataScheme, ApiFieldObject } from "@pepperi-addons/papi-sdk"
+import { UNIT_QTY_FIRST_TSA, UNIT_QTY_SECOND_TSA, UOM_KEY_FIRST_TSA, UOM_KEY_SECOND_TSA } from "../shared/entities"
 
 export interface relation {
     RelationName: string;
@@ -41,7 +42,7 @@ export const relations: relation[] = [
 
 export const UomTSAFields: ApiFieldObject[] = [
     {
-        FieldID: "TSAAOQMUOM1",
+        FieldID: UOM_KEY_FIRST_TSA,
         Label: "AOQM_UOM1",
         Description: "the 1st unit of measure",
         IsUserDefinedField: true,
@@ -56,7 +57,7 @@ export const UomTSAFields: ApiFieldObject[] = [
         }
     },
     {
-        FieldID: "TSAAOQMUOM2",
+        FieldID: UOM_KEY_SECOND_TSA,
         Label: "AOQM_UOM2",
         Description: "the 2nd unit of measure",
         IsUserDefinedField: true,
@@ -71,7 +72,7 @@ export const UomTSAFields: ApiFieldObject[] = [
         }
     },
     {
-        FieldID: "TSAAOQMQuantity1",
+        FieldID: UNIT_QTY_FIRST_TSA,
         Label: "AOQM_Quantity1",
         Description: "The quantity for the 1st unit of measure",
         IsUserDefinedField: true,
@@ -83,7 +84,7 @@ export const UomTSAFields: ApiFieldObject[] = [
         Format: "Int64"
     },
     {
-        FieldID: "TSAAOQMQuantity2",
+        FieldID: UNIT_QTY_SECOND_TSA,
         Label: "AOQM_Quantity2",
         Description: "The quantity for the 2nd unit of measure",
         IsUserDefinedField: true,

@@ -29,3 +29,11 @@ export interface UomItemConfiguration {
 }
 
 export type InventoryAction = keyof typeof InventoryActions;
+
+/** Holds the quantity in UOM */
+export const UNIT_QTY_FIRST_TSA = 'TSAAOQMQuantity1';
+export const UNIT_QTY_SECOND_TSA = 'TSAAOQMQuantity2';
+/** Holds the Key of the UOM of the line */
+export const UOM_KEY_FIRST_TSA = 'TSAAOQMUOM1';
+export const UOM_KEY_SECOND_TSA = 'TSAAOQMUOM2';
+
