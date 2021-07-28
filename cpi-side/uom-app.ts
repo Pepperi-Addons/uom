@@ -68,6 +68,7 @@ class UOMManager {
                 // Increment UNIT_QTY_TSA
                 pepperi.events.intercept('IncrementFieldValue', { FieldID: uqField, ...filter }, async (data, next, main) => {
                     await next(async () => {
+                        // debugger
                         if(data && data.UIObject && data.UIObject.dataObject && data.FieldID) {
                             let oldValue = await data.UIObject.dataObject.getFieldValue(uqField) || 0;
                             const newValue = oldValue + 1;
@@ -334,6 +335,7 @@ class UOMManager {
 }
 
 export async function load() {
+    debugger;
     // get UOM table
     console.log("Getting the UOM table");
     const list: Uom[] = (await pepperi.api.adal.getList({
