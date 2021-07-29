@@ -1,9 +1,14 @@
 export class QuantityCalculator {
-    constructor(){
+    constructor(private inventory){
+
+        
 
 
 
 
+    }
+    getInv() {
+        return this.inventory;
     }
 
     getIncrementValue() {
