@@ -142,7 +142,7 @@ class UOMManager {
                 })
                 // Set UNIT_QTY_TSA   
                 pepperi.events.intercept('SetFieldValue', { FieldID: uqField, ...filter }, async (data, next, main) => {
-                    debugger;
+                    // debugger;
                     await next(async () => {
                         if(data && data.UIObject && data.UIObject && data.FieldID) {
                             await this.setUQField(data.UIObject, data.FieldID, parseInt(data.Value),ItemAction.Set);
@@ -184,6 +184,8 @@ class UOMManager {
             const itemConfig = await this.getItemConfig(dataObject!);
             const uomConfig = this.getUomConfig(uom, itemConfig);
             const otherUomConfig = this.getUomConfig(otherUom, itemConfig);
+            let minBehavior = this.config.MinQuantityType;
+            let caseBehavior = this.config.CaseQuantityType;
             let quantity = this.config.MinQuantityType === 'Fix' ? (value >= uomConfig.Min ? value : uomConfig.Min) : value;
             let otherQuantity = 0;
             let total = 0;
@@ -192,12 +194,12 @@ class UOMManager {
                 otherQuantity = await dataObject?.getFieldValue(otherUQField);
                 total += otherQuantity * otherUomConfig.Factor;
             }
-            // todo - fix inventory
+            // what if inventory is not fix? todo: handle those cases
             if (this.config.InventoryType === "Fix") {
                 // todo: what if there is no inventory from integration
                 const inventory: number = (await dataObject?.getFieldValue(this.config.InventoryFieldID)) || 0;
                 const inventoryLeft = inventory - total;
-                const quantityCalc: QuantityCalculator = new QuantityCalculator(uomConfig,inventoryLeft);
+                const quantityCalc: QuantityCalculator = new QuantityCalculator(uomConfig,inventoryLeft,caseBehavior,minBehavior);
                 switch(itemAction as ItemAction){
                     case ItemAction.Increment: 
                         quantityCalc.setCurr(value-1);

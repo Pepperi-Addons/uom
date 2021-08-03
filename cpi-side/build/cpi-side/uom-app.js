@@ -115,7 +115,7 @@ class UOMManager {
                 });
                 // Set UNIT_QTY_TSA   
                 pepperi.events.intercept('SetFieldValue', Object.assign({ FieldID: uqField }, filter), async (data, next, main) => {
-                    debugger;
+                    // debugger;
                     await next(async () => {
                         if (data && data.UIObject && data.UIObject && data.FieldID) {
                             await this.setUQField(data.UIObject, data.FieldID, parseInt(data.Value), ItemAction.Set);
@@ -155,6 +155,8 @@ class UOMManager {
             const itemConfig = await this.getItemConfig(dataObject);
             const uomConfig = this.getUomConfig(uom, itemConfig);
             const otherUomConfig = this.getUomConfig(otherUom, itemConfig);
+            let minBehavior = this.config.MinQuantityType;
+            let caseBehavior = this.config.CaseQuantityType;
             let quantity = this.config.MinQuantityType === 'Fix' ? (value >= uomConfig.Min ? value : uomConfig.Min) : value;
             let otherQuantity = 0;
             let total = 0;
@@ -168,7 +170,7 @@ class UOMManager {
                 // todo: what if there is no inventory from integration
                 const inventory = (await (dataObject === null || dataObject === void 0 ? void 0 : dataObject.getFieldValue(this.config.InventoryFieldID))) || 0;
                 const inventoryLeft = inventory - total;
-                const quantityCalc = new quantity_calculator_1.QuantityCalculator(uomConfig, inventoryLeft);
+                const quantityCalc = new quantity_calculator_1.QuantityCalculator(uomConfig, inventoryLeft, caseBehavior, minBehavior);
                 switch (itemAction) {
                     case ItemAction.Increment:
                         quantityCalc.setCurr(value - 1);

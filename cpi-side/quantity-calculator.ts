@@ -1,5 +1,6 @@
+
 import { QuantityResult } from './uom-app';
-import { UomItemConfiguration } from './../shared/entities';
+import { InventoryAction, UomItemConfiguration } from './../shared/entities';
 // import { Interval } from './quantity-calculator';
 // import { QuantityCalculator } from './quantity-calculator';
 import { InstalledAddon } from '@pepperi-addons/papi-sdk';
@@ -14,19 +15,20 @@ export class QuantityCalculator {
     private hasInterval:boolean;
     private curr: number;
     private currInv: number;
-    private normalizedInv;
+    private normalizedInv:number;
     private factor:number;
     private cq:number;
     private min:number;
-
+    private originalMin:number;
     // field of fix inventory fix min ... 
-    constructor(itemConfig: UomItemConfiguration, private inventory: number){  
+    constructor(itemConfig: UomItemConfiguration, private inventory: number, private caseBehavior: InventoryAction ,private minBehavior: InventoryAction){  
         if(itemConfig.Factor == 0)
         {
             throw new console.error("factor cannot be 0");
             
         }
         this.min = itemConfig.Min;
+        this.originalMin = itemConfig.Min;
         this.factor = itemConfig.Factor;
         this.max = inventory;
         this.hasInterval = false;
@@ -51,6 +53,10 @@ export class QuantityCalculator {
 
 
     getRealMin():number {
+        if(this.caseBehavior != 'Fix' && this.minBehavior === 'Fix')
+            return this.originalMin;
+        if(this.caseBehavior === 'Fix' && this.minBehavior != 'Fix')
+            return this.cq;
         if(this.min >= this.cq && this.min%this.cq === 0)
         {
             return this.min;
@@ -68,12 +74,34 @@ export class QuantityCalculator {
     inInterval(x:number):boolean{
         if(!this.hasInterval)
             this.buildInterval;
-            //true iff x is in interval and he is a multiplier of cq
+           
+        // if(this.caseBehavior != 'Fix' && this.minBehavior === 'Fix')
+        //     return (x <= this.max && x >= this.min && (x-this.originalMin)%this.cq === 0) || (x === 0)?  true:  false; 
+        
         return (x <= this.max && x >= this.min && x%this.cq === 0) || (x === 0)?  true:  false; 
+    
+    }
+    incCaseFix(num:number):QuantityResult{
+        if(num <= this.max)
+            return {'curr': num, 'total': num*this.factor};
+        // num = Math.floor((num/this.cq)*this.cq);
+        return {'curr': this.max, 'total': this.max*this.factor};
+    }
+    incMinFix(num: number):QuantityResult{
+        //if not case maybe we should inc just by one? 
+        if(num <= this.max)
+            return {'curr': num, 'total': num*this.factor};
+        num = this.normalizedInv;
+            return {'curr': num, 'total': num*this.factor};
+
+        
     }
 
 
     getRealMax():number {
+        if(this.caseBehavior != 'Fix' && this.minBehavior === 'Fix')
+            return this.normalizedInv;
+
         if(this.normalizedInv >= this.cq && this.normalizedInv%this.cq === 0)
         {
             return this.normalizedInv;
@@ -95,9 +123,31 @@ export class QuantityCalculator {
     //@pre: curr>=0,curr is an integer,curr%cq == 0 
     //@post curr >=0 curr is an integer, curr % cq == 0 curr in interval
     getIncrementValue():QuantityResult {
+        //here we need to increment always as min=f(min,case) max=f(max,case) 
+        //so the only situation thats minBehave or caseBehave affect is when we have "wrong number" in the curr field(as result of set action that happend before that)
         if(!this.hasInterval)
             this.buildInterval();
+        // if(this.curr === 0)
+        //     this.curr = this.min;
+        // else 
+        if(this.curr%this.cq != 0 && this.caseBehavior != 'Fix' && this.minBehavior === 'Fix')
+        {
+            if(this.curr < this.cq)
+                return {'curr': this.cq, 'total': this.cq*this.factor};
+            this.curr = Math.ceil(this.curr/this.cq) * this.cq;
+            return {'curr': this.curr, 'total': this.curr*this.factor};
+        }
         this.curr = this.curr + this.cq;
+        //we should check if case is not fixed and curr%cq != 0 so curr = x s.t x = min({q|q>x and q%cq = 0})
+
+        // if(this.caseBehavior != 'Fix' && this.minBehavior === 'Fix')
+        //     return this.incMinFix(this.curr);
+        
+        if(this.caseBehavior === 'Fix' && this.minBehavior != 'Fix')
+            return this.incCaseFix(this.curr);
+
+
+
        
         if(this.inInterval(this.curr))
         {
@@ -123,7 +173,26 @@ export class QuantityCalculator {
     getDecrementValue():QuantityResult{
         if(!this.hasInterval)
             this.buildInterval();
+
+        if(this.curr%this.cq != 0 && this.caseBehavior != 'Fix')
+        {
+            if(this.curr <=this.min)
+                return {'curr': 0, 'total': 0};
+            var cqMul = Math.floor(this.curr/this.cq) * this.cq;
+            this.curr = cqMul >= this.min ? cqMul:this.min;
+            return {'curr': this.curr, 'total': this.curr*this.factor};
+
+        }
+
         this.curr = this.curr - this.cq;
+        if(this.caseBehavior != 'Fix' && this.minBehavior === 'Fix')
+        {
+            if(this.curr < this.originalMin)
+                return {'curr': 0, 'total': 0};
+            return {'curr': this.curr, 'total': this.factor*this.curr};
+            
+        }
+        
        
         if(this.inInterval(this.curr))
         {
@@ -144,6 +213,19 @@ export class QuantityCalculator {
     setVal(num: number):QuantityResult{
             if(!this.hasInterval)
                 this.buildInterval();
+
+            //case min fix and not case fix
+            if(this.caseBehavior != 'Fix' && this.minBehavior === 'Fix')
+            {
+                if(num >= this.originalMin && num <= this.max)
+                    return {'curr': num, 'total': num*this.factor};
+                //so num either bigger than max or smaller than min
+                //num is bigger than max
+                if(num > this.max)
+                    return {'curr': this.max, 'total': this.max*this.factor};
+                //now num is smaller than min
+                return {'curr': this.originalMin, 'total': this.originalMin*this.factor};
+            }
 
             if(num <= 0)
             {
