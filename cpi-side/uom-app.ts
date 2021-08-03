@@ -374,9 +374,9 @@ class UOMManager {
             if(config) {
                 retVal = {
                     UOMKey: uom.Key,
-                    Factor: config.Factor || uom.Multiplier,
-                    Min: config.Min|| 0,
-                    Case: config === undefined? 1:config.Case
+                    Factor: Number(config.Factor) || uom.Multiplier,
+                    Min: Number(config.Min)|| 0,
+                    Case: config === undefined? 1:Number(config.Case)
                 };
             }
             else {

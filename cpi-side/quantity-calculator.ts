@@ -101,18 +101,18 @@ export class QuantityCalculator {
        
         if(this.inInterval(this.curr))
         {
-            return {'curr': this.curr, 'total': this.curr*this.factor*this.cq};
+            return {'curr': this.curr, 'total': this.curr*this.factor};
         }
         // here curr is not in interval after updated so x is above max or x is below min
         if(this.curr > this.max)
         {
             this.curr = this.curr - this.cq;
-            return {'curr': this.curr, 'total': this.curr*this.cq*this.factor};
+            return {'curr': this.curr, 'total': this.curr*this.factor};
         }
         if(this.curr < this.min)
         {
             this.curr = this.getRealMin();
-            return {'curr': this.curr, 'total': this.curr*this.factor*this.cq};
+            return {'curr': this.curr, 'total': this.curr*this.factor};
         }
         return {'curr':0, 'total': 0};
 
@@ -127,13 +127,13 @@ export class QuantityCalculator {
        
         if(this.inInterval(this.curr))
         {
-            return {'curr':this.curr, 'total': this.curr*this.cq*this.factor};
+            return {'curr':this.curr, 'total': this.curr*this.factor};
         }
         //curr not in interval so curr<min o
         if(this.curr < this.min || this.curr <=0)
         {
             this.curr = 0;
-            return {'curr':this.curr, 'total': this.curr*this.cq*this.factor}
+            return {'curr':this.curr, 'total': this.curr*this.factor}
         }
         
         
@@ -142,13 +142,19 @@ export class QuantityCalculator {
     //@pre: curr is in interval or curr = 0
     //@post: curr is in interval or curr == 0
     setVal(num: number):QuantityResult{
-        if(!this.hasInterval)
-            this.buildInterval();
-     
+            if(!this.hasInterval)
+                this.buildInterval();
+
+            if(num <= 0)
+            {
+                this.curr = 0;
+                return {'curr':this.curr, 'total': this.curr*this.factor};
+            }
+
             if(this.inInterval(num))
             {
                 this.curr = num;
-                return  {'curr':this.curr, 'total': this.curr*this.cq*this.factor};
+                return  {'curr':this.curr, 'total': this.curr*this.factor};
             }
 
             if(num % this.cq != 0)
@@ -160,17 +166,11 @@ export class QuantityCalculator {
                     num = this.cq
             }
 
-            if(num <= 0)
-            {
-                this.curr = 0;
-                return {'curr':this.curr, 'total': this.curr*this.cq*this.factor}
-            }
-
             if(this.inInterval(num))
             {
                
                 this.curr = num;
-                return {'curr':this.curr, 'total': this.curr*this.cq*this.factor};
+                return {'curr':this.curr, 'total': this.curr*this.factor};
             }
 
             //if num is not in interval so or num < min or num > max or num%cq != 0
@@ -178,19 +178,19 @@ export class QuantityCalculator {
             if(num < this.min)
             {
                 this.curr = this.min;
-                return {'curr':this.curr, 'total': this.curr*this.cq*this.factor};
+                return {'curr':this.curr, 'total': this.curr*this.factor};
             }
             // if num > max so we  needs to set max(the highest legal value)
             if(num > this.max)
             {
                 this.curr = this.max;
-                return {'curr':this.curr, 'total': this.curr*this.cq*this.factor};
+                return {'curr':this.curr, 'total': this.curr*this.factor};
             }
             
             //so num<max and num>min and num%cq != 0 so we need to set x s.t x>=num and x in interval
             //we can get that x from x = ceil(num/cq)*cq;
 
-            return {'curr':this.curr, 'total': this.curr*this.cq*this.factor};
+            return {'curr':this.curr, 'total': this.curr*this.factor};
         
     }
 
