@@ -111,9 +111,9 @@ export class QuantityCalculator {
         this.min = this.getRealMin();
         this.max = this.getRealMax();
 
-        //rare case, cannot inc to less than min so we above inv therefore return 0
-        if(this.min > this.normalizedInv)
-            return {'curr': 0, 'total': 0}
+        //rare case, stay with same value
+        if(this.min > this.normalizedInv || this.curr > this.max)
+            return {'curr': this.curr, 'total': this.curr*this.factor}
 
         if(!this.hasInterval)
             this.buildInterval();
@@ -235,8 +235,6 @@ export class QuantityCalculator {
             
             let originalMax = this.getRealMax();
             
-            if(this.invBehavior != 'Fix')
-                this.max = Number.MAX_VALUE;
             //if case behavior != fix or min behavior != fix min and max can chage.
             //if both of them not fix, so min is simply zero and max is  normalized inventory.
             if(this.caseBehavior != 'Fix' && this.minBehavior != 'Fix')
@@ -244,29 +242,31 @@ export class QuantityCalculator {
                 this.min = 0;
                 this.max = this.normalizedInv;
             }
-
+            
             //if just case behavior is not fix, so min is the origin min, and max is normalized inventory.
             if(this.caseBehavior != 'Fix' && this.minBehavior === 'Fix')
             {
                 this.min = this.originalMin;
                 this.max = this.normalizedInv;
             }
-
+            
             //if just min behavior not fix, so min is case, and max is max{x | x < normalizedInv and x%cq == 0}
             if(this.minBehavior != 'Fix' && this.caseBehavior === 'Fix')
             {
                 this.min = this.cq;
                 if(this.cq != 0)
-                    this.max = this.normalizedInv <= 0 ? 0: Math.floor(this.normalizedInv/this.cq)*this.cq;
+                this.max = this.normalizedInv <= 0 ? 0: Math.floor(this.normalizedInv/this.cq)*this.cq;
                 else
-                    this.max = this.normalizedInv;
+                this.max = this.normalizedInv;
             }
+            if(this.invBehavior != 'Fix')
+                this.max = Number.MAX_VALUE;
             // so we cant set any value so thats needs to be 0
             if(this.min > this.max)
             {
                 return {'curr': 0, 'total': 0};
             }
-                 
+            
 
 
       

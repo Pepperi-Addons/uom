@@ -436,7 +436,7 @@ class UOMManager {
 }
 
 export async function load() {
-    debugger;
+
     // get UOM table
     console.log("Getting the UOM table");
     const list: Uom[] = (await pepperi.api.adal.getList({
