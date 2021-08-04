@@ -1,4 +1,5 @@
 "use strict";
+// import { config } from 'process';
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -165,12 +166,12 @@ class UOMManager {
                 otherQuantity = await (dataObject === null || dataObject === void 0 ? void 0 : dataObject.getFieldValue(otherUQField));
                 total += otherQuantity * otherUomConfig.Factor;
             }
-            // todo - fix inventory
-            if (this.config.InventoryType === "Fix") {
+            // what if inventory is not fix? todo: handle those cases
+            if (true || this.config.InventoryType === "Fix") {
                 // todo: what if there is no inventory from integration
                 const inventory = (await (dataObject === null || dataObject === void 0 ? void 0 : dataObject.getFieldValue(this.config.InventoryFieldID))) || 0;
                 const inventoryLeft = inventory - total;
-                const quantityCalc = new quantity_calculator_1.QuantityCalculator(uomConfig, inventoryLeft, caseBehavior, minBehavior);
+                const quantityCalc = new quantity_calculator_1.QuantityCalculator(uomConfig, inventoryLeft, caseBehavior, minBehavior, this.config.InventoryType);
                 switch (itemAction) {
                     case ItemAction.Increment:
                         quantityCalc.setCurr(value - 1);

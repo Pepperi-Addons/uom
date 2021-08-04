@@ -1,391 +1,678 @@
-// import { QuantityCalculator } from './quantity-calculator';
-// import 'mocha'
-// import { expect } from 'chai'
 
-// describe('Quantity Calculator', () => {
-// //should test all QC
-//     // describe('Test 1: Incerement first tests', ()=>{
-//     //     //inv = 30 cq = 5 min = 12 factor = 1;
-//     //     const calculator = new QuantityCalculator(30,5,1,12);
-//     //     // 0->15
-//     //     it ('1: increment should go up by 15', () => {
-//     //         expect(calculator.getIncrementValue()).is.a('number').that.is.equal(15);
-//     //     })
-//     //     it ('2: increment should go up by 20', () => {
-//     //         expect(calculator.getIncrementValue()).is.a('number').that.is.equal(20);
-//     //     })
-//     //     it ('3: increment should go up by 25', () => {
-//     //         expect(calculator.getIncrementValue()).is.a('number').that.is.equal(25);
-//     //     })
-//     //     it ('4:  increment should go up by 30', () => {
-//     //         expect(calculator.getIncrementValue()).is.a('number').that.is.equal(30);
-//     //     })
-//     //     it ('5: increment should go up by 30', () => {
-//     //         expect(calculator.getIncrementValue()).is.a('number').that.is.equal(30);
-//     //     })
-//     //     // start to decrease
-//     //     it ('6: decrement: output expected 25', () => {
-//     //         expect(calculator.getDecrementValue()).is.a('number').that.is.equal(25);
-//     //     })
-//     //     it ('7: Decrement output expected 20', () => {
-//     //         expect(calculator.getDecrementValue()).is.a('number').that.is.equal(20);
-//     //     })
-//     //     it ('8: Decrement output expected 15', () => {
-//     //         expect(calculator.getDecrementValue()).is.a('number').that.is.equal(15);
-//     //     })
-//     //     it ('9:  Decrement output expected 0', () => {
-//     //         expect(calculator.getDecrementValue()).is.a('number').that.is.equal(0);
-//     //     })
-//     //     it ('10: Decrement output expected 0', () => {
-//     //         expect(calculator.getDecrementValue()).is.a('number').that.is.equal(0);
-//     //     })
+import { QuantityCalculator } from './quantity-calculator';
+import { InventoryAction, UomItemConfiguration, InventoryActions } from './../shared/entities';
+import 'mocha'
+import { expect } from 'chai'
 
-//     // }),
-//     // describe('Test 2: Incerement: inv< cq ', ()=>{
-//     //     //inv = 10 cq = 15 min = 0 factor = 1;
-//     //     const calculator = new QuantityCalculator(10,15,1,0);
-//     //     // 0->15
-//     //     it ('2.1: increment should return 0', () => {
-//     //         expect(calculator.getIncrementValue()).is.a('number').that.is.equal(0);
-//     //     })
-//     // })
+describe('Quantity Calculator', () => {
+    let inc = (result: number, calc: QuantityCalculator) => {
+        return () => {
+            expect(calc.getIncrementValue()).that.is.eql({'curr': result, 'total' : result*calc.getFactor()});
+        }
+    }
+    let dec = (result: number, calc: QuantityCalculator) => {
+        return () => {
+            expect(calc.getDecrementValue()).is.eql({'curr': result, 'total' : result*calc.getFactor()});
+        }
+    }
+    let set = (result: number, calc: QuantityCalculator, input:number) => {
+        return () => {
+            expect(calc.setVal(input)).that.is.eql({'curr': result, 'total' : result*calc.getFactor()});
+        }
+    }
 
+    describe('Test 1: Inv= fix, Case = fix, Min = fix', ()=>{
+        let invBehavior:InventoryAction = 'Fix';
+        let caseBehavior: InventoryAction = 'Fix';
+        let minBehavior: InventoryAction = 'Fix';
+  
+        describe ('CASE 1: default inc,dec,set with inv = 10 case,factor = 1, min = 0', () => {
+            let  config: UomItemConfiguration = {'UOMKey': "", 'Case':1, 'Min': 0, 'Factor':1};
+            let inventory: number = 10;
+            let calc = new QuantityCalculator(config,inventory,caseBehavior,minBehavior,invBehavior);
+            describe ('1: inc tests:', () => {
+                it('1: inc should go up from 0 to 1', inc(1,calc));
+                it('2: inc should go up from 1 to 2', inc(2,calc));
+                it('3: inc should go up from 2 to 3', inc(3,calc));
+                it('4: inc should go up from 3 to 4', inc(4,calc));
+                it('5: inc should go up from 4 to 5', inc(5,calc));
+                it('6: inc should go up from 5 to 6', inc(6,calc));
+                it('7: inc should go up from 6 to 7', inc(7,calc));
+                it('8: inc should go up from 7 to 8', inc(8,calc));
+                it('9: inc should go up from 8 to 9', inc(9,calc));
+                it('10: inc should go up from 9 to 10', inc(10,calc));
+                it('11: inc should stay on 10', inc(10,calc));
+            });
+            describe ('2: dec tests:', () => {
+                it('1: dec should go down from 10 to 9', dec(9,calc));
+                it('2: dec should go down from 9 to 8', dec(8,calc));
+                it('3: dec should go down from 8 to 7', dec(7,calc));
+                it('4: dec should go down from 7 to 6', dec(6,calc));
+                it('5: dec should go down from 6 to 5', dec(5,calc));
+                it('6: dec should go down from 5 to 4', dec(4,calc));
+                it('7: dec should go down from 4 to 3', dec(3,calc));
+                it('8: dec should go down from 3 to 2', dec(2,calc));
+                it('9: dec should go down from 2 to 1', dec(1,calc));
+                it('10: dec should go down from 1 to 0', dec(0,calc));
+                it('11: dec should stay on 0', dec(0,calc));
+            });
+            describe ('3: set tests:', () => {
+                it('1: set to 0', set(0,calc,0));
+                it('2: set to 10', set(10,calc,10));
+                it('3: set to 5', set(5,calc,5));
+                it('4: set to 11 should set 10', set(10,calc,11));
+                it('5: set to -1 should set 0', set(0,calc, -1));
+                it('6: set to 999 should set to 10 ', set(10,calc,999));
+                it('6: set to 10 should set to 10 ', set(10,calc,999));
+            });
+            describe ('4: set inc dec cobination:', () => {
+                it('1: set to 0', set(0,calc,0));
+                it('2: inc should go up to 1', inc(1,calc));
+                it('3: dec should go down to 0', dec(0,calc));
+                it('4: dec should stay on 0', dec(0,calc));
+                it('5: set to 9 should set 9', set(9,calc, 9));
+                it('6: inc should go to 10 ', inc(10,calc));
+                it('6: set to 999 should set to 10 ', set(10,calc,999));
+                it('6: inc should stay on 10 ', inc(10,calc));
+            });
+        });
 
-// // })
+        describe ('CASE 2: min%case != 0  inv = 10 case = 2 factor = 1, min = 3', () => {
+            let  config: UomItemConfiguration = {'UOMKey': "", 'Case':2, 'Min': 3, 'Factor':1};
+            let inventory: number = 10;
+            let calc = new QuantityCalculator(config,inventory,caseBehavior,minBehavior,invBehavior);
+            describe ('1: inc tests:', () => {
+                it('1: inc should go up from 0 to 4', inc(4,calc));
+                it('2: inc should go up from 4 to 6', inc(6,calc));
+                it('3: inc should go up from 6 to 8', inc(8,calc));
+                it('4: inc should go up from 8 to 10', inc(10,calc));
+                it('5: inc should stay on 10', inc(10,calc));
+            });
+            describe ('2: dec tests:', () => {
+                it('1: dec should go down from 10 to 8', dec(8,calc));
+                it('2: dec should go down from 8 to 6', dec(6,calc));
+                it('3: dec should go down from 6 to 4', dec(4,calc));
+                it('4: dec should go down from 4 to 0', dec(0,calc));
+                it('5: dec should stay on 0', dec(0,calc));
+            });
+            describe ('3: set tests:', () => {
+                it('1: set to 0', set(0,calc,0));
+                it('2: set to 10', set(10,calc,10));
+                it('3: set to 5 need to set to 6', set(6,calc,5));
+                it('4: set to 11 should set 10', set(10,calc,11));
+                it('5: set to -1 should set 0', set(0,calc, -1));
+                it('6: set to 999 should set to 10 ', set(10,calc,999));
+                it('6: set to 1 should set to 4 ', set(4,calc,1));
+            });
+            describe ('4: set inc dec cobination:', () => {
+                it('1: set to 0', set(0,calc,0));
+                it('2: inc should go up to 4', inc(4,calc));
+                it('3: dec should go down to 0', dec(0,calc));
+                it('4: dec should stay on 0', dec(0,calc));
+                it('5: set to 9 should set 10', set(10,calc, 9));
+                it('6: inc should stay on 10 ', inc(10,calc));
+                it('7: set to -1 needs to set to 0 ', set(0,calc,-1));
+                it('8: inc should go to 4 ', inc(4,calc));
+                it('9: dec should go down to 0', dec(0,calc));
+                it('10: set to 3 should set 4', set(4,calc, 3));
+                it('11: dec should go down to 0', dec(0,calc));
+            });
+        });
 
+        describe ('CASE 4: min < case  inv = 10 case = 4 factor = 1, min = 3', () => {
+            let  config: UomItemConfiguration = {'UOMKey': "", 'Case':4, 'Min': 3, 'Factor':1};
+            let inventory: number = 10;
+            let calc = new QuantityCalculator(config,inventory,caseBehavior,minBehavior,invBehavior);
+            describe ('1: inc tests:', () => {
+                it('1: inc should go up from 0 to 4', inc(4,calc));
+                it('2: inc should go up from 4 to 8', inc(8,calc));
+                it('3: stay on 8 ', inc(8,calc));
+            });
+            describe ('2: dec tests:', () => {
+                it('1: dec should go down from 8 to 4', dec(4,calc));
+                it('2: dec should go down from 4 to 0', dec(0,calc));
+                it('3: dec should stay on 0', dec(0,calc));
+            });
+            describe ('3: set tests:', () => {
+                it('1: set to 0', set(0,calc,0));
+                it('2: set to 10 needs to set to 8', set(8,calc,10));
+                it('3: set to 5 need to set to 8', set(8,calc,5));
+                it('4: set to 11 should set 8', set(8,calc,11));
+                it('5: set to -1 should set 0', set(0,calc, -1));
+                it('6: set to 999 should set to 8 ', set(8,calc,999));
+                it('6: set to 1 should set to 4 ', set(4,calc,1));
+            });
+            describe ('4: set inc dec cobination:', () => {
+                it('1: set to 0', set(0,calc,0));
+                it('2: inc should go up to 4', inc(4,calc));
+                it('3: dec should go down to 0', dec(0,calc));
+                it('4: dec should stay on 0', dec(0,calc));
+                it('5: set to 9 should set 8', set(8,calc, 9));
+                it('6: inc should stay on 8 ', inc(8,calc));
+                it('7: set to -1 should set to 0 ', set(0,calc,-1));
+                it('8: inc should inc to 4 ', inc(4,calc));
+                it('9: dec should go down to 0', dec(0,calc));
+                it('10: set to 3 should set 4', set(4,calc, 3));
+                it('11: dec should go down to 0', dec(0,calc));
+            });
+        });
 
+    });
+    describe('Test 2: Inv= fix, Case = DoNothing, Min = fix', ()=>{
+        let invBehavior:InventoryAction = 'Fix';
+        let caseBehavior: InventoryAction = 'DoNothing';
+        let minBehavior: InventoryAction = 'Fix';
+  
+        describe ('CASE 1: default inc,dec,set with inv = 10 case,factor = 1, min = 0', () => {
+            let  config: UomItemConfiguration = {'UOMKey': "", 'Case':1, 'Min': 0, 'Factor':1};
+            let inventory: number = 10;
+            let calc = new QuantityCalculator(config,inventory,caseBehavior,minBehavior,invBehavior);
+            describe ('1: inc tests:', () => {
+                it('1: inc should go up from 0 to 1', inc(1,calc));
+                it('2: inc should go up from 1 to 2', inc(2,calc));
+                it('3: inc should go up from 2 to 3', inc(3,calc));
+                it('4: inc should go up from 3 to 4', inc(4,calc));
+                it('5: inc should go up from 4 to 5', inc(5,calc));
+                it('6: inc should go up from 5 to 6', inc(6,calc));
+                it('7: inc should go up from 6 to 7', inc(7,calc));
+                it('8: inc should go up from 7 to 8', inc(8,calc));
+                it('9: inc should go up from 8 to 9', inc(9,calc));
+                it('10: inc should go up from 9 to 10', inc(10,calc));
+                it('11: inc should stay on 10', inc(10,calc));
+            });
+            describe ('2: dec tests:', () => {
+                it('1: dec should go down from 10 to 9', dec(9,calc));
+                it('2: dec should go down from 9 to 8', dec(8,calc));
+                it('3: dec should go down from 8 to 7', dec(7,calc));
+                it('4: dec should go down from 7 to 6', dec(6,calc));
+                it('5: dec should go down from 6 to 5', dec(5,calc));
+                it('6: dec should go down from 5 to 4', dec(4,calc));
+                it('7: dec should go down from 4 to 3', dec(3,calc));
+                it('8: dec should go down from 3 to 2', dec(2,calc));
+                it('9: dec should go down from 2 to 1', dec(1,calc));
+                it('10: dec should go down from 1 to 0', dec(0,calc));
+                it('11: dec should stay on 0', dec(0,calc));
+            });
+            describe ('3: set tests:', () => {
+                it('1: set to 0', set(0,calc,0));
+                it('2: set to 10', set(10,calc,10));
+                it('3: set to 5', set(5,calc,5));
+                it('4: set to 11 should set 10', set(10,calc,11));
+                it('5: set to -1 should set 0', set(0,calc, -1));
+                it('6: set to 999 should set to 10 ', set(10,calc,999));
+                it('7: set to 10 should set to 10 ', set(10,calc,999));
+            });
+            describe ('4: set inc dec cobination:', () => {
+                it('1: set to 0', set(0,calc,0));
+                it('2: inc should go up to 1', inc(1,calc));
+                it('3: dec should go down to 0', dec(0,calc));
+                it('4: dec should stay on 0', dec(0,calc));
+                it('5: set to 9 should set 9', set(9,calc, 9));
+                it('6: inc should go to 10 ', inc(10,calc));
+                it('7: set to 999 should set to 10 ', set(10,calc,999));
+                it('8: inc should stay on 10 ', inc(10,calc));
+            });
+        });
+        describe ('CASE 2:  min%case != 0. inv = 10 case = 2,factor = 1, min = 3', () => {
+            let  config: UomItemConfiguration = {'UOMKey': "", 'Case':2, 'Min': 3, 'Factor':1};
+            let inventory: number = 10;
+            let calc = new QuantityCalculator(config,inventory,caseBehavior,minBehavior,invBehavior);
+            describe ('1: inc tests:', () => {
+                it('1: inc should go up from 0 to 4', inc(4,calc));
+                it('2: inc should go up from 4 to 6', inc(6,calc));
+                it('3: inc should go up from 6 to 8', inc(8,calc));
+                it('4: inc should go up from 8 to 10', inc(10,calc));
+                it('5: inc should stay on 10', inc(10,calc));
+            });
+            describe ('2: dec tests:', () => {
+                it('1: dec should go down from 10 to 8', dec(8,calc));
+                it('2: dec should go down from 8 to 6', dec(6,calc));
+                it('3: dec should go down from 6 to 4', dec(4,calc));
+                it('4: dec should go down from 4 to 0', dec(0,calc));
+                it('5: dec should stay on 0', dec(0,calc));
+            });
+            describe ('3: set tests:', () => {
+                it('1: set to 0 should be 0', set(0,calc,0));
+                it('2: set to 10 should be 10', set(10,calc,10));
+                it('3: set to 5 should be 5', set(5,calc,5));
+                it('4: set to 11 should set 10', set(10,calc,11));
+                it('5: set to -1 should set 0', set(0,calc, -1));
+                it('6: set to 999 should set to 10 ', set(10,calc,999));
+                it('7: set to 2 should set to 3 ', set(3,calc,2));
+                it('8: set to 1 should set to 3 ', set(3,calc,1));
+            });
+            describe ('4: set inc dec cobination:', () => {
+                it('1: set to 0', set(0,calc,0));
+                it('2: inc should go up to 4', inc(4,calc));
+                it('3: dec should go down to 0', dec(0,calc));
+                it('4: dec should stay on 0', dec(0,calc));
+                it('5: set to 9 should set 9', set(9,calc, 9));
+                it('6: inc should go to 10 ', inc(10,calc));
+                it('7: set to 1 should set to 3 ', set(3,calc,1));
+                it('8: inc should go up from 3 to 4 ', inc(4,calc));
+                it('9: set to 5 should set to 5 ', set(5,calc,5));
+                it('10: dec should go down from 5 to 4', dec(4,calc));
+            });
+        });
 
-// // private readonly inventory: number, private cq: number, private factor: number,private min: number)
+        describe ('CASE 3:  case > Inventory. inv = 5 case = 6,factor = 1, min = 2', () => {
+            let  config: UomItemConfiguration = {'UOMKey': "", 'Case':6, 'Min': 2, 'Factor':1};
+            let inventory: number = 5;
+            let calc = new QuantityCalculator(config,inventory,caseBehavior,minBehavior,invBehavior);
+            describe ('1: inc tests:', () => {
+                it('1: inc should stay on 0', inc(0,calc));
+            });
+            describe ('2: dec tests:', () => {
+                it('1: dec should stay on 0', dec(0,calc));
+            });
+            describe ('3: set tests:', () => {
+                it('1: set to 0 should be 0', set(0,calc,0));
+                it('2: set to 5 should be 5', set(5,calc,5));
+                it('3: set to 5 should be 5', set(5,calc,5));
+                it('4: set to 11 should set 5', set(5,calc,11));
+                it('5: set to -1 should set 0', set(0,calc, -1));
+                it('6: set to 999 should set to 5 ', set(5,calc,999));
+                it('7: set to 2 should set to 2 ', set(2,calc,2));
+                it('8: set to 1 should set to 2 ', set(2,calc,1));
+            });
+            describe ('4: set inc dec cobination:', () => {
+                it('1: set to 0', set(0,calc,0));
+                it('2: inc should stay 0', inc(0,calc));
+                it('3: dec should stay 0', dec(0,calc));
+                it('4: dec should stay on 0', dec(0,calc));
+                it('5: set to 9 should set 5', set(5,calc, 9));
+                it('6: inc should go to 0 ', inc(0,calc));
+                it('7: set to 1 should set to 2 ', set(2,calc,1));
+                it('8: inc should go to 0 ', inc(0,calc));
+                it('9: set to 5 should set to 5 ', set(5,calc,5));
+                it('10: dec should go down from 5 to 0', dec(0,calc));
+                it('11: set to 1 should set to 2 ', set(2,calc,1));
+                it('12: dec should go down from 2 to 0', dec(0,calc));
+            });
+        });
 
-//     describe('Basic functionality', () => {
-//      //basic operations
-//         describe('simple singles', () => {
-//         //working with singles
-//             const calculator = new QuantityCalculator(2,1,1,0);
-     
-//             describe('Incriment', () => {
-//             //inc 
-//                 it ('increment should go up by 1', () => {
-//                     expect(calculator.getIncrementValue()).is.a('number').that.is.equal(1);
-//                 })
+        describe ('CASE 4:  case * factor > inv. inv = 9 case = 6,factor = 2, min = 2', () => {
+            let  config: UomItemConfiguration = {'UOMKey': "", 'Case':6, 'Min': 2, 'Factor':2};
+            let inventory: number = 9;
+            let calc = new QuantityCalculator(config,inventory,caseBehavior,minBehavior,invBehavior);
+            describe ('1: inc tests:', () => {
+                it('1: inc should stay on 0', inc(0,calc));
+            });
+            describe ('2: dec tests:', () => {
+                it('1: dec should stay on 0', dec(0,calc));
+            });
+            describe ('3: set tests:', () => {
+                it('1: set to 0 should be 0', set(0,calc,0));
+                it('2: set to 5 should be 4', set(4,calc,5));
+                it('3: set to 5 should be 4', set(4,calc,5));
+                it('4: set to 11 should set 4', set(4,calc,11));
+                it('5: set to -1 should set 0', set(0,calc, -1));
+                it('6: set to 999 should set to 4 ', set(4,calc,999));
+                it('7: set to 2 should set to 2 ', set(2,calc,2));
+                it('8: set to 1 should set to 2 ', set(2,calc,1));
+            });
+            describe ('4: set inc dec cobination:', () => {
+                it('1: set to 0', set(0,calc,0));
+                it('2: inc should stay 0', inc(0,calc));
+                it('3: dec should stay 0', dec(0,calc));
+                it('4: dec should stay on 0', dec(0,calc));
+                it('5: set to 9 should set 4', set(4,calc, 9));
+                it('6: inc should go to 0 ', inc(0,calc));
+                it('7: set to 1 should set to 2 ', set(2,calc,1));
+                it('8: inc should go to 0 ', inc(0,calc));
+                it('9: set to 5 should set to 4 ', set(4,calc,5));
+                it('10: dec should go down from 4 to 0', dec(0,calc));
+                it('11: set to 1 should set to 2 ', set(2,calc,1));
+                it('12: dec should go down from 2 to 0', dec(0,calc));
+            });
+        });
 
-//                 it ('increment should go up by 1 again', () => {
-//                     expect(calculator.getIncrementValue()).is.a('number').that.is.equal(2);
-//                 })
-//                 //inventory = 2 so no increment expected
-//                 it ('increment should not work, curr val supposed to be 2', () => {
-//                     expect(calculator.getIncrementValue()).is.a('number').that.is.equal(2);
-//                 })
-//             }),
+        describe ('CASE 5:  case = 0. inv = 3,factor = 1, min = 2', () => {
+            let  config: UomItemConfiguration = {'UOMKey': "", 'Case':0, 'Min': 2, 'Factor':1};
+            let inventory: number = 3;
+            let calc = new QuantityCalculator(config,inventory,caseBehavior,minBehavior,invBehavior);
+            describe ('1: inc tests:', () => {
+                it('1: inc should go to 2', inc(2,calc));
+            });
+            describe ('2: dec tests:', () => {
+                it('1: dec should stay on 2', dec(2,calc));
+            });
+            describe ('3: set tests:', () => {
+                it('1: set to 0 should be 0', set(0,calc,0));
+                it('2: set to 5 should be 3', set(3,calc,5));
+                it('3: set to 5 should be 3', set(3,calc,5));
+                it('4: set to 11 should set 3', set(3,calc,11));
+                it('5: set to -1 should set 0', set(0,calc, -1));
+                it('6: set to 999 should set to 3 ', set(3,calc,999));
+                it('7: set to 2 should set to 2 ', set(2,calc,2));
+                it('8: set to 1 should set to 2 ', set(2,calc,1));
+            });
+            describe ('4: set inc dec cobination:', () => {
+                it('1: set to 0', set(0,calc,0));
+                it('2: inc should go to 2', inc(2,calc));
+                it('3: inc should stay 2', inc(2,calc));
+                it('4: dec should stay 2', dec(2,calc));
+                it('5: dec should stay on 2', dec(2,calc));
+                it('6: set to 9 should set 3', set(3,calc, 9));
+                it('7: inc should stay on 3 ', inc(3,calc));
+                it('8: set to 1 should set to 2 ', set(2,calc,1));
+                it('9: inc should stay on 2 ', inc(2,calc));
+                it('10: set to 5 should set to 3 ', set(3,calc,5));
+                it('11: dec should stay on 3', dec(3,calc));
+                it('12: set to 1 should set to 2 ', set(2,calc,1));
+                it('13: dec should stay on 2', dec(2,calc));
+            });
+        });
+       
+     });
+    describe('Test 2: Inv= fix, Case = fix, Min = DoNothing', ()=>{
+        let invBehavior:InventoryAction = 'Fix';
+        let caseBehavior: InventoryAction = 'Fix';
+        let minBehavior: InventoryAction = 'DoNothing';
+  
+        describe ('CASE 1: default inc,dec,set with inv = 10 case,factor = 1, min = 0', () => {
+            let  config: UomItemConfiguration = {'UOMKey': "", 'Case':1, 'Min': 0, 'Factor':1};
+            let inventory: number = 10;
+            let calc = new QuantityCalculator(config,inventory,caseBehavior,minBehavior,invBehavior);
+            describe ('1: inc tests:', () => {
+                it('1: inc should go up from 0 to 1', inc(1,calc));
+                it('2: inc should go up from 1 to 2', inc(2,calc));
+                it('3: inc should go up from 2 to 3', inc(3,calc));
+                it('4: inc should go up from 3 to 4', inc(4,calc));
+                it('5: inc should go up from 4 to 5', inc(5,calc));
+                it('6: inc should go up from 5 to 6', inc(6,calc));
+                it('7: inc should go up from 6 to 7', inc(7,calc));
+                it('8: inc should go up from 7 to 8', inc(8,calc));
+                it('9: inc should go up from 8 to 9', inc(9,calc));
+                it('10: inc should go up from 9 to 10', inc(10,calc));
+                it('11: inc should stay on 10', inc(10,calc));
+            });
+            describe ('2: dec tests:', () => {
+                it('1: dec should go down from 10 to 9', dec(9,calc));
+                it('2: dec should go down from 9 to 8', dec(8,calc));
+                it('3: dec should go down from 8 to 7', dec(7,calc));
+                it('4: dec should go down from 7 to 6', dec(6,calc));
+                it('5: dec should go down from 6 to 5', dec(5,calc));
+                it('6: dec should go down from 5 to 4', dec(4,calc));
+                it('7: dec should go down from 4 to 3', dec(3,calc));
+                it('8: dec should go down from 3 to 2', dec(2,calc));
+                it('9: dec should go down from 2 to 1', dec(1,calc));
+                it('10: dec should go down from 1 to 0', dec(0,calc));
+                it('11: dec should stay on 0', dec(0,calc));
+            });
+            describe ('3: set tests:', () => {
+                it('1: set to 0', set(0,calc,0));
+                it('2: set to 10', set(10,calc,10));
+                it('3: set to 5', set(5,calc,5));
+                it('4: set to 11 should set 10', set(10,calc,11));
+                it('5: set to -1 should set 0', set(0,calc, -1));
+                it('6: set to 999 should set to 10 ', set(10,calc,999));
+                it('7: set to 10 should set to 10 ', set(10,calc,999));
+            });
+            describe ('4: set inc dec cobination:', () => {
+                it('1: set to 0', set(0,calc,0));
+                it('2: inc should go up to 1', inc(1,calc));
+                it('3: dec should go down to 0', dec(0,calc));
+                it('4: dec should stay on 0', dec(0,calc));
+                it('5: set to 9 should set 9', set(9,calc, 9));
+                it('6: inc should go to 10 ', inc(10,calc));
+                it('7: set to 999 should set to 10 ', set(10,calc,999));
+                it('8: inc should stay on 10 ', inc(10,calc));
+            });
+        });
 
-//             describe('decrimenmt', () => {
-//               //decrement 
-//               it ('decrement test 1:   decrement should go down by 1', () => {
-//                 expect(calculator.getDecrementValue()).is.a('number').that.is.equal(1);
-//             })
+        describe ('CASE 2: inv=10, case = 2, min = 3, factor = 1', () => {
+            let  config: UomItemConfiguration = {'UOMKey': "", 'Case':2, 'Min': 3, 'Factor':1};
+            let inventory: number = 10;
+            let calc = new QuantityCalculator(config,inventory,caseBehavior,minBehavior,invBehavior);
+            describe ('1: inc tests:', () => {
+                it('1: inc should go up from 0 to 4', inc(4,calc));
+                it('2: inc should go up from 4 to 6', inc(6,calc));
+                it('3: inc should go up from 6 to 8', inc(8,calc));
+                it('4: inc should go up from 8 to 10', inc(10,calc));
+                it('5: inc should stay 10', inc(10,calc));
+            });
+            describe ('2: dec tests:', () => {
+                it('1: dec should go down from 10 to 8', dec(8,calc));
+                it('2: dec should go down from 8 to 6', dec(6,calc));
+                it('3: dec should go down from 6 to 4', dec(4,calc));
+                it('4: dec should go down from 4 to 0', dec(0,calc));
+                it('5: dec should stay 0', dec(0,calc));
+            });
+            describe ('3: set tests:', () => {
+                it('1: set to 0', set(0,calc,0));
+                it('2: set to 10', set(10,calc,10));
+                it('3: set to 5 should set to 6', set(6,calc,6));
+                it('4: set to 11 should set 10', set(10,calc,11));
+                it('5: set to -1 should set 0', set(0,calc, -1));
+                it('6: set to 999 should set to 10 ', set(10,calc,999));
+                it('7: set to 10 should set to 10 ', set(10,calc,999));
+            });
+            describe ('4: set inc dec cobination:', () => {
+                it('1: set to 0', set(0,calc,0));
+                it('2: inc should go up to 4', inc(4,calc));
+                it('3: dec should go down to 0', dec(0,calc));
+                it('4: dec should stay on 0', dec(0,calc));
+                it('5: set to 9 should set 10', set(10,calc, 10));
+                it('6: inc should go to 10 ', inc(10,calc));
+                it('7: set to 999 should set to 10 ', set(10,calc,999));
+                it('8: inc should stay on 10 ', inc(10,calc));
+                it('9: set to 2 should set to 2 ', set(2,calc,2));
+                it('10: inc should go up to 4 ', inc(4,calc));
+                it('11: set to 1 should set to 2 ', set(2,calc,2));
+                it('12: inc should go up to 4 ', inc(4,calc));
 
-//             it ('decrement test 2:  decrement should go down by 1', () => {
-//                 expect(calculator.getDecrementValue()).is.a('number').that.is.equal(0);
-//             })
+            });
+        });
 
-//             it ('decrement test 3:   should stay 0 ', () => {
-//                 expect(calculator.getDecrementValue()).is.a('number').that.is.equal(0);
-//             })
+        describe ('CASE 3: min > inv inv=5, case = 2, min = 6, factor = 1', () => {
+            let  config: UomItemConfiguration = {'UOMKey': "", 'Case':2, 'Min': 6, 'Factor':1};
+            let inventory: number = 5;
+            let calc = new QuantityCalculator(config,inventory,caseBehavior,minBehavior,invBehavior);
+            describe ('1: inc tests:', () => {
+                it('1: inc should stay 0', inc(0,calc));
+            });
+            describe ('2: dec tests:', () => {
+                it('1: dec should stay 0', dec(0,calc));
+            });
+            describe ('3: set tests:', () => {
+                it('1: set to 0', set(0,calc,0));
+                it('2: set to 10', set(4,calc,10));
+                it('3: set to 5 should set to 4', set(4,calc,5));
+                it('4: set to 11 should set 4', set(4,calc,11));
+                it('5: set to -1 should set 0', set(0,calc, -1));
+                it('6: set to 999 should set to 4 ', set(4,calc,999));
+                it('7: set to 10 should set to 4 ', set(4,calc,999));
+                it('8: set to 1 should set to 2', set(2,calc,1));
+            });
+            describe ('4: set inc dec cobination:', () => {
+                it('1: set to 0', set(0,calc,0));
+                it('2: inc should stay 0', inc(0,calc));
+                it('3: dec should stay 0', dec(0,calc));
+                it('4: dec should stay on 0', dec(0,calc));
+                it('5: set to 9 should set 4', set(4,calc, 9));
+                it('6: inc should set to 0', inc(0,calc));
+                it('7: set to 999 should set to 4 ', set(4,calc,999));
+                it('8: inc should stay to 0 ', inc(0,calc));
+                it('9: set to 2 should set to 2 ', set(2,calc,2));
+                it('10: inc should set to 0 ', inc(0,calc));
+                it('11: set to 1 should set to 2 ', set(2,calc,1));
+                it('12: inc should go to 0 ', inc(0,calc));
+                it('13: set to 3 should set to 4 ', set(4,calc,3));
+                it('14: dec should go down to 0', dec(0,calc));
+                it('15: dec should go to  0', dec(0,calc));
 
-//             }),
-//             describe('simple Set singles' , () => {
-//                 it ('set to 2 ', () => {
-//                     expect(calculator.setVal(2)).is.a('number').that.is.equal(2);
-//                 })
-//                 it('set to -1 expected 0 ', ()=>{
-//                     expect(calculator.setVal(-1)).is.a('number').that.is.equal(0);
-//                 })
-//             })
-//         }),
+            });
+        });
 
+    });
 
-//         //calc, min = 2 , cq = 4, factor = 2, inv = 40.
-//         //that should test the case that min < cq and therefore the real min is cq;
-        
-// // private readonly inventory: number, private cq: number, private factor: number,private min: number)
+    describe('Test 4: Inv= fix, Case = DoNothing, Min = DoNothing', ()=>{
+        let invBehavior:InventoryAction = 'Fix';
+        let caseBehavior: InventoryAction = 'DoNothing';
+        let minBehavior: InventoryAction = 'DoNothing';
+  
+        describe ('CASE 1: default inc,dec,set with inv = 10 case,factor = 1, min = 0', () => {
+            let  config: UomItemConfiguration = {'UOMKey': "", 'Case':1, 'Min': 0, 'Factor':1};
+            let inventory: number = 10;
+            let calc = new QuantityCalculator(config,inventory,caseBehavior,minBehavior,invBehavior);
+            describe ('1: inc tests:', () => {
+                it('1: inc should go up from 0 to 1', inc(1,calc));
+                it('2: inc should go up from 1 to 2', inc(2,calc));
+                it('3: inc should go up from 2 to 3', inc(3,calc));
+                it('4: inc should go up from 3 to 4', inc(4,calc));
+                it('5: inc should go up from 4 to 5', inc(5,calc));
+                it('6: inc should go up from 5 to 6', inc(6,calc));
+                it('7: inc should go up from 6 to 7', inc(7,calc));
+                it('8: inc should go up from 7 to 8', inc(8,calc));
+                it('9: inc should go up from 8 to 9', inc(9,calc));
+                it('10: inc should go up from 9 to 10', inc(10,calc));
+                it('11: inc should stay on 10', inc(10,calc));
+            });
+            describe ('2: dec tests:', () => {
+                it('1: dec should go down from 10 to 9', dec(9,calc));
+                it('2: dec should go down from 9 to 8', dec(8,calc));
+                it('3: dec should go down from 8 to 7', dec(7,calc));
+                it('4: dec should go down from 7 to 6', dec(6,calc));
+                it('5: dec should go down from 6 to 5', dec(5,calc));
+                it('6: dec should go down from 5 to 4', dec(4,calc));
+                it('7: dec should go down from 4 to 3', dec(3,calc));
+                it('8: dec should go down from 3 to 2', dec(2,calc));
+                it('9: dec should go down from 2 to 1', dec(1,calc));
+                it('10: dec should go down from 1 to 0', dec(0,calc));
+                it('11: dec should stay on 0', dec(0,calc));
+            });
+            describe ('3: set tests:', () => {
+                it('1: set to 0', set(0,calc,0));
+                it('2: set to 10', set(10,calc,10));
+                it('3: set to 5', set(5,calc,5));
+                it('4: set to 11 should set 10', set(10,calc,11));
+                it('5: set to -1 should set 0', set(0,calc, -1));
+                it('6: set to 999 should set to 10 ', set(10,calc,999));
+                it('7: set to 10 should set to 10 ', set(10,calc,999));
+            });
+            describe ('4: set inc dec cobination:', () => {
+                it('1: set to 0', set(0,calc,0));
+                it('2: inc should go up to 1', inc(1,calc));
+                it('3: dec should go down to 0', dec(0,calc));
+                it('4: dec should stay on 0', dec(0,calc));
+                it('5: set to 9 should set 9', set(9,calc, 9));
+                it('6: inc should go to 10 ', inc(10,calc));
+                it('7: set to 999 should set to 10 ', set(10,calc,999));
+                it('8: inc should stay on 10 ', inc(10,calc));
+            });
+        });
 
-//         describe('min < cq', () => {
+        describe ('CASE 2: inv=10, case = 2, min = 3, factor = 1', () => {
+            let  config: UomItemConfiguration = {'UOMKey': "", 'Case':2, 'Min': 3, 'Factor':1};
+            let inventory: number = 10;
+            let calc = new QuantityCalculator(config,inventory,caseBehavior,minBehavior,invBehavior);
+            describe ('1: inc tests:', () => {
+                it('1: inc should go up from 0 to 4', inc(4,calc));
+                it('2: inc should go up from 4 to 6', inc(6,calc));
+                it('3: inc should go up from 6 to 8', inc(8,calc));
+                it('4: inc should go up from 8 to 10', inc(10,calc));
+                it('5: inc should stay 10', inc(10,calc));
+            });
+            describe ('2: dec tests:', () => {
+                it('1: dec should go down from 10 to 8', dec(8,calc));
+                it('2: dec should go down from 8 to 6', dec(6,calc));
+                it('3: dec should go down from 6 to 4', dec(4,calc));
+                it('4: dec should go down from 4 to 0', dec(0,calc));
+                it('5: dec should stay 0', dec(0,calc));
+            });
+            describe ('3: set tests:', () => {
+                it('1: set to 0', set(0,calc,0));
+                it('2: set to 10', set(10,calc,10));
+                it('3: set to 5 should set to 5', set(5,calc,5));
+                it('4: set to 11 should set 10', set(10,calc,11));
+                it('5: set to -1 should set 0', set(0,calc, -1));
+                it('6: set to 999 should set to 10 ', set(10,calc,999));
+                it('7: set to 7 should set to 7 ', set(7,calc,7));
+            });
+            describe ('4: set inc dec cobination:', () => {
+                it('1: set to 0', set(0,calc,0));
+                it('2: inc should go up to 4', inc(4,calc));
+                it('3: dec should go down to 0', dec(0,calc));
+                it('4: dec should stay on 0', dec(0,calc));
+                it('5: set to 9 should set 9', set(9,calc, 9));
+                it('6: inc should go to 10 ', inc(10,calc));
+                it('7: set to 999 should set to 10 ', set(10,calc,999));
+                it('8: inc should stay on 10 ', inc(10,calc));
+                it('9: set to 2 should set to 2 ', set(2,calc,2));
+                it('10: inc should go up to 4 ', inc(4,calc));
+                it('11: set to 1 should set to 1 ', set(1,calc,1));
+                it('12: inc should go up to 4 ', inc(4,calc));
+                it('13: inc should go up to 6 ', inc(6,calc));
+                it('14: inc should go up to 8 ', inc(8,calc));
+                it('15: set to 1 should set 1', set(1,calc, 1));
+                it('16: inc should go up to 4 ', inc(4,calc));
+                it('17: set to 1 should set 1', set(1,calc, 1));
+                it('18: dec should go down to 0', dec(0,calc));
+            });
+        });
+
+        describe ('CASE 3: inv=7, case = 4, min = 3, factor = 1', () => {
+            let  config: UomItemConfiguration = {'UOMKey': "", 'Case':4, 'Min': 5, 'Factor':1};
+            let inventory: number = 7;
+            let calc = new QuantityCalculator(config,inventory,caseBehavior,minBehavior,invBehavior);
+            describe ('1: combine set inc dec:', () => {
+                it('1: inc should stay 0', inc(0,calc));
+                it('2: dec should stay 0', dec(0,calc));
+                it('3: set to 1 should set 1', set(1,calc, 1));
+                it('4: inc should go to 0', inc(0,calc));
+                it('5: set to 7 should set 7', set(7,calc, 7));
+                it('6: dec should go to 0', dec(0,calc));
+
             
-//             const calculator = new QuantityCalculator(40,4,4,0);
-//             describe('Incriment', () => {
-//                 //inc 
-//                     it ('increment should go up by 4', () => {
-//                         expect(calculator.getIncrementValue()).is.a('number').that.is.equal(4);
-//                     })
-    
-//                     it ('increment should go up by 4 again', () => {
-//                         expect(calculator.getIncrementValue()).is.a('number').that.is.equal(8);
-//                     })
-//                     //inventory = 2 so no increment expected
-//                     it ('increment should go up 2', () => {
-//                         expect(calculator.getIncrementValue()).is.a('number').that.is.equal(8);
-//                     })
-//                 }),
-//                 describe('decrement', () => {
-//                     //decr.. 
-//                         it ('decrement should go down by 4', () => {
-//                             expect(calculator.getDecrementValue()).is.a('number').that.is.equal(4);
-//                         })
-        
-//                         it ('decrement should go up down 2, cause cq=4 and curr = 6', () => {
-//                             expect(calculator.getDecrementValue()).is.a('number').that.is.equal(0);
-//                         })
-                        
-//                         it ('Decrement should down by 4', () => {
-//                             expect(calculator.getDecrementValue()).is.a('number').that.is.equal(0);
-//                         })
-//                     }),
-//                     describe('set', () => {
-//                         //set 
-//                             it ('set should set 4. input:2 cq:4 => 4', () => {
-//                                 expect(calculator.setVal(2)).is.a('number').that.is.equal(4);
-//                             })
-            
-//                             it ('set neg value should be 0', () => {
-//                                 expect(calculator.setVal(0)).is.a('number').that.is.equal(0);
-//                             })
-                            
-//                             it ('set to 21 with factor 2 should be 42 thats over the max so val expected to be 40', () => {
-//                                 expect(calculator.setVal(21)).is.a('number').that.is.equal(8);
-//                             })
-//                         })
+            });
+        });
+    });
 
-//         }),
+    describe('Test 5: factor = 0 all fix', ()=>{
+        let invBehavior:InventoryAction = 'Fix';
+        let caseBehavior: InventoryAction = 'Fix';
+        let minBehavior: InventoryAction = 'Fix';
+  
+        describe ('CASE 1: factor = 0 inv = 8 case = 2 min = 3', () => {
+            let  config: UomItemConfiguration = {'UOMKey': "", 'Case':2, 'Min': 3, 'Factor':0};
+            let inventory: number = 8;
+            let calc = new QuantityCalculator(config,inventory,caseBehavior,minBehavior,invBehavior);
+            describe ('1: inc tests:', () => {
+                it('1: inc should go up from 0 to 4', inc(4,calc));
+                it('2: inc should go up from 4 to 6', inc(6,calc));
+                it('3: inc should go up from 6 to 8', inc(8,calc));
+                it('4: inc should stay 8', inc(8,calc));
+            });
+            describe ('2: dec tests:', () => {
+                it('1: dec should go down from 8 to 6', dec(6,calc));
+                it('2: dec should go down from 6 to 4', dec(4,calc));
+                it('3: dec should go down from 4 to 0', dec(0,calc));
+                it('4: inc should stay 0', dec(0,calc));
+            });
 
-        
-//         //from prd tables, will be alot sets tests.
-//         // private readonly inventory: number, private cq: number, private factor: number,private min: number)
-//         describe('table 1 tests', () => {
-            
-//             describe('line 3 singles', () => {
-//                 //inventoy = 999, factor = 1, case = 5 trying to set 3
-//                 const calculator = new QuantityCalculator(999,5,1,0);
-//                     it ('should be set to 5', () => {
-//                         expect(calculator.setVal(3)).is.a('number').that.is.equal(5);
-//                     })
-    
-//                     it ('increment, expected 10', () => {
-//                         expect(calculator.getIncrementValue()).is.a('number').that.is.equal(10);
-//                     })
-                  
-//                     it ('increment should be 15', () => {
-//                         expect(calculator.getIncrementValue()).is.a('number').that.is.equal(15);
-//                     })
-//                     it ('Decrement should be 10', () => {
-//                         expect(calculator.getDecrementValue()).is.a('number').that.is.equal(10);
-//                     })
-//                     it ('Decrement should be 5', () => {
-//                         expect(calculator.getDecrementValue()).is.a('number').that.is.equal(5);
-//                     })
-//                     it ('Decrement should be 0', () => {
-//                         expect(calculator.getDecrementValue()).is.a('number').that.is.equal(0);
-//                     })
+        });
+    });
 
-//                 }),
-//                 describe('line 5 singles', () => {
-//                     // private readonly inventory: number, private cq: number, private factor: number,private min: number)
-//                     //inventoy = 3, factor = 1, case = 2, min = 0 trying to set 2 should success
-//                     const calculator = new QuantityCalculator(3,2,1,0);
-//                         it ('should be set to 2', () => {
-//                             expect(calculator.setVal(2)).is.a('number').that.is.equal(2);
-//                         })
-        
-//                         it ('increment, expected stay 2, cause inventory is 3', () => {
-//                             expect(calculator.getIncrementValue()).is.a('number').that.is.equal(2);
-//                         })
-                      
-//                         it ('Decrement should be 0', () => {
-//                             expect(calculator.getDecrementValue()).is.a('number').that.is.equal(0);
-//                         })
-//                     }),
-//                     describe('minQty > inv', () => {
-//                         //inventoy = 5, factor = 1, case = 0, min = 6 
-//                         const calculator = new QuantityCalculator(5,0,1,6);
-//                             it ('set to 5 should failed, expected value 0', () => {
-//                                 expect(calculator.setVal(5)).is.a('number').that.is.equal(0);
-//                             })
-            
-//                             it ('increment, expected value is 0', () => {
-//                                 expect(calculator.getIncrementValue()).is.a('number').that.is.equal(0);
-//                             })
-                          
-//                             it ('Decrement should be 0', () => {
-//                                 expect(calculator.getDecrementValue()).is.a('number').that.is.equal(0);
-//                             })
-//                         }),
-//                         describe('min > case, round to 5x>6', () => {
-//                             //inventoy = 999, factor = 1, case = 5, min = 6 
-//                             const calculator = new QuantityCalculator(999,5,1,6);
-//                                 it ('set to 5 should set the value 10', () => {
-//                                     expect(calculator.setVal(5)).is.a('number').that.is.equal(10);
-//                                 })
-                
-//                                 it ('increment, expected value is 15', () => {
-//                                     expect(calculator.getIncrementValue()).is.a('number').that.is.equal(15);
-//                                 })
-                              
-//                                 it ('Decrement should be 10', () => {
-//                                     expect(calculator.getDecrementValue()).is.a('number').that.is.equal(10);
-//                                 })
-//                                 it ('Decrement should be 6', () => {
-//                                     expect(calculator.getDecrementValue()).is.a('number').that.is.equal(0);
-//                                 })
-//                                 it ('Decrement should be 0', () => {
-//                                     expect(calculator.getDecrementValue()).is.a('number').that.is.equal(0);
-//                                 })
-//                             }),
-                     
-//                                 describe('8x > inv', () => {
-//                                     //inventoy = 7, factor = 1, case = 8, min = 6 
-//                                     const calculator = new QuantityCalculator(7,8,1,6);
-//                                         it ('set to 1 , expected value 0', () => {
-//                                             expect(calculator.setVal(1)).is.a('number').that.is.equal(0);
-//                                         })
-                        
-//                                         it ('increment, expected value is 0', () => {
-//                                             expect(calculator.getIncrementValue()).is.a('number').that.is.equal(0);
-//                                         })
-                                      
-//                                         it ('Decrement should be 0', () => {
-//                                             expect(calculator.getDecrementValue()).is.a('number').that.is.equal(0);
-//                                         })
-//                                     })
-//          })
-//          describe('table 2 tests', () => {
-            
-//             describe('line 1 factor = 3', () => {
-//                 //inventoy = 997, factor = 3, case = 0 
-//                 const calculator = new QuantityCalculator(997,0,3,0);
-//                     it ('set to 1 , should be 1', () => {
-//                         expect(calculator.setVal(1)).is.a('number').that.is.equal(1);
-//                     })
-//                     // it ('get inventory , should be 994', () => {
-//                     //     expect(calculator.getc()).is.a('number').that.is.equal(994);
-//                     // })
-    
-//                     it ('increment, expected 2', () => {
-//                         expect(calculator.getIncrementValue()).is.a('number').that.is.equal(2);
-//                     })
-//                     // it ('get inventory , should be 991', () => {
-//                     //     expect(calculator.getInv()).is.a('number').that.is.equal(991);
-//                     // })
-                  
-//                     it ('set to 50', () => {
-//                         expect(calculator.setVal(50)).is.a('number').that.is.equal(50);
-//                     })
-//                     // it ('get inventory should be 849 ', () => {
-//                     //     expect(calculator.getInv()).is.a('number').that.is.equal(849);
-//                     // })
-//                     it ('set to 1', () => {
-//                         expect(calculator.setVal(1)).is.a('number').that.is.equal(1);
-//                     })
-//                     it ('Decrement should be 0', () => {
-//                         expect(calculator.getDecrementValue()).is.a('number').that.is.equal(0);
-//                     })
-
-//                 }),
-//                 describe('line 3 factor = 3', () => {
-//                     //inventoy = 997, factor = 3, case = 5 
-//                     const calculator = new QuantityCalculator(997,5,3,0);
-//                         it ('set to 1 , should be 5', () => {
-//                             expect(calculator.setVal(1)).is.a('number').that.is.equal(5);
-//                         })
-//                         // it ('get inventory , should be 992', () => {
-//                         //     expect(calculator.getInv()).is.a('number').that.is.equal(992);
-//                         // })
-        
-//                         it ('increment, expected 10', () => {
-//                             expect(calculator.getIncrementValue()).is.a('number').that.is.equal(10);
-//                         })
-//                         // it ('get inventory , should be 927', () => {
-//                         //     expect(calculator.getInv()).is.a('number').that.is.equal(927);
-//                         // })
-                      
-//                         it ('set to 300 should work', () => {
-//                             expect(calculator.setVal(300)).is.a('number').that.is.equal(300);
-//                         })
-//                         it ('inc , val should up to 305', () => {
-//                             expect(calculator.getIncrementValue()).is.a('number').that.is.equal(305);
-//                         })
-//                         it ('set to 400 should set to max', () => {
-//                             expect(calculator.setVal(400)).is.a('number').that.is.equal(330);
-//                         })
-//                         it ('set to 1 val should be 5', () => {
-//                             expect(calculator.setVal(1)).is.a('number').that.is.equal(5);
-//                         })
-//                         it ('Decrement should be 0', () => {
-//                             expect(calculator.getDecrementValue()).is.a('number').that.is.equal(0);
-//                         })
-//                         it ('Decrement should be 0', () => {
-//                             expect(calculator.getDecrementValue()).is.a('number').that.is.equal(0);
-//                         })
-    
-//                     }),
-//                     //start here tests with buy... 
-//                     describe('line 3 factor = 3', () => {
-//                         //inventoy = 997, factor = 3, case = 5 
-//                         const calculator = new QuantityCalculator(997,5,3,0);
-//                             it ('set to 1 , should be 5', () => {
-//                                 expect(calculator.setVal(1)).is.a('number').that.is.equal(5);
-//                                 calculator.buy();
-//                             })
-                            
-                            
-//                             it ('get inventory , should be 982', () => {
-//                                 expect(calculator.getInv()).is.a('number').that.is.equal(982);
-//                             })
-
-//                             it ('set to 1 , should be 5', () => {
-//                                 expect(calculator.setVal(1)).is.a('number').that.is.equal(5);
-//                             })
-            
-//                             it ('increment, expected 10', () => {
-//                                 expect(calculator.getIncrementValue()).is.a('number').that.is.equal(10);
-//                             })
-//                             // it ('get inventory , should be 927', () => {
-//                             //     expect(calculator.getInv()).is.a('number').that.is.equal(927);
-//                             // })
-                          
-//                             it ('set to 300 should work', () => {
-//                                 expect(calculator.setVal(300)).is.a('number').that.is.equal(300);
-//                             })
-//                             it ('inc , val should up to 305', () => {
-//                                 expect(calculator.getIncrementValue()).is.a('number').that.is.equal(305);
-//                             })
-//                             it ('set to 400 should set to max', () => {
-//                                 expect(calculator.setVal(400)).is.a('number').that.is.equal(325);
-//                             })
-//                             it ('set to 1 val should be 5', () => {
-//                                 expect(calculator.setVal(1)).is.a('number').that.is.equal(5);
-//                             })
-//                             it ('Decrement should be 0', () => {
-//                                 expect(calculator.getDecrementValue()).is.a('number').that.is.equal(0);
-//                             })
-//                             it ('Decrement should be 0', () => {
-//                                 expect(calculator.getDecrementValue()).is.a('number').that.is.equal(0);
-//                             })
-//                         })
-
-
-
-               
-               
-
-//         })
+});
 
 
 
 
 
 
-            
-//         })
 
-//     })
+
+
+
+
+
+
+
+
+
+
+
+
 
 

@@ -1,3 +1,4 @@
+// import { config } from 'process';
 
 import '@pepperi-addons/cpi-node'
 import { AtdConfiguration,
@@ -195,11 +196,11 @@ class UOMManager {
                 total += otherQuantity * otherUomConfig.Factor;
             }
             // what if inventory is not fix? todo: handle those cases
-            if (this.config.InventoryType === "Fix") {
+            if (true || this.config.InventoryType === "Fix") {
                 // todo: what if there is no inventory from integration
                 const inventory: number = (await dataObject?.getFieldValue(this.config.InventoryFieldID)) || 0;
                 const inventoryLeft = inventory - total;
-                const quantityCalc: QuantityCalculator = new QuantityCalculator(uomConfig,inventoryLeft,caseBehavior,minBehavior);
+                const quantityCalc: QuantityCalculator = new QuantityCalculator(uomConfig,inventoryLeft,caseBehavior,minBehavior,this.config.InventoryType);
                 switch(itemAction as ItemAction){
                     case ItemAction.Increment: 
                         quantityCalc.setCurr(value-1);
@@ -309,6 +310,29 @@ class UOMManager {
                         uq2 ? uq2.textColor = "#FF0000" : null;
                     }
                 }
+
+                if(this.config.CaseQuantityType === 'Color')
+                {
+                    const itemConfig = await this.getItemConfig(uiObject.dataObject!) 
+                    let uom: Uom | undefined = undefined;
+                    let cq = 0;
+                    if(dd1 && uq1) {
+                        uom = dd1.value ? uoms.get(dd1.value) : undefined;
+                        cq = this.getUomCaseQuantity(uom, itemConfig);
+                        if(Number(uq1.value) % cq != 0 ) {
+                            uq1.textColor = "#FF0000";
+                        }
+                    }
+                    if(dd2 && uq2) {
+                        uom = dd2.value ? uoms.get(dd2.value) : undefined;
+                        cq = this.getUomCaseQuantity(uom,itemConfig)
+                        if(Number(uq2.value) % cq  != 0) {
+                            uq2.textColor = "#FF0000";
+                        }
+                    }
+
+
+                }
                 if(this.config.MinQuantityType === 'Color') {
                     console.log('min quantity action is Color');
                     const itemConfig = await this.getItemConfig(uiObject.dataObject!)
@@ -318,7 +342,7 @@ class UOMManager {
                         uom = dd1.value ? uoms.get(dd1.value) : undefined;
                         minQuantity = this.getUomMinQuantity(uom, itemConfig);
                         console.log('checking uq1. value is:', uq1.value, 'min quantity is:', minQuantity);
-                        if(Number(uq1.value) < minQuantity) {
+                        if(Number(uq1.value) < minQuantity && Number(uq1.value) != 0) {
                             uq1.textColor = "#FF0000";
                         }
                     }
@@ -326,7 +350,7 @@ class UOMManager {
                         uom = dd2.value ? uoms.get(dd2.value) : undefined;
                         minQuantity = this.getUomMinQuantity(uom, itemConfig);
                         console.log('checking uq1. value is:', uq2.value, 'min quantity is:', minQuantity);
-                        if(Number(uq2.value) < minQuantity) {
+                        if(Number(uq2.value) < minQuantity && Number(uq2.value) != 0) {
                             uq2.textColor = "#FF0000";
                         }
                     }
