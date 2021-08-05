@@ -81,7 +81,6 @@ class UOMManager {
     //todo
     const itemConfig = await this.getItemConfig(uiObject.dataObject!);
     const inventory: number = (await dataObject?.getFieldValue(this.config.InventoryFieldID)) || 0;
-    // debugger
     const total: number = (await dataObject?.getFieldValue(UNIT_QUANTITY)) || 0;
     let uom: Uom | undefined = undefined;
     let ddArr = [dd1,dd2];
@@ -100,7 +99,7 @@ class UOMManager {
                 if(calc.toColor(Number(uq1.value), total))
                 {
                     uq1 ? uq1.textColor = "#FF0000" : null;
-                    // uq2 ? uq2.textColor = "#FF0000" : null;
+                    
                 }
             }
         }
