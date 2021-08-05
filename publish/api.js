@@ -2,21 +2,23 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-var perf_hooks = require('perf_hooks');
 var Stream = require('stream');
 var http = require('http');
 var Url = require('url');
 var https = require('https');
 var zlib = require('zlib');
+var perf_hooks = require('perf_hooks');
+var crypto = require('crypto');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
-var perf_hooks__default = /*#__PURE__*/_interopDefaultLegacy(perf_hooks);
 var Stream__default = /*#__PURE__*/_interopDefaultLegacy(Stream);
 var http__default = /*#__PURE__*/_interopDefaultLegacy(http);
 var Url__default = /*#__PURE__*/_interopDefaultLegacy(Url);
 var https__default = /*#__PURE__*/_interopDefaultLegacy(https);
 var zlib__default = /*#__PURE__*/_interopDefaultLegacy(zlib);
+var perf_hooks__default = /*#__PURE__*/_interopDefaultLegacy(perf_hooks);
+var crypto__default = /*#__PURE__*/_interopDefaultLegacy(crypto);
 
 var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
@@ -292,6 +294,42 @@ Object.defineProperty(exports, "__esModule", { value: true });
 
 unwrapExports(sync$1);
 
+var fieldBankCustomField = createCommonjsModule(function (module, exports) {
+Object.defineProperty(exports, "__esModule", { value: true });
+});
+
+unwrapExports(fieldBankCustomField);
+
+var item = createCommonjsModule(function (module, exports) {
+Object.defineProperty(exports, "__esModule", { value: true });
+});
+
+unwrapExports(item);
+
+var transactionLines = createCommonjsModule(function (module, exports) {
+Object.defineProperty(exports, "__esModule", { value: true });
+});
+
+unwrapExports(transactionLines);
+
+var contact = createCommonjsModule(function (module, exports) {
+Object.defineProperty(exports, "__esModule", { value: true });
+});
+
+unwrapExports(contact);
+
+var image = createCommonjsModule(function (module, exports) {
+Object.defineProperty(exports, "__esModule", { value: true });
+});
+
+unwrapExports(image);
+
+var subscription = createCommonjsModule(function (module, exports) {
+Object.defineProperty(exports, "__esModule", { value: true });
+});
+
+unwrapExports(subscription);
+
 var entities = createCommonjsModule(function (module, exports) {
 var __createBinding = (commonjsGlobal && commonjsGlobal.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -326,6 +364,12 @@ __exportStar(batchApiResponse, exports);
 __exportStar(_export, exports);
 __exportStar(catalog, exports);
 __exportStar(sync$1, exports);
+__exportStar(fieldBankCustomField, exports);
+__exportStar(item, exports);
+__exportStar(transactionLines, exports);
+__exportStar(contact, exports);
+__exportStar(image, exports);
+__exportStar(subscription, exports);
 // need something here that can be transpiled to js
 // all the other entities are interfaces
 class Entities {
@@ -367,6 +411,7 @@ class IterableEndpoint {
                 const newOptions = options;
                 newOptions.include_count = true;
                 let currentPage = 1;
+                const pageSize = options.page_size || 100;
                 let obj = { items: [], numOfPages: 1 };
                 return {
                     next: async () => {
@@ -374,14 +419,29 @@ class IterableEndpoint {
                             if (currentPage == 1) {
                                 newOptions.page = currentPage++;
                                 obj = await self.getFirstPage(newOptions);
+                                obj.items = obj.items.reverse();
                                 newOptions.include_count = false;
+                                // this means there is no 'X-Pepperi-Total-Pages' header (eg. ADAL)
+                                if (obj.numOfPages === 0) {
+                                    // the items on first page are less than the page size
+                                    // this means that there are no more pages
+                                    if (obj.items.length < pageSize) {
+                                        obj.numOfPages = 1;
+                                    }
+                                }
                             }
-                            else if (currentPage <= obj.numOfPages) {
+                            else if (obj.numOfPages === 0 || currentPage <= obj.numOfPages) {
                                 newOptions.page = currentPage++;
-                                obj.items = await self.find(newOptions);
+                                obj.items = (await self.find(newOptions)).reverse();
+                                if (obj.numOfPages === 0) {
+                                    // we might have reached the end and don't want to call one extra time
+                                    if (obj.items.length < pageSize) {
+                                        obj.numOfPages = currentPage - 1;
+                                    }
+                                }
                             }
                         }
-                        const retItem = obj.items.length > 0 ? obj.items.shift() : undefined;
+                        const retItem = obj.items.length > 0 ? obj.items.pop() : undefined;
                         if (retItem) {
                             return { value: retItem, done: false };
                         }
@@ -427,6 +487,25 @@ class Endpoint extends IterableEndpoint {
         this.service = service;
         this.endpoint = endpoint;
     }
+    async count(options = {}) {
+        let url = '/totals';
+        url += this.getEndpointURL();
+        const query = Endpoint.encodeQueryParams(Object.assign({ select: 'count(InternalID) as count' }, options));
+        url = query ? url + '?' + query : url;
+        const countObject = await this.service.get(url);
+        if (options.group_by) {
+            // Return an object of 'group_by' values and 'count' values.
+            const groupedCountObjects = {};
+            countObject.forEach((item) => {
+                groupedCountObjects[item[options.group_by || '']] = item['count'];
+            });
+            return groupedCountObjects;
+        }
+        else {
+            // Returns just a number.
+            return countObject && countObject.length == 1 ? countObject[0].count : 0;
+        }
+    }
     async get(id) {
         let url = this.getEndpointURL();
         url += '/' + id;
@@ -442,7 +521,7 @@ class Endpoint extends IterableEndpoint {
         const body = {
             fields: options.fields ? options.fields.join(',') : undefined,
             where: options.where,
-            orderBy: options.orderBy,
+            order_by: options.order_by,
             page: options.page,
             page_size: options.page_size,
             include_nested: options.include_nested,
@@ -459,6 +538,16 @@ class Endpoint extends IterableEndpoint {
             .delete(url)
             .then((res) => res.text())
             .then((res) => (res ? JSON.parse(res) : ''));
+    }
+    uuid(uuid) {
+        const service = this.service;
+        let url = this.getEndpointURL();
+        url += '/uuid/' + uuid;
+        return {
+            get() {
+                return service.get(url);
+            },
+        };
     }
     static encodeQueryParams(params) {
         const ret = [];
@@ -582,6 +671,11 @@ class TableEndpoint extends endpoint_1.default {
             get: async () => {
                 return await this.service.get(`/addons/data/${this.addonUUID}/${this.tableName}/${keyName}`);
             },
+            hardDelete: async (force = false) => {
+                return await this.service.post(`/addons/data/${this.addonUUID}/${this.tableName}/${keyName}/hard_delete`, {
+                    Force: force,
+                });
+            },
         };
     }
 }
@@ -628,6 +722,9 @@ class CodeJobEndpoint {
         this.async = async;
     }
     async find(includeDeleted = false) {
+        return await this.get(includeDeleted);
+    }
+    async get(includeDeleted = false) {
         return await this.service.get(`/code_jobs/${this.uuid}?include_deleted=${includeDeleted}`);
     }
     async publish(body) {
@@ -887,6 +984,73 @@ exports.FileStorageEndpoint = FileStorageEndpoint;
 unwrapExports(fileStorage);
 fileStorage.FileStorageEndpoint;
 
+var dataViews = createCommonjsModule(function (module, exports) {
+var __importDefault = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.DataViewsEndpoint = void 0;
+const endpoint_1 = __importDefault(endpoint);
+class DataViewsEndpoint extends endpoint_1.default {
+    constructor(service) {
+        super(service, '/meta_data/data_views');
+        this.fieldBank = (fieldBankUUID) => {
+            const service = this.service;
+            return {
+                customFields: new CustomFields(service, fieldBankUUID),
+            };
+        };
+    }
+}
+exports.DataViewsEndpoint = DataViewsEndpoint;
+class CustomFields {
+    constructor(service, fieldBankUUID) {
+        this.service = service;
+        this.fieldBankUUID = fieldBankUUID;
+        this.url = `/meta_data/data_views/field_bank/${this.fieldBankUUID}/custom_fields`;
+    }
+    key(keyName) {
+        return {
+            get: async () => {
+                return await this.service.get(`${this.url}/${keyName}`);
+            },
+        };
+    }
+    async get() {
+        return await this.service.get(this.url);
+    }
+    async upsert(body) {
+        return await this.service.post(this.url, body);
+    }
+}
+});
+
+unwrapExports(dataViews);
+dataViews.DataViewsEndpoint;
+
+var notification = createCommonjsModule(function (module, exports) {
+var __importDefault = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.NotificationEndpoint = void 0;
+const endpoint_1 = __importDefault(endpoint);
+class NotificationEndpoint {
+    constructor(service) {
+        this.service = service;
+        this.subscriptions = new endpoint_1.default(this.service, '/notification/subscriptions');
+    }
+    async publish(body) {
+        const url = '/notification/publish';
+        return await this.service.post(url, body);
+    }
+}
+exports.NotificationEndpoint = NotificationEndpoint;
+});
+
+unwrapExports(notification);
+notification.NotificationEndpoint;
+
 var endpoints = createCommonjsModule(function (module, exports) {
 var __createBinding = (commonjsGlobal && commonjsGlobal.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -906,6 +1070,8 @@ __exportStar(maintenance, exports);
 __exportStar(auditLogs, exports);
 __exportStar(sync, exports);
 __exportStar(fileStorage, exports);
+__exportStar(dataViews, exports);
+__exportStar(notification, exports);
 });
 
 unwrapExports(endpoints);
@@ -2556,16 +2722,31 @@ var __importDefault = (commonjsGlobal && commonjsGlobal.__importDefault) || func
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.papi_fetch = exports.papi_performance = void 0;
-
+exports.papi_fetch = exports.getPerformance = void 0;
 const node_fetch_1 = __importDefault(require$$0);
-exports.papi_performance = typeof window !== 'undefined' ? window.performance : perf_hooks__default['default'].performance;
+function getPerformance() {
+    var _a;
+    try {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        if (commonjsGlobal != undefined) {
+            return (_a = perf_hooks__default['default']) === null || _a === void 0 ? void 0 : _a.performance;
+        }
+    }
+    catch (_b) { }
+    try {
+        if (window != undefined) {
+            return window === null || window === void 0 ? void 0 : window.performance;
+        }
+    }
+    catch (_c) { }
+}
+exports.getPerformance = getPerformance;
 exports.papi_fetch = typeof window !== 'undefined' ? window.fetch.bind(window) : node_fetch_1.default;
 });
 
 unwrapExports(papiModule);
 papiModule.papi_fetch;
-papiModule.papi_performance;
+papiModule.getPerformance;
 
 var papiClient = createCommonjsModule(function (module, exports) {
 var __createBinding = (commonjsGlobal && commonjsGlobal.__createBinding) || (Object.create ? (function(o, m, k, k2) {
@@ -2601,7 +2782,7 @@ class PapiClient {
             type: (typeObject) => {
                 return new endpoints.TypeMetaData(this, typeObject);
             },
-            dataViews: new endpoint_1.default(this, '/meta_data/data_views'),
+            dataViews: new endpoints.DataViewsEndpoint(this),
             pepperiObjects: new endpoint_1.default(this, '/meta_data/pepperiObjects'),
         };
         this.userDefinedTables = new endpoint_1.default(this, '/user_defined_tables');
@@ -2622,6 +2803,11 @@ class PapiClient {
         this.application = {
             sync: new endpoints.SyncEndpoint(this),
         };
+        this.items = new endpoint_1.default(this, '/items');
+        this.transactionLines = new endpoint_1.default(this, '/transaction_lines');
+        this.contacts = new endpoint_1.default(this, '/contacts');
+        this.images = new endpoint_1.default(this, '/images');
+        this.notification = new endpoints.NotificationEndpoint(this);
     }
     async get(url) {
         return this.apiCall('GET', url)
@@ -2654,11 +2840,13 @@ class PapiClient {
         if (this.options.actionUUID) {
             options.headers['X-Pepperi-ActionID'] = this.options.actionUUID;
         }
-        const t0 = papiModule.papi_performance.now();
+        const performance = papiModule.getPerformance();
+        const t0 = performance === null || performance === void 0 ? void 0 : performance.now();
         const res = await papiModule.papi_fetch(fullURL, options);
-        const t1 = papiModule.papi_performance.now();
+        const t1 = performance === null || performance === void 0 ? void 0 : performance.now();
         if (!this.options.suppressLogging) {
-            console.log(method, fullURL, 'took', (t1 - t0).toFixed(2), 'milliseconds');
+            const diff = t0 && t1 ? (t1 - t0).toFixed(2) : 0;
+            console.log(method, fullURL, 'took', diff, 'milliseconds');
         }
         if (!res.ok) {
             // try parsing error as json
@@ -2696,12 +2884,969 @@ __exportStar(papiClient, exports);
 
 var index = unwrapExports(dist);
 
+var rng_1 = createCommonjsModule(function (module, exports) {
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = rng;
+
+var _crypto = _interopRequireDefault(crypto__default['default']);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+const rnds8Pool = new Uint8Array(256); // # of random values to pre-allocate
+
+let poolPtr = rnds8Pool.length;
+
+function rng() {
+  if (poolPtr > rnds8Pool.length - 16) {
+    _crypto.default.randomFillSync(rnds8Pool);
+
+    poolPtr = 0;
+  }
+
+  return rnds8Pool.slice(poolPtr, poolPtr += 16);
+}
+});
+
+unwrapExports(rng_1);
+
+var regex = createCommonjsModule(function (module, exports) {
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _default = /^(?:[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}|00000000-0000-0000-0000-000000000000)$/i;
+exports.default = _default;
+});
+
+unwrapExports(regex);
+
+var validate_1$1 = createCommonjsModule(function (module, exports) {
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _regex = _interopRequireDefault(regex);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function validate(uuid) {
+  return typeof uuid === 'string' && _regex.default.test(uuid);
+}
+
+var _default = validate;
+exports.default = _default;
+});
+
+unwrapExports(validate_1$1);
+
+var stringify_1$1 = createCommonjsModule(function (module, exports) {
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _validate = _interopRequireDefault(validate_1$1);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ * Convert array of 16 byte values to UUID string format of the form:
+ * XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+ */
+const byteToHex = [];
+
+for (let i = 0; i < 256; ++i) {
+  byteToHex.push((i + 0x100).toString(16).substr(1));
+}
+
+function stringify(arr, offset = 0) {
+  // Note: Be careful editing this code!  It's been tuned for performance
+  // and works in ways you may not expect. See https://github.com/uuidjs/uuid/pull/434
+  const uuid = (byteToHex[arr[offset + 0]] + byteToHex[arr[offset + 1]] + byteToHex[arr[offset + 2]] + byteToHex[arr[offset + 3]] + '-' + byteToHex[arr[offset + 4]] + byteToHex[arr[offset + 5]] + '-' + byteToHex[arr[offset + 6]] + byteToHex[arr[offset + 7]] + '-' + byteToHex[arr[offset + 8]] + byteToHex[arr[offset + 9]] + '-' + byteToHex[arr[offset + 10]] + byteToHex[arr[offset + 11]] + byteToHex[arr[offset + 12]] + byteToHex[arr[offset + 13]] + byteToHex[arr[offset + 14]] + byteToHex[arr[offset + 15]]).toLowerCase(); // Consistency check for valid UUID.  If this throws, it's likely due to one
+  // of the following:
+  // - One or more input array values don't map to a hex octet (leading to
+  // "undefined" in the uuid)
+  // - Invalid input values for the RFC `version` or `variant` fields
+
+  if (!(0, _validate.default)(uuid)) {
+    throw TypeError('Stringified UUID is invalid');
+  }
+
+  return uuid;
+}
+
+var _default = stringify;
+exports.default = _default;
+});
+
+unwrapExports(stringify_1$1);
+
+var v1_1$1 = createCommonjsModule(function (module, exports) {
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _rng = _interopRequireDefault(rng_1);
+
+var _stringify = _interopRequireDefault(stringify_1$1);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// **`v1()` - Generate time-based UUID**
+//
+// Inspired by https://github.com/LiosK/UUID.js
+// and http://docs.python.org/library/uuid.html
+let _nodeId;
+
+let _clockseq; // Previous uuid creation time
+
+
+let _lastMSecs = 0;
+let _lastNSecs = 0; // See https://github.com/uuidjs/uuid for API details
+
+function v1(options, buf, offset) {
+  let i = buf && offset || 0;
+  const b = buf || new Array(16);
+  options = options || {};
+  let node = options.node || _nodeId;
+  let clockseq = options.clockseq !== undefined ? options.clockseq : _clockseq; // node and clockseq need to be initialized to random values if they're not
+  // specified.  We do this lazily to minimize issues related to insufficient
+  // system entropy.  See #189
+
+  if (node == null || clockseq == null) {
+    const seedBytes = options.random || (options.rng || _rng.default)();
+
+    if (node == null) {
+      // Per 4.5, create and 48-bit node id, (47 random bits + multicast bit = 1)
+      node = _nodeId = [seedBytes[0] | 0x01, seedBytes[1], seedBytes[2], seedBytes[3], seedBytes[4], seedBytes[5]];
+    }
+
+    if (clockseq == null) {
+      // Per 4.2.2, randomize (14 bit) clockseq
+      clockseq = _clockseq = (seedBytes[6] << 8 | seedBytes[7]) & 0x3fff;
+    }
+  } // UUID timestamps are 100 nano-second units since the Gregorian epoch,
+  // (1582-10-15 00:00).  JSNumbers aren't precise enough for this, so
+  // time is handled internally as 'msecs' (integer milliseconds) and 'nsecs'
+  // (100-nanoseconds offset from msecs) since unix epoch, 1970-01-01 00:00.
+
+
+  let msecs = options.msecs !== undefined ? options.msecs : Date.now(); // Per 4.2.1.2, use count of uuid's generated during the current clock
+  // cycle to simulate higher resolution clock
+
+  let nsecs = options.nsecs !== undefined ? options.nsecs : _lastNSecs + 1; // Time since last uuid creation (in msecs)
+
+  const dt = msecs - _lastMSecs + (nsecs - _lastNSecs) / 10000; // Per 4.2.1.2, Bump clockseq on clock regression
+
+  if (dt < 0 && options.clockseq === undefined) {
+    clockseq = clockseq + 1 & 0x3fff;
+  } // Reset nsecs if clock regresses (new clockseq) or we've moved onto a new
+  // time interval
+
+
+  if ((dt < 0 || msecs > _lastMSecs) && options.nsecs === undefined) {
+    nsecs = 0;
+  } // Per 4.2.1.2 Throw error if too many uuids are requested
+
+
+  if (nsecs >= 10000) {
+    throw new Error("uuid.v1(): Can't create more than 10M uuids/sec");
+  }
+
+  _lastMSecs = msecs;
+  _lastNSecs = nsecs;
+  _clockseq = clockseq; // Per 4.1.4 - Convert from unix epoch to Gregorian epoch
+
+  msecs += 12219292800000; // `time_low`
+
+  const tl = ((msecs & 0xfffffff) * 10000 + nsecs) % 0x100000000;
+  b[i++] = tl >>> 24 & 0xff;
+  b[i++] = tl >>> 16 & 0xff;
+  b[i++] = tl >>> 8 & 0xff;
+  b[i++] = tl & 0xff; // `time_mid`
+
+  const tmh = msecs / 0x100000000 * 10000 & 0xfffffff;
+  b[i++] = tmh >>> 8 & 0xff;
+  b[i++] = tmh & 0xff; // `time_high_and_version`
+
+  b[i++] = tmh >>> 24 & 0xf | 0x10; // include version
+
+  b[i++] = tmh >>> 16 & 0xff; // `clock_seq_hi_and_reserved` (Per 4.2.2 - include variant)
+
+  b[i++] = clockseq >>> 8 | 0x80; // `clock_seq_low`
+
+  b[i++] = clockseq & 0xff; // `node`
+
+  for (let n = 0; n < 6; ++n) {
+    b[i + n] = node[n];
+  }
+
+  return buf || (0, _stringify.default)(b);
+}
+
+var _default = v1;
+exports.default = _default;
+});
+
+unwrapExports(v1_1$1);
+
+var parse_1$1 = createCommonjsModule(function (module, exports) {
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _validate = _interopRequireDefault(validate_1$1);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function parse(uuid) {
+  if (!(0, _validate.default)(uuid)) {
+    throw TypeError('Invalid UUID');
+  }
+
+  let v;
+  const arr = new Uint8Array(16); // Parse ########-....-....-....-............
+
+  arr[0] = (v = parseInt(uuid.slice(0, 8), 16)) >>> 24;
+  arr[1] = v >>> 16 & 0xff;
+  arr[2] = v >>> 8 & 0xff;
+  arr[3] = v & 0xff; // Parse ........-####-....-....-............
+
+  arr[4] = (v = parseInt(uuid.slice(9, 13), 16)) >>> 8;
+  arr[5] = v & 0xff; // Parse ........-....-####-....-............
+
+  arr[6] = (v = parseInt(uuid.slice(14, 18), 16)) >>> 8;
+  arr[7] = v & 0xff; // Parse ........-....-....-####-............
+
+  arr[8] = (v = parseInt(uuid.slice(19, 23), 16)) >>> 8;
+  arr[9] = v & 0xff; // Parse ........-....-....-....-############
+  // (Use "/" to avoid 32-bit truncation when bit-shifting high-order bytes)
+
+  arr[10] = (v = parseInt(uuid.slice(24, 36), 16)) / 0x10000000000 & 0xff;
+  arr[11] = v / 0x100000000 & 0xff;
+  arr[12] = v >>> 24 & 0xff;
+  arr[13] = v >>> 16 & 0xff;
+  arr[14] = v >>> 8 & 0xff;
+  arr[15] = v & 0xff;
+  return arr;
+}
+
+var _default = parse;
+exports.default = _default;
+});
+
+unwrapExports(parse_1$1);
+
+var v35 = createCommonjsModule(function (module, exports) {
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = _default;
+exports.URL = exports.DNS = void 0;
+
+var _stringify = _interopRequireDefault(stringify_1$1);
+
+var _parse = _interopRequireDefault(parse_1$1);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function stringToBytes(str) {
+  str = unescape(encodeURIComponent(str)); // UTF8 escape
+
+  const bytes = [];
+
+  for (let i = 0; i < str.length; ++i) {
+    bytes.push(str.charCodeAt(i));
+  }
+
+  return bytes;
+}
+
+const DNS = '6ba7b810-9dad-11d1-80b4-00c04fd430c8';
+exports.DNS = DNS;
+const URL = '6ba7b811-9dad-11d1-80b4-00c04fd430c8';
+exports.URL = URL;
+
+function _default(name, version, hashfunc) {
+  function generateUUID(value, namespace, buf, offset) {
+    if (typeof value === 'string') {
+      value = stringToBytes(value);
+    }
+
+    if (typeof namespace === 'string') {
+      namespace = (0, _parse.default)(namespace);
+    }
+
+    if (namespace.length !== 16) {
+      throw TypeError('Namespace must be array-like (16 iterable integer values, 0-255)');
+    } // Compute hash of namespace and value, Per 4.3
+    // Future: Use spread syntax when supported on all platforms, e.g. `bytes =
+    // hashfunc([...namespace, ... value])`
+
+
+    let bytes = new Uint8Array(16 + value.length);
+    bytes.set(namespace);
+    bytes.set(value, namespace.length);
+    bytes = hashfunc(bytes);
+    bytes[6] = bytes[6] & 0x0f | version;
+    bytes[8] = bytes[8] & 0x3f | 0x80;
+
+    if (buf) {
+      offset = offset || 0;
+
+      for (let i = 0; i < 16; ++i) {
+        buf[offset + i] = bytes[i];
+      }
+
+      return buf;
+    }
+
+    return (0, _stringify.default)(bytes);
+  } // Function#name is not settable on some platforms (#270)
+
+
+  try {
+    generateUUID.name = name; // eslint-disable-next-line no-empty
+  } catch (err) {} // For CommonJS default export support
+
+
+  generateUUID.DNS = DNS;
+  generateUUID.URL = URL;
+  return generateUUID;
+}
+});
+
+unwrapExports(v35);
+v35.URL;
+v35.DNS;
+
+var md5_1 = createCommonjsModule(function (module, exports) {
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _crypto = _interopRequireDefault(crypto__default['default']);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function md5(bytes) {
+  if (Array.isArray(bytes)) {
+    bytes = Buffer.from(bytes);
+  } else if (typeof bytes === 'string') {
+    bytes = Buffer.from(bytes, 'utf8');
+  }
+
+  return _crypto.default.createHash('md5').update(bytes).digest();
+}
+
+var _default = md5;
+exports.default = _default;
+});
+
+unwrapExports(md5_1);
+
+var v3_1$1 = createCommonjsModule(function (module, exports) {
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _v = _interopRequireDefault(v35);
+
+var _md = _interopRequireDefault(md5_1);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+const v3 = (0, _v.default)('v3', 0x30, _md.default);
+var _default = v3;
+exports.default = _default;
+});
+
+unwrapExports(v3_1$1);
+
+var v4_1$1 = createCommonjsModule(function (module, exports) {
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _rng = _interopRequireDefault(rng_1);
+
+var _stringify = _interopRequireDefault(stringify_1$1);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function v4(options, buf, offset) {
+  options = options || {};
+
+  const rnds = options.random || (options.rng || _rng.default)(); // Per 4.4, set bits for version and `clock_seq_hi_and_reserved`
+
+
+  rnds[6] = rnds[6] & 0x0f | 0x40;
+  rnds[8] = rnds[8] & 0x3f | 0x80; // Copy bytes to buffer, if provided
+
+  if (buf) {
+    offset = offset || 0;
+
+    for (let i = 0; i < 16; ++i) {
+      buf[offset + i] = rnds[i];
+    }
+
+    return buf;
+  }
+
+  return (0, _stringify.default)(rnds);
+}
+
+var _default = v4;
+exports.default = _default;
+});
+
+unwrapExports(v4_1$1);
+
+var sha1_1 = createCommonjsModule(function (module, exports) {
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _crypto = _interopRequireDefault(crypto__default['default']);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function sha1(bytes) {
+  if (Array.isArray(bytes)) {
+    bytes = Buffer.from(bytes);
+  } else if (typeof bytes === 'string') {
+    bytes = Buffer.from(bytes, 'utf8');
+  }
+
+  return _crypto.default.createHash('sha1').update(bytes).digest();
+}
+
+var _default = sha1;
+exports.default = _default;
+});
+
+unwrapExports(sha1_1);
+
+var v5_1$1 = createCommonjsModule(function (module, exports) {
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _v = _interopRequireDefault(v35);
+
+var _sha = _interopRequireDefault(sha1_1);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+const v5 = (0, _v.default)('v5', 0x50, _sha.default);
+var _default = v5;
+exports.default = _default;
+});
+
+unwrapExports(v5_1$1);
+
+var nil$1 = createCommonjsModule(function (module, exports) {
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _default = '00000000-0000-0000-0000-000000000000';
+exports.default = _default;
+});
+
+unwrapExports(nil$1);
+
+var version_1$1 = createCommonjsModule(function (module, exports) {
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _validate = _interopRequireDefault(validate_1$1);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function version(uuid) {
+  if (!(0, _validate.default)(uuid)) {
+    throw TypeError('Invalid UUID');
+  }
+
+  return parseInt(uuid.substr(14, 1), 16);
+}
+
+var _default = version;
+exports.default = _default;
+});
+
+unwrapExports(version_1$1);
+
+var validate_1 = createCommonjsModule(function (module, exports) {
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _regex = _interopRequireDefault(regex);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function validate(uuid) {
+  return typeof uuid === 'string' && _regex.default.test(uuid);
+}
+
+var _default = validate;
+exports.default = _default;
+});
+
+unwrapExports(validate_1);
+
+var stringify_1 = createCommonjsModule(function (module, exports) {
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _validate = _interopRequireDefault(validate_1$1);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ * Convert array of 16 byte values to UUID string format of the form:
+ * XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+ */
+const byteToHex = [];
+
+for (let i = 0; i < 256; ++i) {
+  byteToHex.push((i + 0x100).toString(16).substr(1));
+}
+
+function stringify(arr, offset = 0) {
+  // Note: Be careful editing this code!  It's been tuned for performance
+  // and works in ways you may not expect. See https://github.com/uuidjs/uuid/pull/434
+  const uuid = (byteToHex[arr[offset + 0]] + byteToHex[arr[offset + 1]] + byteToHex[arr[offset + 2]] + byteToHex[arr[offset + 3]] + '-' + byteToHex[arr[offset + 4]] + byteToHex[arr[offset + 5]] + '-' + byteToHex[arr[offset + 6]] + byteToHex[arr[offset + 7]] + '-' + byteToHex[arr[offset + 8]] + byteToHex[arr[offset + 9]] + '-' + byteToHex[arr[offset + 10]] + byteToHex[arr[offset + 11]] + byteToHex[arr[offset + 12]] + byteToHex[arr[offset + 13]] + byteToHex[arr[offset + 14]] + byteToHex[arr[offset + 15]]).toLowerCase(); // Consistency check for valid UUID.  If this throws, it's likely due to one
+  // of the following:
+  // - One or more input array values don't map to a hex octet (leading to
+  // "undefined" in the uuid)
+  // - Invalid input values for the RFC `version` or `variant` fields
+
+  if (!(0, _validate.default)(uuid)) {
+    throw TypeError('Stringified UUID is invalid');
+  }
+
+  return uuid;
+}
+
+var _default = stringify;
+exports.default = _default;
+});
+
+unwrapExports(stringify_1);
+
+var parse_1 = createCommonjsModule(function (module, exports) {
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _validate = _interopRequireDefault(validate_1$1);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function parse(uuid) {
+  if (!(0, _validate.default)(uuid)) {
+    throw TypeError('Invalid UUID');
+  }
+
+  let v;
+  const arr = new Uint8Array(16); // Parse ########-....-....-....-............
+
+  arr[0] = (v = parseInt(uuid.slice(0, 8), 16)) >>> 24;
+  arr[1] = v >>> 16 & 0xff;
+  arr[2] = v >>> 8 & 0xff;
+  arr[3] = v & 0xff; // Parse ........-####-....-....-............
+
+  arr[4] = (v = parseInt(uuid.slice(9, 13), 16)) >>> 8;
+  arr[5] = v & 0xff; // Parse ........-....-####-....-............
+
+  arr[6] = (v = parseInt(uuid.slice(14, 18), 16)) >>> 8;
+  arr[7] = v & 0xff; // Parse ........-....-....-####-............
+
+  arr[8] = (v = parseInt(uuid.slice(19, 23), 16)) >>> 8;
+  arr[9] = v & 0xff; // Parse ........-....-....-....-############
+  // (Use "/" to avoid 32-bit truncation when bit-shifting high-order bytes)
+
+  arr[10] = (v = parseInt(uuid.slice(24, 36), 16)) / 0x10000000000 & 0xff;
+  arr[11] = v / 0x100000000 & 0xff;
+  arr[12] = v >>> 24 & 0xff;
+  arr[13] = v >>> 16 & 0xff;
+  arr[14] = v >>> 8 & 0xff;
+  arr[15] = v & 0xff;
+  return arr;
+}
+
+var _default = parse;
+exports.default = _default;
+});
+
+unwrapExports(parse_1);
+
+var v1_1 = createCommonjsModule(function (module, exports) {
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _rng = _interopRequireDefault(rng_1);
+
+var _stringify = _interopRequireDefault(stringify_1$1);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// **`v1()` - Generate time-based UUID**
+//
+// Inspired by https://github.com/LiosK/UUID.js
+// and http://docs.python.org/library/uuid.html
+let _nodeId;
+
+let _clockseq; // Previous uuid creation time
+
+
+let _lastMSecs = 0;
+let _lastNSecs = 0; // See https://github.com/uuidjs/uuid for API details
+
+function v1(options, buf, offset) {
+  let i = buf && offset || 0;
+  const b = buf || new Array(16);
+  options = options || {};
+  let node = options.node || _nodeId;
+  let clockseq = options.clockseq !== undefined ? options.clockseq : _clockseq; // node and clockseq need to be initialized to random values if they're not
+  // specified.  We do this lazily to minimize issues related to insufficient
+  // system entropy.  See #189
+
+  if (node == null || clockseq == null) {
+    const seedBytes = options.random || (options.rng || _rng.default)();
+
+    if (node == null) {
+      // Per 4.5, create and 48-bit node id, (47 random bits + multicast bit = 1)
+      node = _nodeId = [seedBytes[0] | 0x01, seedBytes[1], seedBytes[2], seedBytes[3], seedBytes[4], seedBytes[5]];
+    }
+
+    if (clockseq == null) {
+      // Per 4.2.2, randomize (14 bit) clockseq
+      clockseq = _clockseq = (seedBytes[6] << 8 | seedBytes[7]) & 0x3fff;
+    }
+  } // UUID timestamps are 100 nano-second units since the Gregorian epoch,
+  // (1582-10-15 00:00).  JSNumbers aren't precise enough for this, so
+  // time is handled internally as 'msecs' (integer milliseconds) and 'nsecs'
+  // (100-nanoseconds offset from msecs) since unix epoch, 1970-01-01 00:00.
+
+
+  let msecs = options.msecs !== undefined ? options.msecs : Date.now(); // Per 4.2.1.2, use count of uuid's generated during the current clock
+  // cycle to simulate higher resolution clock
+
+  let nsecs = options.nsecs !== undefined ? options.nsecs : _lastNSecs + 1; // Time since last uuid creation (in msecs)
+
+  const dt = msecs - _lastMSecs + (nsecs - _lastNSecs) / 10000; // Per 4.2.1.2, Bump clockseq on clock regression
+
+  if (dt < 0 && options.clockseq === undefined) {
+    clockseq = clockseq + 1 & 0x3fff;
+  } // Reset nsecs if clock regresses (new clockseq) or we've moved onto a new
+  // time interval
+
+
+  if ((dt < 0 || msecs > _lastMSecs) && options.nsecs === undefined) {
+    nsecs = 0;
+  } // Per 4.2.1.2 Throw error if too many uuids are requested
+
+
+  if (nsecs >= 10000) {
+    throw new Error("uuid.v1(): Can't create more than 10M uuids/sec");
+  }
+
+  _lastMSecs = msecs;
+  _lastNSecs = nsecs;
+  _clockseq = clockseq; // Per 4.1.4 - Convert from unix epoch to Gregorian epoch
+
+  msecs += 12219292800000; // `time_low`
+
+  const tl = ((msecs & 0xfffffff) * 10000 + nsecs) % 0x100000000;
+  b[i++] = tl >>> 24 & 0xff;
+  b[i++] = tl >>> 16 & 0xff;
+  b[i++] = tl >>> 8 & 0xff;
+  b[i++] = tl & 0xff; // `time_mid`
+
+  const tmh = msecs / 0x100000000 * 10000 & 0xfffffff;
+  b[i++] = tmh >>> 8 & 0xff;
+  b[i++] = tmh & 0xff; // `time_high_and_version`
+
+  b[i++] = tmh >>> 24 & 0xf | 0x10; // include version
+
+  b[i++] = tmh >>> 16 & 0xff; // `clock_seq_hi_and_reserved` (Per 4.2.2 - include variant)
+
+  b[i++] = clockseq >>> 8 | 0x80; // `clock_seq_low`
+
+  b[i++] = clockseq & 0xff; // `node`
+
+  for (let n = 0; n < 6; ++n) {
+    b[i + n] = node[n];
+  }
+
+  return buf || (0, _stringify.default)(b);
+}
+
+var _default = v1;
+exports.default = _default;
+});
+
+unwrapExports(v1_1);
+
+var v3_1 = createCommonjsModule(function (module, exports) {
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _v = _interopRequireDefault(v35);
+
+var _md = _interopRequireDefault(md5_1);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+const v3 = (0, _v.default)('v3', 0x30, _md.default);
+var _default = v3;
+exports.default = _default;
+});
+
+unwrapExports(v3_1);
+
+var v4_1 = createCommonjsModule(function (module, exports) {
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _rng = _interopRequireDefault(rng_1);
+
+var _stringify = _interopRequireDefault(stringify_1$1);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function v4(options, buf, offset) {
+  options = options || {};
+
+  const rnds = options.random || (options.rng || _rng.default)(); // Per 4.4, set bits for version and `clock_seq_hi_and_reserved`
+
+
+  rnds[6] = rnds[6] & 0x0f | 0x40;
+  rnds[8] = rnds[8] & 0x3f | 0x80; // Copy bytes to buffer, if provided
+
+  if (buf) {
+    offset = offset || 0;
+
+    for (let i = 0; i < 16; ++i) {
+      buf[offset + i] = rnds[i];
+    }
+
+    return buf;
+  }
+
+  return (0, _stringify.default)(rnds);
+}
+
+var _default = v4;
+exports.default = _default;
+});
+
+unwrapExports(v4_1);
+
+var v5_1 = createCommonjsModule(function (module, exports) {
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _v = _interopRequireDefault(v35);
+
+var _sha = _interopRequireDefault(sha1_1);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+const v5 = (0, _v.default)('v5', 0x50, _sha.default);
+var _default = v5;
+exports.default = _default;
+});
+
+unwrapExports(v5_1);
+
+var nil = createCommonjsModule(function (module, exports) {
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _default = '00000000-0000-0000-0000-000000000000';
+exports.default = _default;
+});
+
+unwrapExports(nil);
+
+var version_1 = createCommonjsModule(function (module, exports) {
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _validate = _interopRequireDefault(validate_1$1);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function version(uuid) {
+  if (!(0, _validate.default)(uuid)) {
+    throw TypeError('Invalid UUID');
+  }
+
+  return parseInt(uuid.substr(14, 1), 16);
+}
+
+var _default = version;
+exports.default = _default;
+});
+
+unwrapExports(version_1);
+
+var C__uom_editor_uom_serverSide_node_modules_uuid_dist = createCommonjsModule(function (module, exports) {
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+Object.defineProperty(exports, "v1", {
+  enumerable: true,
+  get: function () {
+    return _v.default;
+  }
+});
+Object.defineProperty(exports, "v3", {
+  enumerable: true,
+  get: function () {
+    return _v2.default;
+  }
+});
+Object.defineProperty(exports, "v4", {
+  enumerable: true,
+  get: function () {
+    return _v3.default;
+  }
+});
+Object.defineProperty(exports, "v5", {
+  enumerable: true,
+  get: function () {
+    return _v4.default;
+  }
+});
+Object.defineProperty(exports, "NIL", {
+  enumerable: true,
+  get: function () {
+    return _nil.default;
+  }
+});
+Object.defineProperty(exports, "version", {
+  enumerable: true,
+  get: function () {
+    return _version.default;
+  }
+});
+Object.defineProperty(exports, "validate", {
+  enumerable: true,
+  get: function () {
+    return _validate.default;
+  }
+});
+Object.defineProperty(exports, "stringify", {
+  enumerable: true,
+  get: function () {
+    return _stringify.default;
+  }
+});
+Object.defineProperty(exports, "parse", {
+  enumerable: true,
+  get: function () {
+    return _parse.default;
+  }
+});
+
+var _v = _interopRequireDefault(v1_1);
+
+var _v2 = _interopRequireDefault(v3_1);
+
+var _v3 = _interopRequireDefault(v4_1);
+
+var _v4 = _interopRequireDefault(v5_1);
+
+var _nil = _interopRequireDefault(nil);
+
+var _version = _interopRequireDefault(version_1);
+
+var _validate = _interopRequireDefault(validate_1$1);
+
+var _stringify = _interopRequireDefault(stringify_1$1);
+
+var _parse = _interopRequireDefault(parse_1$1);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+});
+
+unwrapExports(C__uom_editor_uom_serverSide_node_modules_uuid_dist);
+C__uom_editor_uom_serverSide_node_modules_uuid_dist.v1;
+C__uom_editor_uom_serverSide_node_modules_uuid_dist.v3;
+var C__uom_editor_uom_serverSide_node_modules_uuid_dist_3 = C__uom_editor_uom_serverSide_node_modules_uuid_dist.v4;
+C__uom_editor_uom_serverSide_node_modules_uuid_dist.v5;
+C__uom_editor_uom_serverSide_node_modules_uuid_dist.NIL;
+C__uom_editor_uom_serverSide_node_modules_uuid_dist.version;
+C__uom_editor_uom_serverSide_node_modules_uuid_dist.validate;
+C__uom_editor_uom_serverSide_node_modules_uuid_dist.stringify;
+C__uom_editor_uom_serverSide_node_modules_uuid_dist.parse;
+
 class MyService {
     constructor(client) {
         this.client = client;
         this.papiClient = new index.PapiClient({
             baseURL: client.BaseURL,
-            token: client.OAuthAccessToken
+            token: client.OAuthAccessToken,
+            addonUUID: client.AddonUUID,
+            addonSecretKey: client.AddonSecretKey,
+            actionUUID: client.ExecutionUUID
         });
     }
     doSomething() {
@@ -2710,21 +3855,100 @@ class MyService {
     getAddons() {
         return this.papiClient.addons.installedAddons.find({});
     }
+    updateDataView(dataView) {
+        var headers = {
+            "X-Pepperi-ActionID": C__uom_editor_uom_serverSide_node_modules_uuid_dist_3(),
+            "X-Pepperi-OwnerID": this.client.AddonUUID.toLowerCase(),
+            "X-Pepperi-SecretKey": this.client.AddonSecretKey
+        };
+        return this.papiClient.post(`/meta_data/data_views`, dataView, headers);
+        // return this.papiClient.metaData.dataViews.upsert(dataView);
+    }
+    getDataView(dataViewName) {
+        return this.papiClient.metaData.dataViews.find({ where: 'Context.Name=' + dataViewName, });
+    }
 }
 
-const CPI_NODE_ADDON_UUID = 'bb6ee826-1c6b-4a11-9758-40a46acb69c5';
+/** Holds the quantity in UOM */
+const UNIT_QTY_FIRST_TSA = 'TSAAOQMQuantity1';
+const UNIT_QTY_SECOND_TSA = 'TSAAOQMQuantity2';
+/** Holds the Key of the UOM of the line */
+const UOM_KEY_FIRST_TSA = 'TSAAOQMUOM1';
+const UOM_KEY_SECOND_TSA = 'TSAAOQMUOM2';
+
+const UomTSAFields = [
+    {
+        FieldID: UOM_KEY_FIRST_TSA,
+        Label: "AOQM_UOM1",
+        Description: "the 1st unit of measure",
+        IsUserDefinedField: true,
+        UIType: {
+            ID: 11,
+            Name: "ComboBox",
+        },
+        Type: "String",
+        Format: "String",
+        TypeSpecificFields: {
+            PicklistValues: []
+        }
+    },
+    {
+        FieldID: UOM_KEY_SECOND_TSA,
+        Label: "AOQM_UOM2",
+        Description: "the 2nd unit of measure",
+        IsUserDefinedField: true,
+        UIType: {
+            ID: 11,
+            Name: "ComboBox",
+        },
+        Type: "String",
+        Format: "String",
+        TypeSpecificFields: {
+            PicklistValues: []
+        }
+    },
+    {
+        FieldID: UNIT_QTY_FIRST_TSA,
+        Label: "AOQM_Quantity1",
+        Description: "The quantity for the 1st unit of measure",
+        IsUserDefinedField: true,
+        UIType: {
+            ID: 28,
+            Name: "NumberIntegerQuantitySelector",
+        },
+        Type: "Integer",
+        Format: "Int64"
+    },
+    {
+        FieldID: UNIT_QTY_SECOND_TSA,
+        Label: "AOQM_Quantity2",
+        Description: "The quantity for the 2nd unit of measure",
+        IsUserDefinedField: true,
+        UIType: {
+            ID: 28,
+            Name: "NumberIntegerQuantitySelector"
+        },
+        Type: "Integer",
+        Format: "Int64",
+    },
+];
+const atdConfigScheme = {
+    Name: "AtdConfig",
+    Type: "cpi_meta_data",
+};
+const uomsScheme = {
+    Name: "Uoms",
+    Type: "cpi_meta_data",
+};
 
 var AddonUUID = "1238582e-9b32-4d21-9567-4e17379f41bb";
-var AddonVersion = "0.0.10";
+var AddonVersion = "0.0.75";
 var DebugPort = 4500;
 var WebappBaseUrl = "https://app.sandbox.pepperi.com";
 var DefaultEditor = "main";
 var Endpoints = [
 	"installation.ts",
 	"api.ts"
-];
-var CPISide = [
-	"uom-app.ts"
 ];
 var Editors = [
 	"main"
@@ -2749,18 +3973,21 @@ var PublishConfig = {
 	ClientStack: "ng10",
 	Editors: [
 		{
-			ParentPackageName: "UOM",
-			PackageName: "uom",
-			Description: "UOM Module"
+			ParentPackageName: "Quantity Module",
+			PackageName: "quantity module",
+			Description: "Quantity Module List"
 		},
 		{
-			ParentPackageName: "UOM",
+			ParentPackageName: "Quantity Module",
 			PackageName: "config",
-			Description: "ATD Config"
+			Description: "Quantity Module Configuration"
 		}
 	],
 	Dependencies: {
-	}
+	},
+	CPISide: [
+		"uom-app.ts"
+	]
 };
 var config = {
 	AddonUUID: AddonUUID,
@@ -2769,7 +3996,6 @@ var config = {
 	WebappBaseUrl: WebappBaseUrl,
 	DefaultEditor: DefaultEditor,
 	Endpoints: Endpoints,
-	CPISide: CPISide,
 	Editors: Editors,
 	Assets: Assets,
 	PublishConfig: PublishConfig
@@ -2781,16 +4007,24 @@ class UomsService {
         this.papiClient = new index.PapiClient({
             baseURL: client.BaseURL,
             token: client.OAuthAccessToken,
+            addonUUID: client.AddonUUID,
+            addonSecretKey: client.AddonSecretKey,
+            actionUUID: client.ActionUUID
         });
     }
     async find(options = {}) {
-        return this.papiClient.addons.api.uuid(CPI_NODE_ADDON_UUID).file('cpi_node').func('cpi_side_data').get(Object.assign({ addon_uuid: config.AddonUUID, table: 'Uoms' }, options));
+        return this.papiClient.addons.data.uuid(config.AddonUUID).table(uomsScheme.Name).find(options);
     }
     async upsert(obj) {
-        return this.papiClient.addons.api.uuid(CPI_NODE_ADDON_UUID).file('cpi_node').func('cpi_side_data').post({
-            addon_uuid: config.AddonUUID,
-            table: 'Uoms'
-        }, obj);
+        return this.papiClient.addons.data.uuid(config.AddonUUID).table(uomsScheme.Name).upsert(obj);
+    }
+    async getByKey(uonKey) {
+        try {
+            return await this.papiClient.addons.data.uuid(config.AddonUUID).table(uomsScheme.Name).key(uonKey).get();
+        }
+        catch (e) {
+            return undefined;
+        }
     }
 }
 
@@ -2800,31 +4034,54 @@ class ObjectsService {
         this.pepperiObjects = [];
         this.fields = {};
     }
-    async getAtd(by) {
-        if (!this.pepperiObjects.length) {
-            this.pepperiObjects = await this.papiClient.metaData.pepperiObjects.iter().toArray();
-        }
-        return this.pepperiObjects.find(atd => {
-            if (typeof by === 'number') {
-                return by === parseInt(atd.SubTypeID);
-            }
-            else if (typeof by === 'string') {
-                return by === atd.SubTypeName;
-            }
-        });
-    }
     async getField(atdId, fieldId) {
         const fields = await this.getAtdFields(atdId);
         return fields ? fields.find(field => field.FieldID === fieldId) : undefined;
     }
     async getAtdFields(atdId) {
-        const atd = await this.getAtd(atdId);
-        if (atd) {
-            if (!this.fields[atdId]) {
-                this.fields[atdId] = await this.papiClient.metaData.type(atd.Type).fields.get();
-            }
+        if (!this.fields[atdId]) {
+            this.fields[atdId] = await this.papiClient.metaData.type("transaction_lines").types.subtype(atdId.toString()).fields.get();
         }
         return this.fields[atdId];
+    }
+    async getItemsFields() {
+        if (!this.fields['items']) {
+            this.fields['items'] = await this.papiClient.metaData.type("items").fields.get();
+        }
+        return this.fields['items'];
+    }
+    async createAtdTransactionLinesFields(atdId, fields) {
+        const bulkURL = `/meta_data/bulk/transaction_lines/types/${atdId}/fields`;
+        const createdFields = await this.papiClient.post(bulkURL, fields);
+        return createdFields.length > 0;
+    }
+}
+
+class ConfigurationService {
+    constructor(client) {
+        this.client = client;
+        this.papiClient = new index.PapiClient({
+            baseURL: client.BaseURL,
+            token: client.OAuthAccessToken,
+            addonUUID: client.AddonUUID,
+            addonSecretKey: client.AddonSecretKey,
+            actionUUID: client.ActionUUID
+        });
+    }
+    async find(options = {}) {
+        return await this.papiClient.addons.data.uuid(config.AddonUUID).table(atdConfigScheme.Name).find(options);
+        // return this.papiClient.addons.api.uuid(CPI_NODE_ADDON_UUID).file('cpi_node').func('cpi_side_data').get({
+        //     addon_uuid: config.AddonUUID,
+        //     table: 'AtdConfig',
+        //     ...options
+        // })
+    }
+    async upsert(obj) {
+        return await this.papiClient.addons.data.uuid(config.AddonUUID).table(atdConfigScheme.Name).upsert(obj);
+        // return this.papiClient.addons.api.uuid(CPI_NODE_ADDON_UUID).file('cpi_node').func('cpi_side_data').post({
+        //     addon_uuid: config.AddonUUID,
+        //     table: 'AtdConfig'
+        // }, obj);
     }
 }
 
@@ -2837,10 +4094,30 @@ async function uoms(client, request) {
         return await service.find(request.query);
     }
 }
+async function getUomByKey(client, request) {
+    const service = new UomsService(client);
+    let uomKey = '';
+    if (request.method == 'GET' && (request === null || request === void 0 ? void 0 : request.query)) {
+        uomKey = 'uomKey' in request.query ? request.query.uomKey : '';
+    }
+    return await service.getByKey(uomKey);
+}
+async function atdConfiguration(client, request) {
+    const service = new ConfigurationService(client);
+    if (request.method == 'POST') {
+        return service.upsert(request.body);
+    }
+    else if (request.method == 'GET') {
+        return await service.find(request.query);
+    }
+}
 async function getAtdFields(client, request) {
     const papiClient = new index.PapiClient({
         baseURL: client.BaseURL,
         token: client.OAuthAccessToken,
+        addonUUID: client.AddonUUID,
+        addonSecretKey: client.AddonSecretKey,
+        actionUUID: client.ActionUUID
     });
     const service = new ObjectsService(papiClient);
     let atdID = -1;
@@ -2854,7 +4131,105 @@ async function getAtdFields(client, request) {
             atdID = 'atdID' in request.query ? Number(request.query.atdID) : -1;
         }
     }
-    return await service.getAtdFields(atdID);
+    const items = await service.getItemsFields();
+    items.forEach(item => item['FieldID'] = `Item.${item.FieldID}`);
+    return [...await service.getAtdFields(atdID), ...items];
+}
+async function createTSAFields(client, request) {
+    debugger;
+    let created = false;
+    const papiClient = new index.PapiClient({
+        baseURL: client.BaseURL,
+        token: client.OAuthAccessToken,
+        addonUUID: client.AddonUUID,
+        addonSecretKey: client.AddonSecretKey,
+        actionUUID: client.ActionUUID
+    });
+    const service = new ObjectsService(papiClient);
+    let atdID = -1;
+    if (request.method == 'POST') {
+        if (request === null || request === void 0 ? void 0 : request.body) {
+            atdID = 'atdID' in request.body ? Number(request.body.atdID) : -1;
+        }
+    }
+    else if (request.method == 'GET') {
+        if (request === null || request === void 0 ? void 0 : request.query) {
+            atdID = 'atdID' in request.query ? Number(request.query.atdID) : -1;
+        }
+    }
+    const field = await service.getField(atdID, 'TSAAOQM_UOM1');
+    if (field == undefined) {
+        created = await service.createAtdTransactionLinesFields(atdID, UomTSAFields);
+    }
+    return created;
+}
+async function importUom(client, request) {
+    const papiClient = new index.PapiClient({
+        baseURL: client.BaseURL,
+        token: client.OAuthAccessToken,
+        actionUUID: client.ActionUUID,
+        addonUUID: client.AddonUUID,
+        addonSecretKey: client.AddonSecretKey
+    });
+    const service = new ConfigurationService(client);
+    const objService = new ObjectsService(papiClient);
+    try {
+        console.log('importUOM is called, data got from call:', request.body);
+        if (request.body && request.body.Resource == 'transactions') {
+            const config = Object.assign({ Key: request.body.InternalID }, request.body.DataFromExport);
+            await service.upsert(config);
+            await objService.createAtdTransactionLinesFields(request.body.InternalID, UomTSAFields);
+        }
+        return {
+            success: true
+        };
+    }
+    catch (err) {
+        console.log('importUom Failed with error:', err);
+        return {
+            success: false,
+            errorMessage: 'message' in err ? err.message : 'unknown error occured'
+        };
+    }
+}
+async function exportUom(client, request) {
+    const service = new ConfigurationService(client);
+    try {
+        let config;
+        console.log('exportUOM is called, data got from call:', request.query);
+        if (request.query && request.query.resource == 'transactions') {
+            config = await service.find({
+                where: `Key= ${request.query.internal_id}`,
+            });
+            if (config && config.length > 0) {
+                return {
+                    success: true,
+                    DataForImport: {
+                        UOMFieldID: config[0].UOMFieldID,
+                        InventoryFieldID: config[0].InventoryFieldID,
+                        InventoryType: config[0].InventoryType
+                    },
+                };
+            }
+            else {
+                return {
+                    success: true,
+                    DataForImport: {},
+                };
+            }
+        }
+        return {
+            success: true,
+            DataForImport: {},
+        };
+    }
+    catch (err) {
+        console.log('importUom Failed with error:', err);
+        return {
+            success: false,
+            errorMessage: 'message' in err ? err.message : 'unknown error occured'
+        };
+    }
 }
 // add functions here
 // this function will run on the 'api/foo' endpoint
@@ -2865,6 +4240,11 @@ async function foo(client, request) {
     return res;
 }
 
+exports.atdConfiguration = atdConfiguration;
+exports.createTSAFields = createTSAFields;
+exports.exportUom = exportUom;
 exports.foo = foo;
 exports.getAtdFields = getAtdFields;
+exports.getUomByKey = getUomByKey;
+exports.importUom = importUom;
 exports.uoms = uoms;
