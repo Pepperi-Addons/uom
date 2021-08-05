@@ -195,6 +195,8 @@ export class QuantityCalculator {
         if(this.curr > this.min && this.curr % this.cq != 0 && this.caseBehavior != 'Fix')
         {
             this.curr = this.cq != 0 ?  Math.floor(this.curr/this.cq) * this.cq: this.curr;
+            //if now he is bigger than max, he should be max(remember max of the interval is legal)
+            this.curr = this.curr > this.max ? this.max: this.curr;
             return {'curr':this.curr, 'total': this.curr*this.factor};
 
         }
