@@ -2,21 +2,21 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-var perf_hooks = require('perf_hooks');
 var Stream = require('stream');
 var http = require('http');
 var Url = require('url');
 var https = require('https');
 var zlib = require('zlib');
+var perf_hooks = require('perf_hooks');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
-var perf_hooks__default = /*#__PURE__*/_interopDefaultLegacy(perf_hooks);
 var Stream__default = /*#__PURE__*/_interopDefaultLegacy(Stream);
 var http__default = /*#__PURE__*/_interopDefaultLegacy(http);
 var Url__default = /*#__PURE__*/_interopDefaultLegacy(Url);
 var https__default = /*#__PURE__*/_interopDefaultLegacy(https);
 var zlib__default = /*#__PURE__*/_interopDefaultLegacy(zlib);
+var perf_hooks__default = /*#__PURE__*/_interopDefaultLegacy(perf_hooks);
 
 var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
@@ -292,6 +292,42 @@ Object.defineProperty(exports, "__esModule", { value: true });
 
 unwrapExports(sync$1);
 
+var fieldBankCustomField = createCommonjsModule(function (module, exports) {
+Object.defineProperty(exports, "__esModule", { value: true });
+});
+
+unwrapExports(fieldBankCustomField);
+
+var item = createCommonjsModule(function (module, exports) {
+Object.defineProperty(exports, "__esModule", { value: true });
+});
+
+unwrapExports(item);
+
+var transactionLines = createCommonjsModule(function (module, exports) {
+Object.defineProperty(exports, "__esModule", { value: true });
+});
+
+unwrapExports(transactionLines);
+
+var contact = createCommonjsModule(function (module, exports) {
+Object.defineProperty(exports, "__esModule", { value: true });
+});
+
+unwrapExports(contact);
+
+var image = createCommonjsModule(function (module, exports) {
+Object.defineProperty(exports, "__esModule", { value: true });
+});
+
+unwrapExports(image);
+
+var subscription = createCommonjsModule(function (module, exports) {
+Object.defineProperty(exports, "__esModule", { value: true });
+});
+
+unwrapExports(subscription);
+
 var entities = createCommonjsModule(function (module, exports) {
 var __createBinding = (commonjsGlobal && commonjsGlobal.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -326,6 +362,12 @@ __exportStar(batchApiResponse, exports);
 __exportStar(_export, exports);
 __exportStar(catalog, exports);
 __exportStar(sync$1, exports);
+__exportStar(fieldBankCustomField, exports);
+__exportStar(item, exports);
+__exportStar(transactionLines, exports);
+__exportStar(contact, exports);
+__exportStar(image, exports);
+__exportStar(subscription, exports);
 // need something here that can be transpiled to js
 // all the other entities are interfaces
 class Entities {
@@ -367,6 +409,7 @@ class IterableEndpoint {
                 const newOptions = options;
                 newOptions.include_count = true;
                 let currentPage = 1;
+                const pageSize = options.page_size || 100;
                 let obj = { items: [], numOfPages: 1 };
                 return {
                     next: async () => {
@@ -374,14 +417,29 @@ class IterableEndpoint {
                             if (currentPage == 1) {
                                 newOptions.page = currentPage++;
                                 obj = await self.getFirstPage(newOptions);
+                                obj.items = obj.items.reverse();
                                 newOptions.include_count = false;
+                                // this means there is no 'X-Pepperi-Total-Pages' header (eg. ADAL)
+                                if (obj.numOfPages === 0) {
+                                    // the items on first page are less than the page size
+                                    // this means that there are no more pages
+                                    if (obj.items.length < pageSize) {
+                                        obj.numOfPages = 1;
+                                    }
+                                }
                             }
-                            else if (currentPage <= obj.numOfPages) {
+                            else if (obj.numOfPages === 0 || currentPage <= obj.numOfPages) {
                                 newOptions.page = currentPage++;
-                                obj.items = await self.find(newOptions);
+                                obj.items = (await self.find(newOptions)).reverse();
+                                if (obj.numOfPages === 0) {
+                                    // we might have reached the end and don't want to call one extra time
+                                    if (obj.items.length < pageSize) {
+                                        obj.numOfPages = currentPage - 1;
+                                    }
+                                }
                             }
                         }
-                        const retItem = obj.items.length > 0 ? obj.items.shift() : undefined;
+                        const retItem = obj.items.length > 0 ? obj.items.pop() : undefined;
                         if (retItem) {
                             return { value: retItem, done: false };
                         }
@@ -427,6 +485,25 @@ class Endpoint extends IterableEndpoint {
         this.service = service;
         this.endpoint = endpoint;
     }
+    async count(options = {}) {
+        let url = '/totals';
+        url += this.getEndpointURL();
+        const query = Endpoint.encodeQueryParams(Object.assign({ select: 'count(InternalID) as count' }, options));
+        url = query ? url + '?' + query : url;
+        const countObject = await this.service.get(url);
+        if (options.group_by) {
+            // Return an object of 'group_by' values and 'count' values.
+            const groupedCountObjects = {};
+            countObject.forEach((item) => {
+                groupedCountObjects[item[options.group_by || '']] = item['count'];
+            });
+            return groupedCountObjects;
+        }
+        else {
+            // Returns just a number.
+            return countObject && countObject.length == 1 ? countObject[0].count : 0;
+        }
+    }
     async get(id) {
         let url = this.getEndpointURL();
         url += '/' + id;
@@ -442,7 +519,7 @@ class Endpoint extends IterableEndpoint {
         const body = {
             fields: options.fields ? options.fields.join(',') : undefined,
             where: options.where,
-            orderBy: options.orderBy,
+            order_by: options.order_by,
             page: options.page,
             page_size: options.page_size,
             include_nested: options.include_nested,
@@ -459,6 +536,16 @@ class Endpoint extends IterableEndpoint {
             .delete(url)
             .then((res) => res.text())
             .then((res) => (res ? JSON.parse(res) : ''));
+    }
+    uuid(uuid) {
+        const service = this.service;
+        let url = this.getEndpointURL();
+        url += '/uuid/' + uuid;
+        return {
+            get() {
+                return service.get(url);
+            },
+        };
     }
     static encodeQueryParams(params) {
         const ret = [];
@@ -582,6 +669,11 @@ class TableEndpoint extends endpoint_1.default {
             get: async () => {
                 return await this.service.get(`/addons/data/${this.addonUUID}/${this.tableName}/${keyName}`);
             },
+            hardDelete: async (force = false) => {
+                return await this.service.post(`/addons/data/${this.addonUUID}/${this.tableName}/${keyName}/hard_delete`, {
+                    Force: force,
+                });
+            },
         };
     }
 }
@@ -628,6 +720,9 @@ class CodeJobEndpoint {
         this.async = async;
     }
     async find(includeDeleted = false) {
+        return await this.get(includeDeleted);
+    }
+    async get(includeDeleted = false) {
         return await this.service.get(`/code_jobs/${this.uuid}?include_deleted=${includeDeleted}`);
     }
     async publish(body) {
@@ -887,6 +982,73 @@ exports.FileStorageEndpoint = FileStorageEndpoint;
 unwrapExports(fileStorage);
 fileStorage.FileStorageEndpoint;
 
+var dataViews = createCommonjsModule(function (module, exports) {
+var __importDefault = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.DataViewsEndpoint = void 0;
+const endpoint_1 = __importDefault(endpoint);
+class DataViewsEndpoint extends endpoint_1.default {
+    constructor(service) {
+        super(service, '/meta_data/data_views');
+        this.fieldBank = (fieldBankUUID) => {
+            const service = this.service;
+            return {
+                customFields: new CustomFields(service, fieldBankUUID),
+            };
+        };
+    }
+}
+exports.DataViewsEndpoint = DataViewsEndpoint;
+class CustomFields {
+    constructor(service, fieldBankUUID) {
+        this.service = service;
+        this.fieldBankUUID = fieldBankUUID;
+        this.url = `/meta_data/data_views/field_bank/${this.fieldBankUUID}/custom_fields`;
+    }
+    key(keyName) {
+        return {
+            get: async () => {
+                return await this.service.get(`${this.url}/${keyName}`);
+            },
+        };
+    }
+    async get() {
+        return await this.service.get(this.url);
+    }
+    async upsert(body) {
+        return await this.service.post(this.url, body);
+    }
+}
+});
+
+unwrapExports(dataViews);
+dataViews.DataViewsEndpoint;
+
+var notification = createCommonjsModule(function (module, exports) {
+var __importDefault = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.NotificationEndpoint = void 0;
+const endpoint_1 = __importDefault(endpoint);
+class NotificationEndpoint {
+    constructor(service) {
+        this.service = service;
+        this.subscriptions = new endpoint_1.default(this.service, '/notification/subscriptions');
+    }
+    async publish(body) {
+        const url = '/notification/publish';
+        return await this.service.post(url, body);
+    }
+}
+exports.NotificationEndpoint = NotificationEndpoint;
+});
+
+unwrapExports(notification);
+notification.NotificationEndpoint;
+
 var endpoints = createCommonjsModule(function (module, exports) {
 var __createBinding = (commonjsGlobal && commonjsGlobal.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -906,6 +1068,8 @@ __exportStar(maintenance, exports);
 __exportStar(auditLogs, exports);
 __exportStar(sync, exports);
 __exportStar(fileStorage, exports);
+__exportStar(dataViews, exports);
+__exportStar(notification, exports);
 });
 
 unwrapExports(endpoints);
@@ -2556,16 +2720,31 @@ var __importDefault = (commonjsGlobal && commonjsGlobal.__importDefault) || func
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.papi_fetch = exports.papi_performance = void 0;
-
+exports.papi_fetch = exports.getPerformance = void 0;
 const node_fetch_1 = __importDefault(require$$0);
-exports.papi_performance = typeof window !== 'undefined' ? window.performance : perf_hooks__default['default'].performance;
+function getPerformance() {
+    var _a;
+    try {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        if (commonjsGlobal != undefined) {
+            return (_a = perf_hooks__default['default']) === null || _a === void 0 ? void 0 : _a.performance;
+        }
+    }
+    catch (_b) { }
+    try {
+        if (window != undefined) {
+            return window === null || window === void 0 ? void 0 : window.performance;
+        }
+    }
+    catch (_c) { }
+}
+exports.getPerformance = getPerformance;
 exports.papi_fetch = typeof window !== 'undefined' ? window.fetch.bind(window) : node_fetch_1.default;
 });
 
 unwrapExports(papiModule);
 papiModule.papi_fetch;
-papiModule.papi_performance;
+papiModule.getPerformance;
 
 var papiClient = createCommonjsModule(function (module, exports) {
 var __createBinding = (commonjsGlobal && commonjsGlobal.__createBinding) || (Object.create ? (function(o, m, k, k2) {
@@ -2601,7 +2780,7 @@ class PapiClient {
             type: (typeObject) => {
                 return new endpoints.TypeMetaData(this, typeObject);
             },
-            dataViews: new endpoint_1.default(this, '/meta_data/data_views'),
+            dataViews: new endpoints.DataViewsEndpoint(this),
             pepperiObjects: new endpoint_1.default(this, '/meta_data/pepperiObjects'),
         };
         this.userDefinedTables = new endpoint_1.default(this, '/user_defined_tables');
@@ -2622,6 +2801,11 @@ class PapiClient {
         this.application = {
             sync: new endpoints.SyncEndpoint(this),
         };
+        this.items = new endpoint_1.default(this, '/items');
+        this.transactionLines = new endpoint_1.default(this, '/transaction_lines');
+        this.contacts = new endpoint_1.default(this, '/contacts');
+        this.images = new endpoint_1.default(this, '/images');
+        this.notification = new endpoints.NotificationEndpoint(this);
     }
     async get(url) {
         return this.apiCall('GET', url)
@@ -2654,11 +2838,13 @@ class PapiClient {
         if (this.options.actionUUID) {
             options.headers['X-Pepperi-ActionID'] = this.options.actionUUID;
         }
-        const t0 = papiModule.papi_performance.now();
+        const performance = papiModule.getPerformance();
+        const t0 = performance === null || performance === void 0 ? void 0 : performance.now();
         const res = await papiModule.papi_fetch(fullURL, options);
-        const t1 = papiModule.papi_performance.now();
+        const t1 = performance === null || performance === void 0 ? void 0 : performance.now();
         if (!this.options.suppressLogging) {
-            console.log(method, fullURL, 'took', (t1 - t0).toFixed(2), 'milliseconds');
+            const diff = t0 && t1 ? (t1 - t0).toFixed(2) : 0;
+            console.log(method, fullURL, 'took', diff, 'milliseconds');
         }
         if (!res.ok) {
             // try parsing error as json
@@ -2696,67 +2882,31 @@ __exportStar(papiClient, exports);
 
 var index = unwrapExports(dist);
 
-const CPI_NODE_ADDON_UUID = 'bb6ee826-1c6b-4a11-9758-40a46acb69c5';
-
-var AddonUUID = "1238582e-9b32-4d21-9567-4e17379f41bb";
-var AddonVersion = "0.0.10";
-var DebugPort = 4500;
-var WebappBaseUrl = "https://app.sandbox.pepperi.com";
-var DefaultEditor = "main";
-var Endpoints = [
-	"installation.ts",
-	"api.ts"
+const relations = [
+    {
+        RelationName: "ATDImport",
+        AddonUUID: "1238582e-9b32-4d21-9567-4e17379f41bb",
+        Name: "UomRelations",
+        Description: "Relation from Uom addon to ATD Import addon",
+        Type: "AddonAPI",
+        AddonRelativeURL: "/api/importUom"
+    },
+    {
+        RelationName: "ATDExport",
+        AddonUUID: "1238582e-9b32-4d21-9567-4e17379f41bb",
+        Name: "UomRelations",
+        Description: "Relation from Uom addon to ATD Export addon",
+        Type: "AddonAPI",
+        AddonRelativeURL: "/api/exportUom"
+    },
 ];
-var CPISide = [
-	"uom-app.ts"
-];
-var Editors = [
-	"main"
-];
-var Assets = [
-	"de.json",
-	"en.json",
-	"en.ngx-lib.json",
-	"es.json",
-	"fr.json",
-	"he.json",
-	"hu.json",
-	"it.json",
-	"ja.json",
-	"nl.json",
-	"pl.json",
-	"pt.json",
-	"ru.json",
-	"zh.json"
-];
-var PublishConfig = {
-	ClientStack: "ng10",
-	Editors: [
-		{
-			ParentPackageName: "UOM",
-			PackageName: "uom",
-			Description: "UOM Module"
-		},
-		{
-			ParentPackageName: "UOM",
-			PackageName: "config",
-			Description: "ATD Config"
-		}
-	],
-	Dependencies: {
-	}
+const atdConfigScheme = {
+    Name: "AtdConfig",
+    Type: "cpi_meta_data",
 };
-var config = {
-	AddonUUID: AddonUUID,
-	AddonVersion: AddonVersion,
-	DebugPort: DebugPort,
-	WebappBaseUrl: WebappBaseUrl,
-	DefaultEditor: DefaultEditor,
-	Endpoints: Endpoints,
-	CPISide: CPISide,
-	Editors: Editors,
-	Assets: Assets,
-	PublishConfig: PublishConfig
+const uomsScheme = {
+    Name: "Uoms",
+    Type: "cpi_meta_data",
 };
 
 /*
@@ -2771,13 +2921,14 @@ async function install(client, request) {
     const papiClient = new index.PapiClient({
         baseURL: client.BaseURL,
         token: client.OAuthAccessToken,
+        addonUUID: client.AddonUUID,
+        addonSecretKey: client.AddonSecretKey
     });
-    await papiClient.addons.api.uuid(CPI_NODE_ADDON_UUID).file('cpi_node').func('files').post({}, {
-        AddonUUID: config.AddonUUID,
-        Files: ['uom-app.js'],
-        Version: request.body.ToVersion
-    });
-    return { success: true, resultObject: {} };
+    let retVal = await createADALSchemes(papiClient);
+    if (retVal.success) {
+        retVal = await createRelations(papiClient, relations);
+    }
+    return retVal;
 }
 async function uninstall(client, request) {
     return { success: true, resultObject: {} };
@@ -2786,16 +2937,50 @@ async function upgrade(client, request) {
     const papiClient = new index.PapiClient({
         baseURL: client.BaseURL,
         token: client.OAuthAccessToken,
+        addonUUID: client.AddonUUID,
+        addonSecretKey: client.AddonSecretKey,
     });
-    await papiClient.addons.api.uuid(CPI_NODE_ADDON_UUID).file('cpi_node').func('files').post({}, {
-        AddonUUID: config.AddonUUID,
-        Files: ['uom-app.js'],
-        Version: request.body.ToVersion
-    });
-    return { success: true, resultObject: {} };
+    let retVal = await createADALSchemes(papiClient);
+    if (retVal.success) {
+        retVal = await createRelations(papiClient, relations);
+    }
+    return retVal;
 }
 async function downgrade(client, request) {
     return { success: true, resultObject: {} };
+}
+async function createRelations(papiClient, relations) {
+    try {
+        relations.forEach(async (singleRelation) => {
+            await papiClient.post('/addons/data/relations', singleRelation);
+        });
+        return {
+            success: true,
+            errorMessage: ""
+        };
+    }
+    catch (err) {
+        return {
+            success: false,
+            errorMessage: ('message' in err) ? err.message : 'Unknown Error Occured',
+        };
+    }
+}
+async function createADALSchemes(papiClient) {
+    try {
+        await papiClient.addons.data.schemes.post(atdConfigScheme);
+        await papiClient.addons.data.schemes.post(uomsScheme);
+        return {
+            success: true,
+            errorMessage: ""
+        };
+    }
+    catch (err) {
+        return {
+            success: false,
+            errorMessage: ('message' in err) ? err.message : 'Unknown Error Occured',
+        };
+    }
 }
 
 exports.downgrade = downgrade;
