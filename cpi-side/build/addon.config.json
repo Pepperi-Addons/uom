@@ -32,7 +32,7 @@
         "Editors": [
             {
                 "ParentPackageName": "Quantity Module",
-                "PackageName": "quantity module",
+                "PackageName": "uom",
                 "Description": "Quantity Module List"
             },
             {

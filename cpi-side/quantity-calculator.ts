@@ -51,7 +51,8 @@ export class QuantityCalculator {
 
     }
     toColor(num:number, total:number):boolean{
-        return (this.invBehavior === 'Color' && total > this.normalizedInv) || (this.caseBehavior === 'Color' && num%this.cq != 0) || (this.minBehavior === 'Color' && num < this.getRealMin() && this.getRealMin() > 0); 
+        // debugger
+        return  (this.caseBehavior === 'Color' && num%this.cq != 0) || (this.minBehavior === 'Color' && num < this.getRealMin() && num > 0); 
     }
 
 
