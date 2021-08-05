@@ -89,15 +89,8 @@ class UOMManager {
                         //he never enter that if, cause data.UIObject.dataObject always undefined just in single action he is enter here
                         if (data && data.UIObject && data.UIObject.dataObject && data.FieldID) {
                             let oldValue = await data.UIObject.dataObject.getFieldValue(uqField) || 0;
-                            //    const uomValue = await data.UIObject.dataObject.getFieldValue();
-                            //is it the right way?
                             let itemConfig = await this.getItemConfig(data.UIObject.dataObject);
-                            //    let cq: number = itemConfig['case'];
-                            //    let factor = itemConfig['Factor'];
-                            //    let min = itemConfig['Min'];
-                            //    let uom_key = itemConfig['UOMKey'];
                             const inventory = (await ((_a = data.dataObject) === null || _a === void 0 ? void 0 : _a.getFieldValue(this.config.InventoryFieldID))) || 0;
-                            //here i need to use my quantity calc to increment.
                             const newValue = oldValue + 1;
                             await this.setUQField(data.UIObject, data.FieldID, newValue, ItemAction.Increment);
                         }
@@ -108,7 +101,6 @@ class UOMManager {
                     await next(async () => {
                         if (data && data.UIObject && data.UIObject.dataObject && data.FieldID) {
                             let oldValue = await data.UIObject.dataObject.getFieldValue(uqField) || 0;
-                            //here i can use my quantity calc
                             const newValue = oldValue - 1;
                             await this.setUQField(data.UIObject, data.FieldID, newValue, ItemAction.Decrement);
                         }
@@ -116,7 +108,6 @@ class UOMManager {
                 });
                 // Set UNIT_QTY_TSA   
                 pepperi.events.intercept('SetFieldValue', Object.assign({ FieldID: uqField }, filter), async (data, next, main) => {
-                    // debugger;
                     await next(async () => {
                         if (data && data.UIObject && data.UIObject && data.FieldID) {
                             await this.setUQField(data.UIObject, data.FieldID, parseInt(data.Value), ItemAction.Set);
@@ -166,31 +157,24 @@ class UOMManager {
                 otherQuantity = await (dataObject === null || dataObject === void 0 ? void 0 : dataObject.getFieldValue(otherUQField));
                 total += otherQuantity * otherUomConfig.Factor;
             }
-            // what if inventory is not fix? todo: handle those cases
-            if (true || this.config.InventoryType === "Fix") {
-                // todo: what if there is no inventory from integration
-                const inventory = (await (dataObject === null || dataObject === void 0 ? void 0 : dataObject.getFieldValue(this.config.InventoryFieldID))) || 0;
-                const inventoryLeft = inventory - total;
-                const quantityCalc = new quantity_calculator_1.QuantityCalculator(uomConfig, inventoryLeft, caseBehavior, minBehavior, this.config.InventoryType);
-                switch (itemAction) {
-                    case ItemAction.Increment:
-                        quantityCalc.setCurr(value - 1);
-                        quantityResult = quantityCalc.getIncrementValue();
-                        break;
-                    case ItemAction.Decrement:
-                        quantityCalc.setCurr(value + 1);
-                        quantityResult = quantityCalc.getDecrementValue(); //send here old val;
-                        break;
-                    case ItemAction.Set:
-                        quantityCalc.setCurr(value - 1);
-                        quantityResult = quantityCalc.setVal(value);
-                        break;
-                }
-                ;
-                // if quantity is bigger than the max quantity available in that UOM
-                // set quantity to the max
-                // quantity = quantity < maxInUOM ? quantity : maxInUOM;
+            const inventory = (await (dataObject === null || dataObject === void 0 ? void 0 : dataObject.getFieldValue(this.config.InventoryFieldID))) || 0;
+            const inventoryLeft = inventory - total;
+            const quantityCalc = new quantity_calculator_1.QuantityCalculator(uomConfig, inventoryLeft, caseBehavior, minBehavior, this.config.InventoryType);
+            switch (itemAction) {
+                case ItemAction.Increment:
+                    quantityCalc.setCurr(value - 1);
+                    quantityResult = quantityCalc.getIncrementValue();
+                    break;
+                case ItemAction.Decrement:
+                    quantityCalc.setCurr(value + 1);
+                    quantityResult = quantityCalc.getDecrementValue();
+                    break;
+                case ItemAction.Set:
+                    quantityCalc.setCurr(value - 1);
+                    quantityResult = quantityCalc.setVal(value);
+                    break;
             }
+            ;
             // add quantity to total
             total += quantityResult.total;
             // item with just one UOM - just set the UnitsQuantity & total
@@ -386,7 +370,6 @@ class UOMManager {
     }
 }
 async function load() {
-    debugger;
     // get UOM table
     console.log("Getting the UOM table");
     const list = (await pepperi.api.adal.getList({

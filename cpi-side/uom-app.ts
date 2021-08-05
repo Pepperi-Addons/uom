@@ -113,18 +113,13 @@ class UOMManager {
                      
                         if(data && data.UIObject && data.UIObject.dataObject && data.FieldID) {
                            let oldValue = await data.UIObject.dataObject.getFieldValue(uqField) || 0;
-                        //    const uomValue = await data.UIObject.dataObject.getFieldValue();
-
-                            //is it the right way?
+                  
                            let itemConfig: UomItemConfiguration[] = await this.getItemConfig(data.UIObject.dataObject);
-                        //    let cq: number = itemConfig['case'];
-                        //    let factor = itemConfig['Factor'];
-                        //    let min = itemConfig['Min'];
-                        //    let uom_key = itemConfig['UOMKey'];
+                      
                           
                             const inventory: number = (await data.dataObject?.getFieldValue(this.config.InventoryFieldID)) || 0;
 
-                            //here i need to use my quantity calc to increment.
+                           
                             const newValue = oldValue + 1;
                             await this.setUQField(data.UIObject, data.FieldID, newValue,ItemAction.Increment);
                         }
@@ -135,7 +130,7 @@ class UOMManager {
                     await next(async () => {
                         if(data && data.UIObject && data.UIObject.dataObject && data.FieldID) {
                             let oldValue = await data.UIObject.dataObject.getFieldValue(uqField) || 0;
-                            //here i can use my quantity calc
+                            
                             const newValue = oldValue - 1;
                             await this.setUQField(data.UIObject, data.FieldID, newValue,ItemAction.Decrement);
                         }
@@ -143,7 +138,7 @@ class UOMManager {
                 })
                 // Set UNIT_QTY_TSA   
                 pepperi.events.intercept('SetFieldValue', { FieldID: uqField, ...filter }, async (data, next, main) => {
-                    // debugger;
+                  
                     await next(async () => {
                         if(data && data.UIObject && data.UIObject && data.FieldID) {
                             await this.setUQField(data.UIObject, data.FieldID, parseInt(data.Value),ItemAction.Set);
@@ -195,31 +190,28 @@ class UOMManager {
                 otherQuantity = await dataObject?.getFieldValue(otherUQField);
                 total += otherQuantity * otherUomConfig.Factor;
             }
-            // what if inventory is not fix? todo: handle those cases
-            if (true || this.config.InventoryType === "Fix") {
-                // todo: what if there is no inventory from integration
-                const inventory: number = (await dataObject?.getFieldValue(this.config.InventoryFieldID)) || 0;
-                const inventoryLeft = inventory - total;
-                const quantityCalc: QuantityCalculator = new QuantityCalculator(uomConfig,inventoryLeft,caseBehavior,minBehavior,this.config.InventoryType);
-                switch(itemAction as ItemAction){
-                    case ItemAction.Increment: 
-                        quantityCalc.setCurr(value-1);
-                        quantityResult = quantityCalc.getIncrementValue();
-                        break;
+            
+        
+            const inventory: number = (await dataObject?.getFieldValue(this.config.InventoryFieldID)) || 0;
+            const inventoryLeft = inventory - total;
+            const quantityCalc: QuantityCalculator = new QuantityCalculator(uomConfig,inventoryLeft,caseBehavior,minBehavior,this.config.InventoryType);
+            switch(itemAction as ItemAction){
+                case ItemAction.Increment: 
+                    quantityCalc.setCurr(value-1);
+                    quantityResult = quantityCalc.getIncrementValue();
+                    break;
                     
-                    case ItemAction.Decrement: 
-                        quantityCalc.setCurr(value+1);
-                        quantityResult = quantityCalc.getDecrementValue();//send here old val;
-                        break;
-                    case ItemAction.Set:
-                        quantityCalc.setCurr(value-1);
-                        quantityResult = quantityCalc.setVal(value)
-                        break;
-                };
-                // if quantity is bigger than the max quantity available in that UOM
-                // set quantity to the max
-                // quantity = quantity < maxInUOM ? quantity : maxInUOM;
-            }
+                case ItemAction.Decrement: 
+                    quantityCalc.setCurr(value+1);
+                    quantityResult = quantityCalc.getDecrementValue();
+                    break;
+                case ItemAction.Set:
+                    quantityCalc.setCurr(value-1);
+                    quantityResult = quantityCalc.setVal(value)
+                    break;
+            };
+           
+            
             // add quantity to total
             total += quantityResult.total ;
             

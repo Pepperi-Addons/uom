@@ -281,9 +281,9 @@ describe('Quantity Calculator', () => {
                 it('3: dec should stay 0', dec(0,calc));
                 it('4: dec should stay on 0', dec(0,calc));
                 it('5: set to 9 should set 5', set(5,calc, 9));
-                it('6: inc should go to 0 ', inc(0,calc));
+                it('6: inc should stay on 5 ', inc(5,calc));
                 it('7: set to 1 should set to 2 ', set(2,calc,1));
-                it('8: inc should go to 0 ', inc(0,calc));
+                it('8: inc should stay on 2 ', inc(2,calc));
                 it('9: set to 5 should set to 5 ', set(5,calc,5));
                 it('10: dec should go down from 5 to 0', dec(0,calc));
                 it('11: set to 1 should set to 2 ', set(2,calc,1));
@@ -317,9 +317,9 @@ describe('Quantity Calculator', () => {
                 it('3: dec should stay 0', dec(0,calc));
                 it('4: dec should stay on 0', dec(0,calc));
                 it('5: set to 9 should set 4', set(4,calc, 9));
-                it('6: inc should go to 0 ', inc(0,calc));
+                it('6: inc should stay on 4 ', inc(4,calc));
                 it('7: set to 1 should set to 2 ', set(2,calc,1));
-                it('8: inc should go to 0 ', inc(0,calc));
+                it('8: inc should stay on 2 ', inc(2,calc));
                 it('9: set to 5 should set to 4 ', set(4,calc,5));
                 it('10: dec should go down from 4 to 0', dec(0,calc));
                 it('11: set to 1 should set to 2 ', set(2,calc,1));
@@ -491,16 +491,16 @@ describe('Quantity Calculator', () => {
                 it('3: dec should stay 0', dec(0,calc));
                 it('4: dec should stay on 0', dec(0,calc));
                 it('5: set to 9 should set 4', set(4,calc, 9));
-                it('6: inc should set to 0', inc(0,calc));
+                it('6: inc should stay on 4', inc(4,calc));
                 it('7: set to 999 should set to 4 ', set(4,calc,999));
-                it('8: inc should stay to 0 ', inc(0,calc));
+                it('8: inc should stay on 4 ', inc(4,calc));
                 it('9: set to 2 should set to 2 ', set(2,calc,2));
-                it('10: inc should set to 0 ', inc(0,calc));
+                it('10: inc should stay on 2 ', inc(2,calc));
                 it('11: set to 1 should set to 2 ', set(2,calc,1));
-                it('12: inc should go to 0 ', inc(0,calc));
+                it('12: inc should stay on 2 ', inc(2,calc));
                 it('13: set to 3 should set to 4 ', set(4,calc,3));
                 it('14: dec should go down to 0', dec(0,calc));
-                it('15: dec should go to  0', dec(0,calc));
+                it('15: dec should stay on   0', dec(0,calc));
 
             });
         });
@@ -612,7 +612,7 @@ describe('Quantity Calculator', () => {
             });
         });
 
-        describe ('CASE 3: inv=7, case = 4, min = 3, factor = 1', () => {
+        describe ('CASE 3:  inv=7, case = 4, min = 5, factor = 1', () => {
             let  config: UomItemConfiguration = {'UOMKey': "", 'Case':4, 'Min': 5, 'Factor':1};
             let inventory: number = 7;
             let calc = new QuantityCalculator(config,inventory,caseBehavior,minBehavior,invBehavior);
@@ -620,7 +620,7 @@ describe('Quantity Calculator', () => {
                 it('1: inc should stay 0', inc(0,calc));
                 it('2: dec should stay 0', dec(0,calc));
                 it('3: set to 1 should set 1', set(1,calc, 1));
-                it('4: inc should go to 0', inc(0,calc));
+                it('4: inc should stay on 1', inc(1,calc));
                 it('5: set to 7 should set 7', set(7,calc, 7));
                 it('6: dec should go to 0', dec(0,calc));
 
