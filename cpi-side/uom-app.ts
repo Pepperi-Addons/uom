@@ -81,27 +81,26 @@ class UOMManager {
     //todo
     const itemConfig = await this.getItemConfig(uiObject.dataObject!);
     const inventory: number = (await dataObject?.getFieldValue(this.config.InventoryFieldID)) || 0;
+    // debugger
     const total: number = (await dataObject?.getFieldValue(UNIT_QUANTITY)) || 0;
     let uom: Uom | undefined = undefined;
     let ddArr = [dd1,dd2];
-    let uqArr = [uq1,uq2];
+    let uqArr = [uq1,uq2];0
+
     for(var i=0; i<2; i++){
         var dd1 = ddArr[i];
         var uq1 = uqArr[i];
         if(dd1 && uq1){
             //get relevant data build calc and check if he needs to color
             uom = dd1.value ? uoms.get(dd1.value) : undefined;
-            const cq = this.getUomCaseQuantity(uom, itemConfig);
+            const cq = this.getUomCaseQuantity(uom, itemConfig);5
             const min = this.getUomMinQuantity(uom, itemConfig);
-            const factor = uom? uom.Multiplier: 0;
-            const field:number = 0;
-        
+            const factor = this.getUomConfig(uom, itemConfig).Factor;
             const calc = new QuantityCalculator({'UOMKey': "",'Min': min, 'Case':cq, 'Factor': factor },inventory,this.config.CaseQuantityType, this.config.MinQuantityType, this.config.InventoryType);
                 if(calc.toColor(Number(uq1.value), total))
                 {
-                  
                     uq1 ? uq1.textColor = "#FF0000" : null;
-                    uq2 ? uq2.textColor = "#FF0000" : null;
+                    // uq2 ? uq2.textColor = "#FF0000" : null;
                 }
             }
         }
@@ -334,76 +333,18 @@ class UOMManager {
                 const total: number = (await dataObject?.getFieldValue(UNIT_QUANTITY)) || 0;
                 let uom: Uom | undefined = undefined;
                 await this.colorField(dd1,dd2,uq1,uq2,uiObject,dataObject);
-                // if(dd1 && uq1){
-                //     //get relevant data build calc and check if he needs to color
-                //     uom = dd1.value ? uoms.get(dd1.value) : undefined;
-                //     const cq = this.getUomCaseQuantity(uom, itemConfig);
-                //     const min = this.getUomMinQuantity(uom, itemConfig);
-                //     const factor = uom? uom.Multiplier: 0;
-                    
-                //     const calc = new QuantityCalculator({'UOMKey': "",'Min': min, 'Case':cq, 'Factor': factor },inventory,this.config.CaseQuantityType, this.config.MinQuantityType, this.config.InventoryType);
-                //         if(calc.isLegal(Number(uq1.value)))
-                //         {
-                //             uq1 ? uq1.textColor = "#FF0000" : null;
-                //             uq2 ? uq2.textColor = "#FF0000" : null;
-                //         }
-                //     }
-
+ 
 
                 //paint in red if total > inventory
-                // if (this.config.InventoryType === "Color") {
-                //     const inventory: number = (await dataObject?.getFieldValue(this.config.InventoryFieldID)) || 0;
-                //     const total: number = (await dataObject?.getFieldValue(UNIT_QUANTITY)) || 0;
-                //     if(total > inventory) {
-                //         uq1 ? uq1.textColor = "#FF0000" : null;
-                //         uq2 ? uq2.textColor = "#FF0000" : null;
-                //     }
-                // }
+                if (this.config.InventoryType === "Color") {
+                    const inventory: number = (await dataObject?.getFieldValue(this.config.InventoryFieldID)) || 0;
+                    const total: number = (await dataObject?.getFieldValue(UNIT_QUANTITY)) || 0;
+                    if(total > inventory) {
+                        uq1 ? uq1.textColor = "#FF0000" : null;
+                        uq2 ? uq2.textColor = "#FF0000" : null;
+                    }
+                }
 
-                // if(this.config.CaseQuantityType === 'Color')
-                // {
-                //     const itemConfig = await this.getItemConfig(uiObject.dataObject!) 
-                //     let uom: Uom | undefined = undefined;
-                //     let cq = 0;
-                //     if(dd1 && uq1) {
-                //         uom = dd1.value ? uoms.get(dd1.value) : undefined;
-                //         cq = this.getUomCaseQuantity(uom, itemConfig);
-                //         if(Number(uq1.value) % cq != 0 ) {
-                //             uq1.textColor = "#FF0000";
-                //         }
-                //     }
-                //     if(dd2 && uq2) {
-                //         uom = dd2.value ? uoms.get(dd2.value) : undefined;
-                //         cq = this.getUomCaseQuantity(uom,itemConfig)
-                //         if(Number(uq2.value) % cq  != 0) {
-                //             uq2.textColor = "#FF0000";
-                //         }
-                //     }
-
-
-                // }
-                // if(this.config.MinQuantityType === 'Color') {
-                //     console.log('min quantity action is Color');
-                //     const itemConfig = await this.getItemConfig(uiObject.dataObject!)
-                //     let uom: Uom | undefined = undefined;
-                //     let minQuantity = 0;
-                //     if(dd1 && uq1) {
-                //         uom = dd1.value ? uoms.get(dd1.value) : undefined;
-                //         minQuantity = this.getUomMinQuantity(uom, itemConfig);
-                //         console.log('checking uq1. value is:', uq1.value, 'min quantity is:', minQuantity);
-                //         if(Number(uq1.value) < minQuantity && Number(uq1.value) != 0) {
-                //             uq1.textColor = "#FF0000";
-                //         }
-                //     }
-                //     if(dd2 && uq2) {
-                //         uom = dd2.value ? uoms.get(dd2.value) : undefined;
-                //         minQuantity = this.getUomMinQuantity(uom, itemConfig);
-                //         console.log('checking uq1. value is:', uq2.value, 'min quantity is:', minQuantity);
-                //         if(Number(uq2.value) < minQuantity && Number(uq2.value) != 0) {
-                //             uq2.textColor = "#FF0000";
-                //         }
-                //     }
-                // }
             }
             else {
                 dd1 ? dd1.visible = false : null;
