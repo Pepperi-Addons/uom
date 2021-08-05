@@ -1,2 +1,6 @@
 import '@pepperi-addons/cpi-node';
-export declare function load(configuration: any): Promise<void>;
+export interface QuantityResult {
+    curr: number;
+    total: number;
+}
+export declare function load(): Promise<void>;
