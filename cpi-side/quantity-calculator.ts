@@ -5,7 +5,6 @@ export class QuantityCalculator {
     private max:number 
     private hasInterval:boolean;
     private curr: number;
-    private currInv: number;
     private normalizedInv:number;
     private factor:number;
     private cq:number;
@@ -18,7 +17,6 @@ export class QuantityCalculator {
         this.max = inventory;
         this.hasInterval = false;
         this.curr = 0;
-        this.currInv = this.inventory;
         this.cq = itemConfig.Case;
         this.normalizedInv =  Math.floor(this.inventory/this.factor);
     }
@@ -80,11 +78,9 @@ export class QuantityCalculator {
         //in case we change the real min and the real max
         this.min = this.getRealMin();
         this.max = this.getRealMax();
-
         //rare case, stay with same value
         if(this.min > this.normalizedInv || this.curr > this.max)
             return {'curr': this.curr, 'total': this.curr*this.factor}
-
         if(!this.hasInterval)
             this.buildInterval();
         // thats rare case where we cannot inc
@@ -180,7 +176,6 @@ export class QuantityCalculator {
             //always build interval before the function
           if(!this.hasInterval)
                 this.buildInterval();
-            let originalMax = this.getRealMax(); 
             if(this.caseBehavior != 'Fix' && this.minBehavior != 'Fix')
             {
                 this.min = 0;
@@ -216,10 +211,6 @@ export class QuantityCalculator {
             //simple case, if he is legal thats ok. if case is not fix so the num is legal iff min<=num<=max
             if(this.inInterval(num) || (this.caseBehavior != 'Fix' && num <= this.max && num >= this.min))
             {
-                if(!this.inInterval)
-                {
-                 
-                }
                 this.curr = num;
                 return  {'curr':this.curr, 'total': this.curr*this.factor};
             }
@@ -248,6 +239,7 @@ export class QuantityCalculator {
             //default
             return {'curr':this.curr, 'total': this.curr*this.factor};
     }
+    //setting the current value of the amount
     setCurr(x:number):void{
         this.curr = x;
         return;
