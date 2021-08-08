@@ -73,7 +73,8 @@ export class QuantityCalculator {
         return this.cq != 0 ? Math.floor(this.normalizedInv/this.cq)*this.cq: this.normalizedInv;
     }
     //this function get the number after preforming an increment action.
-    getIncrementValue( ):QuantityResult {   
+    getIncrementValue(num: number):QuantityResult {   
+        this.curr = num;
         //in case we change the real min and the real max
         this.min = this.getRealMin();
         this.max = this.getRealMax();
@@ -133,7 +134,8 @@ export class QuantityCalculator {
         return {'curr':0, 'total': 0};
     }
      //this function get the number after preforming an Decrement action.
-    getDecrementValue():QuantityResult{
+    getDecrementValue(num: number):QuantityResult{
+        this.curr = num;
         //in every action we build an interval of legal values, *this is not continuous interval
         if(!this.hasInterval)
             this.buildInterval();
