@@ -85,7 +85,7 @@ class UOMManager {
     let uom: Uom | undefined = undefined;
     let ddArr = [dd1,dd2];
     let uqArr = [uq1,uq2];0
-
+        //add
     for(var i=0; i<2; i++){
         var dd1 = ddArr[i];
         var uq1 = uqArr[i];
