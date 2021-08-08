@@ -8,13 +8,13 @@ const plugin_node_resolve_1 = __importDefault(require("@rollup/plugin-node-resol
 const plugin_commonjs_1 = __importDefault(require("@rollup/plugin-commonjs"));
 const plugin_json_1 = __importDefault(require("@rollup/plugin-json"));
 const addon_config_json_1 = __importDefault(require("../addon.config.json"));
-exports.default = addon_config_json_1.default.CPISide.map(endpoint => {
+exports.default = addon_config_json_1.default.PublishConfig.CPISide.map(endpoint => {
     return {
         input: endpoint,
         output: [
             {
                 dir: '../publish',
-                format: 'cjs'
+                format: 'cjs',
             }
         ],
         external: [],

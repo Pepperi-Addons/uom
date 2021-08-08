@@ -1,6 +1,6 @@
 {
   "AddonUUID": "1238582e-9b32-4d21-9567-4e17379f41bb",
-  "AddonVersion": "0.0.62",
+  "AddonVersion": "0.0.78",
   "DebugPort": 4500,
   "WebappBaseUrl": "https://app.sandbox.pepperi.com",
   "DefaultEditor": "main",
@@ -31,9 +31,14 @@
     "ClientStack": "ng10",
     "Editors": [
       {
-        "ParentPackageName": "UOM",
+        "ParentPackageName": "Quantity Module",
         "PackageName": "uom",
-        "Description": "UOM Module"
+        "Description": "Quantity Module List"
+      },
+      {
+        "ParentPackageName": "Quantity Module",
+        "PackageName": "config",
+        "Description": "Quantity Module Configuration"
       }
     ],
     "Dependencies": {},
