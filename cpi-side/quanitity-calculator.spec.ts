@@ -17,7 +17,7 @@ describe('Quantity Calculator', () => {
     }
     let set = (result: number, calc: QuantityCalculator, input:number) => {
         return () => {
-            expect(calc.setVal(input)).that.is.eql({'curr': result, 'total' : result*calc.getFactor()});
+            expect(calc.setValue(input)).that.is.eql({'curr': result, 'total' : result*calc.getFactor()});
         }
     }
 
