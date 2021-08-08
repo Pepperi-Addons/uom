@@ -52,20 +52,14 @@
             "production": {
               "fileReplacements": [
                 {
-                    "replace": "src/environments/environment.ts",
-                    "with": "src/environments/environment.prod.ts"
-                },
-                {
-                    "replace": "./webpack.config.js",
-                    "with": "./webpack.prod.config.js"
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
                 }
               ],
               "optimization": true,
               "outputHashing": "none",
-              "sourceMap": false,
-              "extractCss": true,
               "namedChunks": false,
-              "extractLicenses": false,
+              "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true,
               "budgets": [
@@ -80,6 +74,15 @@
                   "maximumError": "10kb"
                 }
               ]
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true,
+              "outputHashing": "none"
             }
           },
           "defaultConfiguration": "production"
@@ -91,59 +94,21 @@
           },
           "configurations": {
             "Standalone": {
-                
+
             },
             "SingleSpa": {
-                
+
             },
             "production": {
               "browserTarget": "client-side:build:production"
-            }
-          },
-          "defaultConfiguration": "production"
-        },
-        "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
-          "options": {
-            "browserTarget": "client-side:build"
-          }
-        },
-        "test": {
-          "builder": "@angular-devkit/build-angular:karma",
-          "options": {
-            "main": "src/test.ts",
-            "polyfills": "src/polyfills.ts",
-            "tsConfig": "tsconfig.spec.json",
-            "karmaConfig": "karma.conf.js",
-            "assets": [
-              "src/favicon.ico",
-              "src/assets"
-            ],
-            "scripts": []
-          }
-        },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "tsconfig.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
-          }
-        },
-        "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
-          "options": {
-            "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "client-side:serve"
-          },
-          "configurations": {
-            "production": {
-              "devServerTarget": "client-side:serve:production"
-            }
-          }
+            },
+
+              "development": {
+                  "browserTarget": "client-side:build:development"
+              }
+
+              },
+              "defaultConfiguration": "development"
         }
       }
     }

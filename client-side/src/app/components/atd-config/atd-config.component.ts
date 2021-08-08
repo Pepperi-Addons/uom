@@ -11,8 +11,7 @@ import { PepDialogData, PepDialogService } from '@pepperi-addons/ngx-lib/dialog'
 @Component({
     selector: 'atd-config-addon',
     templateUrl: './atd-config.component.html',
-    styleUrls: ['./atd-config.component.scss'],
-    // providers: [AtdConfigService]
+    styleUrls: ['./atd-config.component.scss']
 })
 
 export class AtdConfigComponent implements OnInit {
@@ -27,7 +26,6 @@ export class AtdConfigComponent implements OnInit {
     isUomFieldValid: boolean = false;
     @Input() hostObject: any;
     @Output() hostEvents: EventEmitter<any> = new EventEmitter<any>();
-    @ViewChildren('pepSelect') pepSelect: Array<PepSelectComponent>;
 
     constructor(
         public pluginService: AtdConfigService,
@@ -38,9 +36,9 @@ export class AtdConfigComponent implements OnInit {
     ) {
 
     }
-    
-    
-    ngOnInit() {        
+
+
+    ngOnInit() {
         console.log('host object is:', this.hostObject);
         this.pluginService.pluginUUID = this.routeParams.snapshot.params['addon_uuid'];
 
@@ -64,7 +62,7 @@ export class AtdConfigComponent implements OnInit {
         this.pluginService.getAtdFields(this.AtdID).then(fields => {
             this.TSAStringfields = fields?.filter(field=> {
                 //return string fileds that are not 5:Date, 6:DateAndTime, 19:LimitedDate, 20:Image, 24:Attachment, 48:GuidReferenceType
-                return field.Type === "String" && [5,6,19,20,24,48].indexOf(field.UIType.ID) == -1 
+                return field.Type === "String" && [5,6,19,20,24,48].indexOf(field.UIType.ID) == -1
             }).map(field => {
                 return {
                     key: field.FieldID,
@@ -100,14 +98,6 @@ export class AtdConfigComponent implements OnInit {
     }
 
     ngAfterViewInit(){
-        // this.pepSelect.forEach(pep => {
-        //     pep.select.overlayDir.backdropClick.subscribe( ev => {
-        //         pep.select.close();
-        //         this.cd.detectChanges();
-        //     });
-        //     pep.select.close();
-        //     this.cd.detectChanges();
-        // });
     }
 
     onValueChanged(element, $event) {
@@ -158,12 +148,6 @@ export class AtdConfigComponent implements OnInit {
                 break;
             }
         }
-        
-        this.pepSelect.forEach(pep => {
-            pep.select.close();
-            this.cd.detectChanges();
-        });
-       
 
     }
 
@@ -178,11 +162,11 @@ export class AtdConfigComponent implements OnInit {
         this.AtdID = this.Configuration = undefined
         //this.emitClose();
     }
-    
+
     emitClose() {
         this.hostEvents.emit({closeDialog:true});
     }
-    
+
     Cancel() {
         this.pluginService.getConfiguration(this.AtdID).then(config => {
             this.Configuration = config.length == 1  ? config[0] : {
