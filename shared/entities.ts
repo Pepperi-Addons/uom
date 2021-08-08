@@ -5,37 +5,15 @@ export interface Uom {
     Hidden?: boolean
 }
 
-//what exactly this object represent?
 export interface AtdConfiguration {
     Key: string, 
     UOMFieldID: string,
-    InventoryFieldID: string, 
-    InventoryType: InventoryAction,
-    ItemConfigFieldID: string,
-    CaseQuantityType: InventoryAction
-    MinQuantityType: InventoryAction
+    InventoryFieldID: string,
+    InventoryType: string
 }
 
-export const InventoryActions = {
-    DoNothing: 'Do Nothing',
-    Fix: 'Fix Inventory',
-    Color: 'Color',
+export enum InventoryAction {
+    DoNothing = 'Do Nothing',
+    Fix = 'Fix Inventory',
+    Color = 'Color',
 }
-
-//thats what i need to use
-export interface UomItemConfiguration {
-    UOMKey: string,
-    Factor: number,
-    Case: number,
-    Min: number
-}
-
-export type InventoryAction = keyof typeof InventoryActions;
-
-/** Holds the quantity in UOM */
-export const UNIT_QTY_FIRST_TSA = 'TSAAOQMQuantity1';
-export const UNIT_QTY_SECOND_TSA = 'TSAAOQMQuantity2';
-/** Holds the Key of the UOM of the line */
-export const UOM_KEY_FIRST_TSA = 'TSAAOQMUOM1';
-export const UOM_KEY_SECOND_TSA = 'TSAAOQMUOM2';
-

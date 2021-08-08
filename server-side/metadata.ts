@@ -1,5 +1,4 @@
 import { AddonDataScheme, ApiFieldObject } from "@pepperi-addons/papi-sdk"
-import { UNIT_QTY_FIRST_TSA, UNIT_QTY_SECOND_TSA, UOM_KEY_FIRST_TSA, UOM_KEY_SECOND_TSA } from "../shared/entities"
 
 export interface relation {
     RelationName: string;
@@ -8,6 +7,18 @@ export interface relation {
     Description: string;
     Type: "AddonAPI" | "NgComponent" | "Navigation";
     [key:string]:string;
+}
+
+export const tab = {
+    Title: "Configure UOM",
+    FieldID: {
+        Type: "Component",
+        AddonUUID: "1238582e-9b32-4d21-9567-4e17379f41bb",
+        RelativeURL: 'atd_config',
+        SubType: "NG11",
+        ModuleName: 'AtdConfigModule',
+        ComponentName: 'AtdConfigComponent'
+    }
 }
 
 export const relations: relation[] = [
@@ -27,22 +38,22 @@ export const relations: relation[] = [
         Type:"AddonAPI",
         AddonRelativeURL:"/api/exportUom"
     },
-    // {
-    //     RelationName: "TransactionTypeListMenu",
-    //     AddonUUID: "1238582e-9b32-4d21-9567-4e17379f41bb",
-    //     Name:"UomRelations",
-    //     Description:"Configure UOM",
-    //     Type:"NgComponent",
-    //     AddonRelativeURL:"atd_config",
-    //     SubType: "NG11",
-    //     ModuleName: 'AtdConfigModule',
-    //     ComponentName: 'AtdConfigComponent'
-    // },
+    {
+        RelationName: "TransactionTypeListMenu",
+        AddonUUID: "1238582e-9b32-4d21-9567-4e17379f41bb",
+        Name:"UomRelations",
+        Description:"Configure UOM",
+        Type:"NgComponent",
+        AddonRelativeURL:"atd_config",
+        SubType: "NG11",
+        ModuleName: 'AtdConfigModule',
+        ComponentName: 'AtdConfigComponent'
+    },
 ]
 
 export const UomTSAFields: ApiFieldObject[] = [
     {
-        FieldID: UOM_KEY_FIRST_TSA,
+        FieldID: "TSAAOQMUOM1",
         Label: "AOQM_UOM1",
         Description: "the 1st unit of measure",
         IsUserDefinedField: true,
@@ -57,7 +68,7 @@ export const UomTSAFields: ApiFieldObject[] = [
         }
     },
     {
-        FieldID: UOM_KEY_SECOND_TSA,
+        FieldID: "TSAAOQMUOM2",
         Label: "AOQM_UOM2",
         Description: "the 2nd unit of measure",
         IsUserDefinedField: true,
@@ -72,7 +83,7 @@ export const UomTSAFields: ApiFieldObject[] = [
         }
     },
     {
-        FieldID: UNIT_QTY_FIRST_TSA,
+        FieldID: "TSAAOQMQuantity1",
         Label: "AOQM_Quantity1",
         Description: "The quantity for the 1st unit of measure",
         IsUserDefinedField: true,
@@ -84,7 +95,7 @@ export const UomTSAFields: ApiFieldObject[] = [
         Format: "Int64"
     },
     {
-        FieldID: UNIT_QTY_SECOND_TSA,
+        FieldID: "TSAAOQMQuantity2",
         Label: "AOQM_Quantity2",
         Description: "The quantity for the 2nd unit of measure",
         IsUserDefinedField: true,

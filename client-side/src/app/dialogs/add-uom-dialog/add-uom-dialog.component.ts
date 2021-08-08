@@ -1,4 +1,3 @@
-import { TranslateModule } from '@ngx-translate/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Component, OnInit, Inject, OnDestroy, Injectable, ViewEncapsulation } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
@@ -27,9 +26,6 @@ export class AddUomDialogComponent implements OnInit, OnDestroy {
     title: string;
     dialogData: any;
     mode = 'Add';
-    isMultiplierValid: boolean = false;
-    isTitleValid: boolean = false;
-    isKeyValid: boolean = false;
 
     constructor( public dialogRef: MatDialogRef<AddUomDialogComponent>,
         @Inject(MAT_DIALOG_DATA) public incoming: any) {
@@ -41,9 +37,6 @@ export class AddUomDialogComponent implements OnInit, OnDestroy {
             this.dialogData.Key = current.Key;
             this.dialogData.Title = current.Title;
             this.dialogData.Multiplier = current.Multiplier;
-            this.isKeyValid = true;
-            this.isMultiplierValid = true;
-            this.isTitleValid = true;
             this.mode = 'Edit';
         }
     }
@@ -58,18 +51,15 @@ export class AddUomDialogComponent implements OnInit, OnDestroy {
     onValueChanged(element, $event) {
         switch(element) {
             case 'ID': {
-                this.dialogData.Key = $event;
-                this.isKeyValid = $event != '';
+                this.dialogData.Key = $event.value;
                 break;
             }
             case 'Title': {
-                this.dialogData.Title = $event;
-                this.isTitleValid = $event != '';
+                this.dialogData.Title = $event.value;
                 break;
             }
             case 'Multiplier': {
-                this.dialogData.Multiplier = $event;
-                this.isMultiplierValid = $event > 0;
+                this.dialogData.Multiplier = $event.value;
                 break;
             }
         }

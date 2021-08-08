@@ -43,14 +43,6 @@ export class AddonService {
         await this.papiClient.addons.api.uuid(this.pluginUUID).file('api').func('uoms').post(undefined, data);
     }
 
-    async doesUomExist(uomKey: string): Promise<boolean> {
-        const obj = await this.papiClient.addons.api.uuid(this.pluginUUID).file('api').func('getUomByKey').get({
-            uomKey: uomKey
-        });
-
-        return obj != '';
-    }
-
     openDialog(title = 'Modal Test', content, buttons,
         input , callbackFunc = null): void {
         const dialogConfig = this.dialogService.getDialogConfig({disableClose: true, panelClass:'pepperi-standalone'}, 'inline')

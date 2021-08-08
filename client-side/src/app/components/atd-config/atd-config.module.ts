@@ -39,13 +39,16 @@ export function createTranslateLoader(http: HttpClient, fileService: PepFileServ
         CommonModule,
         MaterialModule,
         HttpClientModule,
-        // TranslateModule.forRoot({
-        //     loader: {
-        //         provide: TranslateLoader,
-        //         useFactory: createSubAddonTranslateLoader,
-        //         deps: [HttpClient, PepFileService]
-        //     }
-        // })
+        PepNgxLibModule,
+        PepButtonModule,
+        PepSelectModule,
+        TranslateModule.forChild({
+            loader: {
+                provide: TranslateLoader,
+                useFactory: createTranslateLoader,
+                deps: [HttpClient, PepFileService, PepAddonService]
+            }, isolate: false
+        })
     ],
     exports:[AtdConfigComponent],
     providers: [

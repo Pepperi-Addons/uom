@@ -14,7 +14,7 @@ export class ObjectsService {
         return fields ? fields.find(field => field.FieldID === fieldId) : undefined;
     }
 
-    async getAtdFields(atdId: number): Promise<ApiFieldObject[]> {
+    async getAtdFields(atdId: number): Promise<ApiFieldObject[] | undefined> {
         if (!this.fields[atdId]) {
             this.fields[atdId] = await this.papiClient.metaData.type("transaction_lines").types.subtype(atdId.toString()).fields.get();
         }
@@ -22,12 +22,12 @@ export class ObjectsService {
         return this.fields[atdId];
     }
 
-    async getItemsFields(): Promise<ApiFieldObject[]> {
-        if (!this.fields['items']) {
-            this.fields['items'] = await this.papiClient.metaData.type("items").fields.get();
+    async getAtdTransactionLinesFields(atdId: number): Promise<ApiFieldObject[] | undefined> {
+        if (!this.fields[atdId + '_lines']) {
+            this.fields[atdId + '_lines'] = await this.papiClient.metaData.type("transaction_lines").types.subtype(atdId.toString()).fields.get();
         }
-
-        return this.fields['items'];
+            
+        return this.fields[atdId + '_lines'];
     }
 
     async createAtdTransactionLinesFields(atdId: number, fields:ApiFieldObject[]): Promise<boolean> {

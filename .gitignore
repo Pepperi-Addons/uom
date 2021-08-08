@@ -1,6 +1,3 @@
-/publish/**
-/publish/editors
-**/node_modules**
-**/build/**
+publish/**
 var_sk
-/cpi-side/mochawesome-report
+node_modules/**
