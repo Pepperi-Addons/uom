@@ -3942,7 +3942,7 @@ const uomsScheme = {
 };
 
 var AddonUUID = "1238582e-9b32-4d21-9567-4e17379f41bb";
-var AddonVersion = "0.0.75";
+var AddonVersion = "0.0.76";
 var DebugPort = 4500;
 var WebappBaseUrl = "https://app.sandbox.pepperi.com";
 var DefaultEditor = "main";
@@ -3974,7 +3974,7 @@ var PublishConfig = {
 	Editors: [
 		{
 			ParentPackageName: "Quantity Module",
-			PackageName: "quantity module",
+			PackageName: "uom",
 			Description: "Quantity Module List"
 		},
 		{
