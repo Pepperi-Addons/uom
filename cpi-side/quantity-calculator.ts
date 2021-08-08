@@ -1,4 +1,3 @@
-
 import { QuantityResult } from './uom-app';
 import { InventoryAction, UomItemConfiguration } from './../shared/entities';
 export class QuantityCalculator {
