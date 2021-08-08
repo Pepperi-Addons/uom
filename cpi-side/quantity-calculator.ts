@@ -78,7 +78,7 @@ export class QuantityCalculator {
         this.min = this.getRealMin();
         this.max = this.getRealMax();
         //rare case, stay with same value
-        if(this.min > this.normalizedInv || this.curr > this.max)
+        if(this.min > this.normalizedInv || this.curr >= this.max)
             return {'curr': this.curr, 'total': this.curr*this.factor}
         if(!this.hasInterval)
             this.buildInterval();
