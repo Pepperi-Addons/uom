@@ -312,7 +312,7 @@ class UOMManager {
         const config = itemConfig.find(item => item.UOMKey === uom.Key);
         return {
             UOMKey: uom.Key,
-            Factor: config? Number(config.Factor) || uom.Multiplier: uom.Multiplier,
+            Factor: config? (Number(config.Factor) == 0? 1: Number(config.Factor))  || uom.Multiplier: uom.Multiplier,
             Min: config? Number(config.Min): 0,
             Case: config? Number(config.Case): 1
         }; 
