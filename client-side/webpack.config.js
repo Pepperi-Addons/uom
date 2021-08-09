@@ -7,16 +7,16 @@ const TerserPlugin = require('terser-webpack-plugin');
 const DynamicContainerPathPlugin = require('dynamic-container-path-webpack-plugin');
 const setPublicPath = require('dynamic-container-path-webpack-plugin/set-path');
 module.exports = (config, options, env) => {
-    // config.plugins.push(
-    //     new webpack.DefinePlugin({
-    //       CLIENT_MODE: JSON.stringify(env.configuration),
-    //     })
-    // )
+    config.plugins.push(
+        new webpack.DefinePlugin({
+          CLIENT_MODE: JSON.stringify(env.configuration),
+        })
+    )
 
-    // if (env.configuration === 'Standalone') {
-    //     return config;
-    // }
-    // else {
+    if (env.configuration === 'Standalone') {
+        return config;
+    }
+    else {
         const mfConfig = {
             output: {
               uniqueName: "atd_config",
@@ -51,7 +51,7 @@ module.exports = (config, options, env) => {
         const merged = merge(config, mfConfig);
         const singleSpaWebpackConfig = singleSpaAngularWebpack(merged, options);
         return singleSpaWebpackConfig;
-    // }
+    }
 
 
     // Feel free to modify this webpack config however you'd like to

@@ -158,13 +158,13 @@ export function createTranslateLoader(http: HttpClient, fileService: PepFileServ
         CommonModule,
         PepNgxLibModule,
         pepperiComponentsModules,
-        // TranslateModule.forChild({
-        //     loader: {
-        //         provide: TranslateLoader,
-        //         useFactory: createTranslateLoader,
-        //         deps: [HttpClient, PepFileService, PepAddonService]
-        //     }, isolate: false
-        // })
+        TranslateModule.forChild({
+            loader: {
+                provide: TranslateLoader,
+                useFactory: createTranslateLoader,
+                deps: [HttpClient, PepFileService, PepAddonService]
+            }, isolate: false
+        })
     ],
     exports: [
         PepNgxLibModule,
@@ -175,22 +175,22 @@ export function createTranslateLoader(http: HttpClient, fileService: PepFileServ
 export class PepUIModule {
 
     constructor(
-        //   translate: TranslateService,
+          translate: TranslateService,
           private pepperiIconRegistry: PepIconRegistry
       ) {
         this.pepperiIconRegistry.registerIcons(pepIcons);
 
-        // let userLang = 'en';
-        // translate.setDefaultLang(userLang);
-        // userLang = translate.getBrowserLang().split('-')[0]; // use navigator lang if available
+        let userLang = 'en';
+        translate.setDefaultLang(userLang);
+        userLang = translate.getBrowserLang().split('-')[0]; // use navigator lang if available
 
-        // if (location.href.indexOf('userLang=en') > -1) {
-        //     userLang = 'en';
-        // }
+        if (location.href.indexOf('userLang=en') > -1) {
+            userLang = 'en';
+        }
 
-        // // the lang to use, if the lang isn't available, it will use the current loader to get them
-        // translate.use(userLang).subscribe((res: any) => {
-        //     // In here you can put the code you want. At this point the lang will be loaded
-        // });
+        // the lang to use, if the lang isn't available, it will use the current loader to get them
+        translate.use(userLang).subscribe((res: any) => {
+            // In here you can put the code you want. At this point the lang will be loaded
+        });
     }
 }
