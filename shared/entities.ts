@@ -5,7 +5,7 @@ export interface Uom {
     Hidden?: boolean
 }
 
-//what exactly this object represent?
+
 export interface AtdConfiguration {
     Key: string, 
     UOMFieldID: string,

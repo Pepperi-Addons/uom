@@ -1,14 +1,17 @@
+
 import { QuantityResult } from './uom-app';
 import { InventoryAction, UomItemConfiguration } from './../shared/entities';
 export class QuantityCalculator {
     private max:number 
     private hasInterval:boolean;
     private curr: number;
+    private currInv: number;
     private normalizedInv:number;
     private factor:number;
     private cq:number;
     private min:number;
     private originalMin:number;
+    
     constructor(itemConfig: UomItemConfiguration, private inventory: number, private caseBehavior: InventoryAction ,private minBehavior: InventoryAction,private invBehavior: InventoryAction){  
         this.min = itemConfig.Min;
         this.originalMin = itemConfig.Min;
@@ -16,10 +19,11 @@ export class QuantityCalculator {
         this.max = inventory;
         this.hasInterval = false;
         this.curr = 0;
+        this.currInv = this.inventory;
         this.cq = itemConfig.Case;
         this.normalizedInv =  Math.floor(this.inventory/this.factor);
     }
-    //build an interval,x is in interval if x is >= min(the real min as function of case and min) x<=max , ad x%case == 0
+    //define the real max and min
     buildInterval(){
         this.min = this.getRealMin();
         this.max = this.getRealMax();
@@ -30,57 +34,39 @@ export class QuantityCalculator {
         }
         this.hasInterval = true;
     }
-    //functiopn made for tests.
     getFactor():number {
         return this.factor;
     }
     toColor(num:number, total:number):boolean{
+        // debugger
         return  (this.caseBehavior === 'Color' && num%this.cq != 0) || (this.minBehavior === 'Color' && num < this.getRealMin() && num > 0); 
     }
-    //this function return the min as a function of min,case,inventory.
     getRealMin():number {
-        if(this.originalMin >= this.cq && this.originalMin%this.cq === 0)
-        {
-            return this.originalMin;
-        }
-        if(this.originalMin < this.cq && this.originalMin != 0)
-        { // min should be cq
-            return this.cq
-        }
         //now min > cq and min%cq != 0 therefore we need  the min number x s.t x>=min but x%cq == 0 
         //such x we cant get from cail(min/cq)*cq
         return this.cq != 0? Math.ceil(this.originalMin/this.cq)*this.cq: this.originalMin;
     }
-    //this function check if number is in interval.
     inInterval(x:number):boolean{
         if(!this.hasInterval)
             this.buildInterval;
         return (x <= this.max && x >= this.min && x%this.cq === 0) || (x === 0)?  true:  false; 
     }
-    //this function return the max as a function of min,case,inventory.
     getRealMax():number {
-        if(this.normalizedInv >= this.cq && this.normalizedInv%this.cq === 0)
-        {
-            return this.normalizedInv;
-        }
-        //cannot buy anything if cq > inv
-        if(this.normalizedInv < this.cq)
-        {
-            return 0;
-        }
         //so inventory&cq != 0 therefore we need the max number x s.t x<inv and x%cq == 0
         //that x can be getting from floor(inv/cq)*cq
         return this.cq != 0 ? Math.floor(this.normalizedInv/this.cq)*this.cq: this.normalizedInv;
     }
-    //this function get the number after preforming an increment action.
-    getIncrementValue(num: number):QuantityResult {   
-        this.curr = num;
+
+    getIncrementValue(value: number):QuantityResult {   
+        this.curr = value;
         //in case we change the real min and the real max
-        this.min = this.getRealMin();
-        this.max = this.getRealMax();
+        const  min = this.getRealMin();
+        const max  = this.getRealMax();
+
         //rare case, stay with same value
-        if(this.min > this.normalizedInv || this.curr >= this.max)
+        if(min > this.normalizedInv || this.curr > max)
             return {'curr': this.curr, 'total': this.curr*this.factor}
+
         if(!this.hasInterval)
             this.buildInterval();
         // thats rare case where we cannot inc
@@ -89,27 +75,27 @@ export class QuantityCalculator {
         //if curr is 0 so we need to round him up to the real min who is f(case,min)  unless min is zero and than we should inc him to the case 
         if(this.curr == 0)
         {
-            this.curr = this.min === 0? 1: this.min
+            this.curr = min === 0? 1: min
             return {'curr': this.curr, 'total': this.curr*this.factor}
         }
         //thats can happen just after set with some behavior that is not fixed
         if(this.curr % this.cq != 0 )
         {
             // if he less than min he should be min
-            if(this.curr < this.min)
+            if(this.curr < min)
             {
-                this.curr = this.min;
+                this.curr = min;
                 return {'curr': this.curr, 'total': this.curr*this.factor};
             }
             //so he needs to be real max
-            if(this.curr > this.max)
+            if(this.curr > max)
             {
-                this.curr = this.max;
+                this.curr = max;
                 return { 'curr': this.curr, 'total': this.curr * this.factor};
             }
             //otherwise we need to round him up to the closest value x s.t x%cq == 0
             this.curr = this.cq != 0 ? Math.ceil(this.curr/this.cq) * this.cq: this.curr;
-            this. curr = this.curr > this.max ? this.max: this.curr;
+            this. curr = this.curr > max ? max: this.curr;
             return { 'curr': this.curr, 'total': this.curr * this.factor};
         }
         this.curr = this.curr + this.cq;
@@ -120,22 +106,21 @@ export class QuantityCalculator {
         }
         // here curr is not in interval after updated so x is above max or x is below min
         //case curr > max: we need to update him to be real max that is f(case.min)
-        if(this.curr > this.max)
+        if(this.curr > max)
         {
-            this.curr = this.max;
+            this.curr = max;
             return {'curr': this.curr, 'total': this.curr*this.factor};
         }
         //case curr is less than min: curr need to be the real min who is f(case,min)
-        if(this.curr < this.min)
+        if(this.curr < min)
         {
             this.curr = this.min;
             return {'curr': this.curr, 'total': this.curr*this.factor};
         }
         return {'curr':0, 'total': 0};
     }
-     //this function get the number after preforming an Decrement action.
-    getDecrementValue(num: number):QuantityResult{
-        this.curr = num;
+    getDecrementValue(value: number):QuantityResult{
+        this.curr = value;
         //in every action we build an interval of legal values, *this is not continuous interval
         if(!this.hasInterval)
             this.buildInterval();
@@ -172,11 +157,11 @@ export class QuantityCalculator {
         }
         return {'curr':0, 'total': 0};
     }
-     //this function get the number after preforming an Set action.
     setValue(num: number):QuantityResult{
             //always build interval before the function
           if(!this.hasInterval)
                 this.buildInterval();
+            let originalMax = this.getRealMax(); 
             if(this.caseBehavior != 'Fix' && this.minBehavior != 'Fix')
             {
                 this.min = 0;
@@ -212,6 +197,10 @@ export class QuantityCalculator {
             //simple case, if he is legal thats ok. if case is not fix so the num is legal iff min<=num<=max
             if(this.inInterval(num) || (this.caseBehavior != 'Fix' && num <= this.max && num >= this.min))
             {
+                if(!this.inInterval)
+                {
+                 
+                }
                 this.curr = num;
                 return  {'curr':this.curr, 'total': this.curr*this.factor};
             }
@@ -240,7 +229,10 @@ export class QuantityCalculator {
             //default
             return {'curr':this.curr, 'total': this.curr*this.factor};
     }
-    //setting the current value of the amount
+    updateNormalizedInv():void{
+        this.normalizedInv = this.factor == 0? 0: Math.floor(this.currInv/this.factor);
+
+    }
     setCurr(x:number):void{
         this.curr = x;
         return;

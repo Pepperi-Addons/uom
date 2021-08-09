@@ -871,6 +871,21 @@ describe('Quantity Calculator', () => {
 
 
     });
+    describe('Test 10: factor = 4 case = Fix inv,min = Color', ()=>{
+        let invBehavior:InventoryAction = 'Fix';
+        let caseBehavior: InventoryAction = 'DoNothing';
+        let minBehavior: InventoryAction = 'Fix';
+  
+        describe ('CASE 1: factor = 4 inv = 8 case = 3 min = 1', () => {
+            let  config: UomItemConfiguration = {'UOMKey': "", 'Case':3, 'Min': 1, 'Factor':4};
+            let inventory: number = 8;
+            let calc = new QuantityCalculator(config,inventory,caseBehavior,minBehavior,invBehavior);
+            describe ('1: inc tests:', () => {
+                it('1: set to 1 should work', set(1,calc,1));
+                it('2: inc should stay on 1', inc(1,calc,1));
+            });
+        });
+    });
 
 
 });

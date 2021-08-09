@@ -51,17 +51,17 @@ class UOMManager {
     }
     
     async colorField(dd1: UIField | undefined, dd2: UIField | undefined, uq1: UIField | undefined, uq2: UIField|undefined, uiObject:UIObject){
-    const dataObject = uiObject.dataObject!;
-    const itemConfig = await this.getItemConfig(uiObject.dataObject!);
-    const inventory: number = (await dataObject?.getFieldValue(this.config.InventoryFieldID)) || 0;
-    const total: number = (await dataObject?.getFieldValue(UNIT_QUANTITY)) || 0;
-    let uom: Uom | undefined = undefined;
-    if(dd1 && uq1){
-        this.colorFields(dd1, uq1, uom, itemConfig, inventory, total); 
-    }
-    if(dd2 && uq2){
-        this.colorFields(dd2, uq2, uom, itemConfig, inventory, total); 
-    }
+        const dataObject = uiObject.dataObject!;
+        const itemConfig = await this.getItemConfig(uiObject.dataObject!);
+        const inventory: number = (await dataObject?.getFieldValue(this.config.InventoryFieldID)) || 0;
+        const total: number = (await dataObject?.getFieldValue(UNIT_QUANTITY)) || 0;
+        let uom: Uom | undefined = undefined;
+        if(dd1 && uq1){
+            this.colorFields(dd1, uq1, uom, itemConfig, inventory, total); 
+        }
+        if(dd2 && uq2){
+            this.colorFields(dd2, uq2, uom, itemConfig, inventory, total); 
+        }
         
     }
     colorFields(dd1:UIField,uq1:UIField,uom: Uom|undefined, itemConfig: UomItemConfiguration[], inventory:number,total: number){
@@ -72,8 +72,8 @@ class UOMManager {
                       {
                           uq1 ? uq1.textColor = "#FF0000" : null;  
                       }
-
     }
+
     subscribe() {
         // subscribe to Order center & cart data views
         for (const dataView of [...OC_DATA_VIEWS, ...CART_DATA_VIEWS]) {
@@ -93,8 +93,7 @@ class UOMManager {
             pepperi.events.intercept('RecalculateUIObject', filter, async (data, next, main) => {
                 await this.recalculateOrderCenterItem(data);
                 await next(main);
-            })
-            
+            })        
             for (const uqField of [UNIT_QTY_FIRST_TSA, UNIT_QTY_SECOND_TSA]) {
                 pepperi.events.intercept('IncrementFieldValue', { FieldID: uqField, ...filter }, async (data, next, main) => {
                     
@@ -170,15 +169,15 @@ class UOMManager {
             const inventory: number = (await dataObject?.getFieldValue(this.config.InventoryFieldID)) || 0;
             const inventoryLeft = inventory - total;
             const quantityCalc: QuantityCalculator = new QuantityCalculator(uomConfig,inventoryLeft,caseBehavior,minBehavior,this.config.InventoryType);
-            switch(itemAction as ItemAction){
+            switch(itemAction){
                 case ItemAction.Increment: 
                     quantityCalc.setCurr(value);
-                    quantityResult = quantityCalc.getIncrementValue();
+                    quantityResult = quantityCalc.getIncrementValue(value);
                     break;
                     
                 case ItemAction.Decrement: 
                     quantityCalc.setCurr(value);
-                    quantityResult = quantityCalc.getDecrementValue();
+                    quantityResult = quantityCalc.getDecrementValue(value);
                     break;
                 case ItemAction.Set:
                     quantityResult = quantityCalc.setValue(value)
@@ -306,28 +305,21 @@ class UOMManager {
         return JSON.parse(str);
     }
     getUomConfig(uom: Uom | undefined, itemConfig: UomItemConfiguration[]) : UomItemConfiguration{
-        let retVal: UomItemConfiguration = {
-            UOMKey:"",
-            Factor: 1,
-            Min: 0,
-            Case: 1
-        };
-        if(uom) {
-            const config = itemConfig.find(item => item.UOMKey === uom.Key);
-            if(config) {
-                retVal = {
-                    UOMKey: uom.Key,
-                    Factor: Number(config.Factor) || uom.Multiplier,
-                    Min: Number(config.Min)|| 0,
-                    Case: config === undefined? 1:Number(config.Case)
-                };
-            }
-            else {
-                retVal.Factor = uom.Multiplier;
-                retVal.UOMKey = uom.Key;
-            }
+        if(!uom){
+            return {
+                UOMKey:"",
+                Factor: 1,
+                Min: 0,
+                Case: 1
+            };
         }
-        return retVal;
+        const config = itemConfig.find(item => item.UOMKey === uom.Key);
+        return {
+            UOMKey: uom.Key,
+            Factor: config? Number(config.Factor) || uom.Multiplier: uom.Multiplier,
+            Min: config? Number(config.Min): 0,
+            Case: config? Number(config.Case): 1
+        }; 
     }
     getUomMinQuantity(uom: Uom | undefined, itemConfig: UomItemConfiguration[]) : number{
         let minQuantity = 0;
