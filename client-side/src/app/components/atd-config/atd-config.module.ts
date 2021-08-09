@@ -1,3 +1,4 @@
+import { PepUIModule } from './../../modules/pepperi.module';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
@@ -39,6 +40,7 @@ export function createTranslateLoader(http: HttpClient, fileService: PepFileServ
         CommonModule,
         MaterialModule,
         HttpClientModule,
+        PepUIModule
         // TranslateModule.forRoot({
         //     loader: {
         //         provide: TranslateLoader,
