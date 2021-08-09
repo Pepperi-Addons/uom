@@ -1,7 +1,7 @@
 {
-  "name": "typescript",
+  "name": "quantity",
   "version": "1.0.0",
-  "description": "",
+  "description": "A template for creating a pepperi addon with an angular app for the client-side & a typescript nodejs app for the server-side",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -20,6 +20,15 @@
     "@pepperi-addons/scripts": "^2.0.4"
   },
   "devDependencies": {
+    "dynamic-container-path-webpack-plugin": "^1.1.6",
     "mochawesome": "^6.2.2"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Pepperi-Addons/uom.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Pepperi-Addons/uom/issues"
+  },
+  "homepage": "https://github.com/Pepperi-Addons/uom#readme"
 }
