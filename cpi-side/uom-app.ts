@@ -314,7 +314,7 @@ class UOMManager {
             UOMKey: uom.Key,
             Factor: config? (Number(config.Factor) == 0? 1: Number(config.Factor))  || uom.Multiplier: uom.Multiplier,
             Min: config? Number(config.Min): 0,
-            Case: config? Number(config.Case): 1
+            Case: config? Number(config.Case) == 0? 1: Number(config.Case) :1
         }; 
     }
     getUomMinQuantity(uom: Uom | undefined, itemConfig: UomItemConfiguration[]) : number{
