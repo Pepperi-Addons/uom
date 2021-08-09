@@ -128,7 +128,6 @@ class UOMManager {
             for (const ddField of [UOM_KEY_FIRST_TSA, UOM_KEY_SECOND_TSA]) {
                 // Drop Down Change
                 pepperi.events.intercept('SetFieldValue', { FieldID: ddField, ...filter }, async (data, next, main) => {
-                    debugger;
                     await next(main);
                     // update the UQ field
                     const uqFieldId = data.FieldID === UOM_KEY_FIRST_TSA ? UNIT_QTY_FIRST_TSA : UNIT_QTY_SECOND_TSA;
@@ -171,12 +170,9 @@ class UOMManager {
             const quantityCalc: QuantityCalculator = new QuantityCalculator(uomConfig,inventoryLeft,caseBehavior,minBehavior,this.config.InventoryType);
             switch(itemAction){
                 case ItemAction.Increment: 
-                    quantityCalc.setCurr(value);
                     quantityResult = quantityCalc.getIncrementValue(value);
-                    break;
-                    
+                    break; 
                 case ItemAction.Decrement: 
-                    quantityCalc.setCurr(value);
                     quantityResult = quantityCalc.getDecrementValue(value);
                     break;
                 case ItemAction.Set:
