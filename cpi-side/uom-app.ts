@@ -100,8 +100,6 @@ class UOMManager {
                     await next(async () => {
                         if(data && data.UIObject && data.UIObject.dataObject && data.FieldID) {
                             let oldValue = await data.UIObject.dataObject.getFieldValue(uqField) || 0;
-                            let itemConfig: UomItemConfiguration[] = await this.getItemConfig(data.UIObject.dataObject);
-                            const inventory: number = (await data.dataObject?.getFieldValue(this.config.InventoryFieldID)) || 0;
                             await this.setUQField(data.UIObject, data.FieldID, oldValue,ItemAction.Increment);
                         }
                     });
