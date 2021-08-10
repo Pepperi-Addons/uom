@@ -6,19 +6,24 @@ import { AtdConfiguration,
         UNIT_QTY_SECOND_TSA,
         UOM_KEY_FIRST_TSA,
         UOM_KEY_SECOND_TSA } from './../shared/entities';
-import { DataObject, EventData, UIObject, TransactionLines } from '@pepperi-addons/cpi-node';
+import { DataObject, EventData, UIObject, TransactionLines, UIField  } from '@pepperi-addons/cpi-node';
 import config from '../addon.config.json';
-
-
+import { QuantityCalculator } from './quantity-calculator';
+enum ItemAction{
+    Increment,
+    Decrement,
+    Set
+}
+export interface QuantityResult{
+    curr:number;
+    total:number
+}
 /** The Real UQ Field - Holds the quantity in Baseline */
 const UNIT_QUANTITY = 'UnitsQuantity';
-/** A list of Order Center Data Views */
+/** A list of Order Center Data Views */ 
 const OC_DATA_VIEWS = [ 'OrderCenterGrid', 'OrderCenterView1', 'OrderCenterView2', 'OrderCenterView3', 'OrderCenterItemFullPage', 'OrderCenterVariant', 'OrderCenterBarcodeGridline', 'OrderCenterBarcodeLinesView', 'OrderCenterItemDetails', 'OrderCenterMatrix', 'OrderCenterFlatMatrixGrid', 'OrderCenterFlatMatrixLine'];
 /** A list of Cart Data Views */
 const CART_DATA_VIEWS = ['OrderCartGrid', 'OrderCartView1' ];
-/**
- * Data Structure that holds the UOM from the ADAL table
- */
 class UOMMap {
     private hashMap: { [key: string]: Uom };
     constructor(uoms: Uom[]) {
@@ -44,6 +49,31 @@ class UOMManager {
     load() {
         this.subscribe()        
     }
+    
+    async colorField(dd1: UIField | undefined, dd2: UIField | undefined, uq1: UIField | undefined, uq2: UIField|undefined, uiObject:UIObject){
+        const dataObject = uiObject.dataObject!;
+        const itemConfig = await this.getItemConfig(dataObject!);
+        const inventory: number = (await dataObject?.getFieldValue(this.config.InventoryFieldID)) || 0;
+        const total: number = (await dataObject?.getFieldValue(UNIT_QUANTITY)) || 0;
+        let uom: Uom | undefined = undefined;
+        if(dd1 && uq1){
+            this.colorFields(dd1, uq1, uom, itemConfig, inventory, total); 
+        }
+        if(dd2 && uq2){
+            this.colorFields(dd2, uq2, uom, itemConfig, inventory, total); 
+        }
+        
+    }
+    colorFields(dd1:UIField,uq1:UIField,uom: Uom|undefined, itemConfig: UomItemConfiguration[], inventory:number,total: number){
+                  //get relevant data build calc and check if he needs to color
+                  uom = dd1.value ? uoms.get(dd1.value) : undefined;
+                  const calc = new QuantityCalculator(this.getUomConfig(uom, itemConfig),inventory,this.config.CaseQuantityType, this.config.MinQuantityType, this.config.InventoryType);
+                      if(calc.toColor(Number(uq1.value), total, inventory))
+                      {
+                          uq1 ? uq1.textColor = "#FF0000" : null;  
+                      }
+    }
+
     subscribe() {
         // subscribe to Order center & cart data views
         for (const dataView of [...OC_DATA_VIEWS, ...CART_DATA_VIEWS]) {
@@ -63,15 +93,14 @@ class UOMManager {
             pepperi.events.intercept('RecalculateUIObject', filter, async (data, next, main) => {
                 await this.recalculateOrderCenterItem(data);
                 await next(main);
-            })
+            })        
             for (const uqField of [UNIT_QTY_FIRST_TSA, UNIT_QTY_SECOND_TSA]) {
-                // Increment UNIT_QTY_TSA
                 pepperi.events.intercept('IncrementFieldValue', { FieldID: uqField, ...filter }, async (data, next, main) => {
+                    
                     await next(async () => {
                         if(data && data.UIObject && data.UIObject.dataObject && data.FieldID) {
                             let oldValue = await data.UIObject.dataObject.getFieldValue(uqField) || 0;
-                            const newValue = oldValue + 1;
-                            await this.setUQField(data.UIObject, data.FieldID, newValue);
+                            await this.setUQField(data.UIObject, data.FieldID, oldValue,ItemAction.Increment);
                         }
                     });
                 });
@@ -80,17 +109,16 @@ class UOMManager {
                     await next(async () => {
                         if(data && data.UIObject && data.UIObject.dataObject && data.FieldID) {
                             let oldValue = await data.UIObject.dataObject.getFieldValue(uqField) || 0;
-                            const newValue = oldValue - 1;
-                            await this.setUQField(data.UIObject, data.FieldID, newValue);
+                            await this.setUQField(data.UIObject, data.FieldID, oldValue,ItemAction.Decrement);
                         }
                     });
                 })
-                // Set UNIT_QTY_TSA
+                // Set UNIT_QTY_TSA   
                 pepperi.events.intercept('SetFieldValue', { FieldID: uqField, ...filter }, async (data, next, main) => {
-                    debugger;
+                  
                     await next(async () => {
                         if(data && data.UIObject && data.UIObject && data.FieldID) {
-                            await this.setUQField(data.UIObject, data.FieldID, parseInt(data.Value));
+                            await this.setUQField(data.UIObject, data.FieldID, parseInt(data.Value),ItemAction.Set);
                         }
                     });
                 })
@@ -98,21 +126,19 @@ class UOMManager {
             for (const ddField of [UOM_KEY_FIRST_TSA, UOM_KEY_SECOND_TSA]) {
                 // Drop Down Change
                 pepperi.events.intercept('SetFieldValue', { FieldID: ddField, ...filter }, async (data, next, main) => {
-                    debugger;
                     await next(main);
                     // update the UQ field
                     const uqFieldId = data.FieldID === UOM_KEY_FIRST_TSA ? UNIT_QTY_FIRST_TSA : UNIT_QTY_SECOND_TSA;
                     const quantity = await data.DataObject?.getFieldValue(uqFieldId);
-                    await this.setUQField(data.UIObject!, uqFieldId, quantity);
+                    await this.setUQField(data.UIObject!, uqFieldId, quantity,ItemAction.Set);
                 })
             }
         }
     }
-    async setUQField(uiObject: UIObject, fieldId: string, value: number) {
-        try {
-            //const t0 = performance.now();
-            
+    async setUQField(uiObject: UIObject, fieldId: string, value: number, itemAction:ItemAction) {
+        try { 
             const dataObject = uiObject.dataObject;
+            let doNothing:boolean = false;
             
             // set the fieldIDs
             const uqField = fieldId;
@@ -127,33 +153,35 @@ class UOMManager {
             const itemConfig = await this.getItemConfig(dataObject!);
             const uomConfig = this.getUomConfig(uom, itemConfig);
             const otherUomConfig = this.getUomConfig(otherUom, itemConfig);
+            let minBehavior = this.config.MinQuantityType;
+            let caseBehavior = this.config.CaseQuantityType;
             let quantity = this.config.MinQuantityType === 'Fix' ? (value >= uomConfig.Min ? value : uomConfig.Min) : value;
             let otherQuantity = 0;
             let total = 0;
+            let quantityResult:QuantityResult = {'curr': 0,'total': 0};
             if (otherUom) {
                 otherQuantity = await dataObject?.getFieldValue(otherUQField);
                 total += otherQuantity * otherUomConfig.Factor;
             }
-            // todo - fix inventory
-            if (this.config.InventoryType === "Fix") {
-                // todo: what if there is no inventory from integration
-                const inventory: number = (await dataObject?.getFieldValue(this.config.InventoryFieldID)) || 0;
-                const inventoryLeft = inventory - total;
-                const maxInUOM = Math.floor(inventoryLeft / uomConfig.Factor);
-                
-                // if quantity is bigger than the max quantity available in that UOM
-                // set quantity to the max
-                quantity = quantity < maxInUOM ? quantity : maxInUOM;
-            }
+            const inventory: number = (await dataObject?.getFieldValue(this.config.InventoryFieldID)) || 0;
+            const inventoryLeft = inventory - total;
+            const quantityCalc: QuantityCalculator = new QuantityCalculator(uomConfig,inventoryLeft,caseBehavior,minBehavior,this.config.InventoryType);
+            switch(itemAction){
+                case ItemAction.Increment: 
+                    quantityResult = quantityCalc.getIncrementValue(value);
+                    break; 
+                case ItemAction.Decrement: 
+                    quantityResult = quantityCalc.getDecrementValue(value);
+                    break;
+                case ItemAction.Set:
+                    quantityResult = quantityCalc.setValue(value)
+                    break;
+            };
             // add quantity to total
-            total += quantity * uomConfig.Factor;
-            
+            total += quantityResult.total ;
             // item with just one UOM - just set the UnitsQuantity & total
             await dataObject?.setFieldValue(UNIT_QUANTITY, total.toString(), true);
-            await uiObject.setFieldValue(uqField, quantity.toString(), true);
-
-            // const t1 = performance.now();
-            // console.log(`Set Field took ${t1 - t0}ms`);
+            await uiObject.setFieldValue(uqField, quantityResult.curr.toString(), true);
         }
         catch(err) {
             console.log('Error setting UQ field');
@@ -180,7 +208,6 @@ class UOMManager {
                     Value: uom!.Title
                 }
             });
-
             // run uom logic only when current item has available uoms. otherwise, hide uom fields and continue with regular UQ logic
             if(optionalValues.length > 0 && dataObject.children.length == 0) {
 
@@ -224,36 +251,7 @@ class UOMManager {
                         dd2.readonly = true;
                     }
                 }
-                if (this.config.InventoryType === "Color") {
-                    const inventory: number = (await dataObject?.getFieldValue(this.config.InventoryFieldID)) || 0;
-                    const total: number = (await dataObject?.getFieldValue(UNIT_QUANTITY)) || 0;
-                    if(total > inventory) {
-                        uq1 ? uq1.textColor = "#FF0000" : null;
-                        uq2 ? uq2.textColor = "#FF0000" : null;
-                    }
-                }
-                if(this.config.MinQuantityType === 'Color') {
-                    console.log('min quantity action is Color');
-                    const itemConfig = await this.getItemConfig(uiObject.dataObject!)
-                    let uom: Uom | undefined = undefined;
-                    let minQuantity = 0;
-                    if(dd1 && uq1) {
-                        uom = dd1.value ? uoms.get(dd1.value) : undefined;
-                        minQuantity = this.getUomMinQuantity(uom, itemConfig);
-                        console.log('checking uq1. value is:', uq1.value, 'min quantity is:', minQuantity);
-                        if(Number(uq1.value) < minQuantity) {
-                            uq1.textColor = "#FF0000";
-                        }
-                    }
-                    if(dd2 && uq2) {
-                        uom = dd2.value ? uoms.get(dd2.value) : undefined;
-                        minQuantity = this.getUomMinQuantity(uom, itemConfig);
-                        console.log('checking uq1. value is:', uq2.value, 'min quantity is:', minQuantity);
-                        if(Number(uq2.value) < minQuantity) {
-                            uq2.textColor = "#FF0000";
-                        }
-                    }
-                }
+                await this.colorField(dd1,dd2,uq1,uq2,uiObject);
             }
             else {
                 dd1 ? dd1.visible = false : null;
@@ -278,7 +276,7 @@ class UOMManager {
         }
         return JSON.parse(str);
     }
-
+   
     async getItemConfig(dataObject: DataObject): Promise<UomItemConfiguration[]> {
         let str = await dataObject.getFieldValue(this.config.ItemConfigFieldID);
         if (!str) {
@@ -286,32 +284,15 @@ class UOMManager {
         }
         return JSON.parse(str);
     }
-
     getUomConfig(uom: Uom | undefined, itemConfig: UomItemConfiguration[]) : UomItemConfiguration{
-        let retVal: UomItemConfiguration = {
-            UOMKey:"",
-            Factor: 1,
-            Min: 0,
-            Case: 1
-        };
-        if(uom) {
-            const config = itemConfig.find(item => item.UOMKey === uom.Key);
-            if(config) {
-                retVal = {
-                    UOMKey: uom.Key,
-                    Factor: config.Factor,
-                    Min: config.Min,
-                    Case: config.Case
-                };
-            }
-            else {
-                retVal.UOMKey = uom.Key;
-            }
-        }
-    
-        return retVal;
+        const config = itemConfig.find(item => item.UOMKey === uom?.Key);
+        return {
+            UOMKey: uom?.Key || "",
+            Factor: Number(config?.Factor || uom?.Multiplier || 1),
+            Min: Number(config?.Min || 0),
+            Case: Number(config?.Case || 1)
+        }; 
     }
-    
     getUomMinQuantity(uom: Uom | undefined, itemConfig: UomItemConfiguration[]) : number{
         let minQuantity = 0;
         if(uom) {
@@ -320,19 +301,16 @@ class UOMManager {
         }
     
         return minQuantity;
-    }
-    
+    }  
     getUomCaseQuantity(uom: Uom | undefined, itemConfig: UomItemConfiguration[]) : number{
         let caseQuantity = 1;
         if(uom) {
             const config = itemConfig.find(item => item.UOMKey === uom.Key);
             caseQuantity = config ? Number(config.Case) : 1;
         }
-    
         return caseQuantity;
     }
 }
-
 export async function load() {
     // get UOM table
     console.log("Getting the UOM table");

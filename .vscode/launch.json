@@ -46,6 +46,7 @@
             "address": "localhost",
             // "websocketAddress": "ws://0.0.0.0:9222/f56157ef-6f9b-49d8-ae3a-db4ccd53ffff",
             "name": "Launch CPINode debugger Server",
+            "preLaunchTask": "Publish cpi side"
         }
     ]
 }

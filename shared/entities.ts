@@ -5,10 +5,11 @@ export interface Uom {
     Hidden?: boolean
 }
 
+
 export interface AtdConfiguration {
     Key: string, 
     UOMFieldID: string,
-    InventoryFieldID: string,
+    InventoryFieldID: string, 
     InventoryType: InventoryAction,
     ItemConfigFieldID: string,
     CaseQuantityType: InventoryAction
@@ -21,6 +22,7 @@ export const InventoryActions = {
     Color: 'Color',
 }
 
+//thats what i need to use
 export interface UomItemConfiguration {
     UOMKey: string,
     Factor: number,

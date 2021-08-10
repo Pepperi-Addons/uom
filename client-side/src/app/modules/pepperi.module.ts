@@ -120,18 +120,19 @@ const pepperiComponentsModules = [
     PepTopBarModule
 ];
 
-import { TranslateModule, TranslateLoader, TranslateService } from '@ngx-translate/core';
+import { TranslateModule, TranslateLoader, TranslateService, TranslateStore } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { MultiTranslateHttpLoader } from 'ngx-translate-multi-http-loader';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 // export function createTranslateLoader(http: HttpClient) {
 //    return new TranslateHttpLoader(http, '/assets/i18n/', '.json');
 // }
 
 export function createTranslateLoader(http: HttpClient, fileService: PepFileService, addonService: PepAddonService) {
-    const addonStaticFolder = addonService.getAddonStaticFolder();
     const translationsPath: string = fileService.getAssetsTranslationsPath();
     const translationsSuffix: string = fileService.getAssetsTranslationsSuffix();
+    const addonStaticFolder = addonService.getAddonStaticFolder();
 
     return new MultiTranslateHttpLoader(http, [
         {
@@ -144,7 +145,7 @@ export function createTranslateLoader(http: HttpClient, fileService: PepFileServ
         {
             prefix:
                 addonStaticFolder.length > 0
-                    ? addonStaticFolder + "assets/i18n/" 
+                    ? addonStaticFolder + "assets/i18n/"
                     : "/assets/i18n/",
             suffix: ".json",
         },
@@ -157,18 +158,19 @@ export function createTranslateLoader(http: HttpClient, fileService: PepFileServ
         CommonModule,
         PepNgxLibModule,
         pepperiComponentsModules,
-        TranslateModule.forRoot({
+        TranslateModule.forChild({
             loader: {
                 provide: TranslateLoader,
                 useFactory: createTranslateLoader,
                 deps: [HttpClient, PepFileService, PepAddonService]
-            }
+            }, isolate: false
         })
     ],
     exports: [
         PepNgxLibModule,
         pepperiComponentsModules
-    ]
+    ],
+    providers: [TranslateStore]
 })
 export class PepUIModule {
 

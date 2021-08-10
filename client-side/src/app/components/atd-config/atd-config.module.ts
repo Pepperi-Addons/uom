@@ -1,66 +1,46 @@
-import { AtdConfigComponent } from './index';
+import { PepUIModule } from './../../modules/pepperi.module';
 import { CommonModule } from '@angular/common';
-import { Injectable, NgModule } from '@angular/core';
-import { PepUIModule } from '../../modules/pepperi.module';
-import { MaterialModule } from '../../modules/material.module';
-
-import { TranslateModule, TranslateLoader, TranslateService } from '@ngx-translate/core';
-import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { NgModule } from '@angular/core';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { MaterialModule } from './../../modules/material.module';
+import { PepSelectModule } from '@pepperi-addons/ngx-lib/select';
+import { PepButtonModule } from '@pepperi-addons/ngx-lib/button';
+import { TranslateLoader, TranslateModule, TranslateService, TranslateStore } from '@ngx-translate/core';
+import { PepHttpService, PepFileService, PepNgxLibModule, PepAddonService, PepCustomizationService } from '@pepperi-addons/ngx-lib';
 import { MultiTranslateHttpLoader } from 'ngx-translate-multi-http-loader';
-import { HttpBackend, HttpClient, HttpClientModule } from '@angular/common/http';
-import { PepAddonService, PepFileService } from '@pepperi-addons/ngx-lib';
+import { AtdConfigComponent } from './index';
 
-// export function createTranslateLoader(http: HttpClient) {
-//    return new TranslateHttpLoader(http, '/assets/i18n/', '.json');
-// }
-
-// @Injectable({providedIn: 'root'})
-// export class HttpClientTrans extends HttpClient {
-//   constructor(handler: HttpBackend) {
-//     super(handler);
-//   }
-// }
-
-export function createSubAddonTranslateLoader(http: HttpClient, fileService: PepFileService) {
-    const addonStaticFolder = getAddonStaticFolder();
+export function createTranslateLoader(http: HttpClient, fileService: PepFileService, addonService: PepAddonService) {
     const translationsPath: string = fileService.getAssetsTranslationsPath();
     const translationsSuffix: string = fileService.getAssetsTranslationsSuffix();
+    const addonStaticFolder = addonService.getAddonStaticFolder();
 
     return new MultiTranslateHttpLoader(http, [
         {
             prefix:
                 addonStaticFolder.length > 0
-                    ? addonStaticFolder + '/' + translationsPath 
+                    ? addonStaticFolder + translationsPath
                     : translationsPath,
             suffix: translationsSuffix,
         },
         {
             prefix:
                 addonStaticFolder.length > 0
-                    ? addonStaticFolder + "/assets/i18n/" 
+                    ? addonStaticFolder + "assets/i18n/"
                     : "/assets/i18n/",
             suffix: ".json",
         },
     ]);
-    //return new TranslateHttpLoader(http, '/assets/i18n/', '.json')
 }
-
-function getAddonStaticFolder() {
-    const scripts = document.getElementsByTagName("script");
-    const srcArray = scripts[scripts.length-1].src.split('/');
-    srcArray.pop();
-    return srcArray.join('/');
-}
-
 @NgModule({
     declarations: [
         AtdConfigComponent
     ],
     imports: [
         CommonModule,
-        PepUIModule,
         MaterialModule,
         HttpClientModule,
+        PepUIModule
         // TranslateModule.forRoot({
         //     loader: {
         //         provide: TranslateLoader,
@@ -69,26 +49,31 @@ function getAddonStaticFolder() {
         //     }
         // })
     ],
-    exports:[AtdConfigComponent]
+    exports:[AtdConfigComponent],
+    providers: [
+        TranslateStore,
+        PepHttpService,
+        PepAddonService,
+        PepCustomizationService
+    ]
 })
 
 
 export class AtdConfigModule {
     constructor(
-        translate: TranslateService
-    ) {
+          translate: TranslateService
+      ) {
 
-      let userLang = 'en';
-      translate.setDefaultLang(userLang);
-      userLang = translate.getBrowserLang().split('-')[0]; // use navigator lang if available
+        let userLang = 'en';
+        translate.setDefaultLang(userLang);
+        userLang = translate.getBrowserLang().split('-')[0]; // use navigator lang if available
 
-      if (location.href.indexOf('userLang=en') > -1) {
-          userLang = 'en';
-      }
-
-      // the lang to use, if the lang isn't available, it will use the current loader to get them
-      translate.use(userLang).subscribe((res: any) => {
-          // In here you can put the code you want. At this point the lang will be loaded
-      });
-  }
+        if (location.href.indexOf('userLang=en') > -1) {
+            userLang = 'en';
+        }
+        // the lang to use, if the lang isn't available, it will use the current loader to get them
+        translate.use(userLang).subscribe((res: any) => {
+            // In here you can put the code you want. At this point the lang will be loaded
+        });
+    }
 }

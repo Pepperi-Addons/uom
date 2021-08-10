@@ -1,15 +1,16 @@
 {
-  "name": "typescript",
+  "name": "quantity",
   "version": "1.0.0",
-  "description": "",
+  "description": "A template for creating a pepperi addon with an angular app for the client-side & a typescript nodejs app for the server-side",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "cd ./client-side && npm run build:single-spa && cd .. && cd ./server-side && npm run build && cd .. && cd ./cpi-side && npm run build && cd ..",
-    "init": "yarn && cd ./server-side && yarn && cd .. && cd ./client-side && yarn && cd .. && cd ./cpi-side && yarn && cd ..",
+    "init": "npm i && cd ./server-side && npm i && cd .. && cd ./client-side && npm i && cd .. && cd ./cpi-side && npm i && cd ..",
     "client:addon": "cd client-side && ng serve --port 4400 --configuration SingleSpa && cd..",
     "client:standalone": "cd client-side && ng serve --port 4400 --configuration Standalone && cd..",
     "publish-addon": "npm run build && publish-addon",
+    "pub-addon": "publish-addon",
     "cpi-publish-addon": "cd ./cpi-side && npm run build:debug && cd .. && cpi-node-debug"
   },
   "keywords": [],
@@ -17,5 +18,17 @@
   "license": "ISC",
   "dependencies": {
     "@pepperi-addons/scripts": "^2.0.4"
-  }
+  },
+  "devDependencies": {
+    "dynamic-container-path-webpack-plugin": "^1.1.6",
+    "mochawesome": "^6.2.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Pepperi-Addons/uom.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Pepperi-Addons/uom/issues"
+  },
+  "homepage": "https://github.com/Pepperi-Addons/uom#readme"
 }
