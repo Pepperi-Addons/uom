@@ -47,7 +47,7 @@ export class QuantityCalculator {
         const max  = this.getRealMax();
 
         //rare case, stay with same value
-        if(min > this.normalizedInv || value > max)
+        if((min > this.normalizedInv || value > max) && this.invBehavior === 'Fix')
             return {'curr': value, 'total': value*this.factor}
 
 
