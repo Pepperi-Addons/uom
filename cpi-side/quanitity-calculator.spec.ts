@@ -667,7 +667,7 @@ describe('Quantity Calculator', () => {
                 it('1: inc should go up from 0 to 4', inc(4,calc,0));
                 it('2: inc should go up from 4 to 6', inc(6,calc,4));
                 it('3: inc should go up from 6 to 8', inc(8,calc,6));
-                it('4: inc should stay 8', inc(8,calc,8));
+                it('4: inc should go up 10', inc(10,calc,8));
             });
             describe ('2: dec tests:', () => {
                 it('1: dec should go down from 8 to 6', dec(6,calc,8));
@@ -684,13 +684,13 @@ describe('Quantity Calculator', () => {
             describe ('4: combine tests inc,set,dec:', () => {
                 it('1: set to 9 expected: 10', set(10,calc,9));
                 it('2: dec expected: 8 ', dec(8,calc,10));
-                it('3: inc expected: 8', inc(8,calc,8));
+                it('3: inc expected: 10', inc(10,calc,8));
                 it('4: set to to 3 expected: 4', set(4,calc,3));
                 it('5: dec expected: 0 ', dec(0,calc,4));
                 it('6: inc expected: 4', inc(4,calc,0));
                 it('7: set to to 50 expected: 50', set(50,calc,50));
-                it('8: inc expected: 50', inc(50,calc,50));
-                it('5: dec expected: 8 ', dec(8,calc,50));
+                it('8: inc expected: 50', inc(52,calc,50));
+                it('9: dec expected: 8 ', dec(50,calc,52));
             });
 
 
@@ -711,7 +711,7 @@ describe('Quantity Calculator', () => {
                 it('1: inc should go up from 0 to 4', inc(4,calc,0));
                 it('2: inc should go up from 4 to 6', inc(6,calc,4));
                 it('3: inc should go up from 6 to 8', inc(8,calc,6));
-                it('4: inc should stay 8', inc(8,calc,8));
+                it('4: inc should go up to 10', inc(10,calc,8));
             });
             describe ('2: dec tests:', () => {
                 it('1: dec should go down from 8 to 6', dec(6,calc,8));
@@ -728,13 +728,13 @@ describe('Quantity Calculator', () => {
             describe ('4: combine tests inc,set,dec:', () => {
                 it('1: set to 9 expected: 10', set(10,calc,9));
                 it('2: dec expected: 8 ', dec(8,calc,10));
-                it('3: inc expected: 8', inc(8,calc,8));
+                it('3: inc expected: 10', inc(10,calc,8));
                 it('4: set to to 3 expected: 4', set(4,calc,3));
                 it('5: dec expected: 0 ', dec(0,calc,4));
                 it('6: inc expected: 4', inc(4,calc,0));
                 it('7: set to to 50 expected: 50', set(50,calc,50));
-                it('8: inc expected: 50', inc(50,calc,50));
-                it('5: dec expected: 8 ', dec(8,calc,50));
+                it('8: inc expected: 52', inc(52,calc,50));
+                it('9: dec expected: 50 ', dec(50,calc,52));
             });
 
 
@@ -754,7 +754,7 @@ describe('Quantity Calculator', () => {
                 it('1: inc should go up from 0 to 4', inc(4,calc,0));
                 it('2: inc should go up from 4 to 6', inc(6,calc,4));
                 it('3: inc should go up from 6 to 8', inc(8,calc,6));
-                it('4: inc should stay 8', inc(8,calc,8));
+                it('4: inc should go up to 10', inc(10,calc,8));
             });
             describe ('2: dec tests:', () => {
                 it('1: dec should go down from 8 to 6', dec(6,calc,8));
@@ -771,13 +771,13 @@ describe('Quantity Calculator', () => {
             describe ('4: combine tests inc,set,dec:', () => {
                 it('1: set to 9 expected: 9', set(9,calc,9));
                 it('2: dec expected: 8 ', dec(8,calc,9));
-                it('3: inc expected: 8', inc(8,calc,8));
+                it('3: inc expected: 10', inc(10,calc,8));
                 it('4: set to to 3 expected: 3', set(3,calc,3));
                 it('5: dec expected: 0 ', dec(0,calc,3));
                 it('6: inc expected: 4', inc(4,calc,0));
                 it('7: set to to 51 expected: 51', set(51,calc,51));
-                it('8: inc expected: 51', inc(51,calc,51));
-                it('5: dec expected: 8 ', dec(8,calc,51));
+                it('8: inc expected: 52', inc(52,calc,51));
+                it('9: dec expected: 8 ', dec(50,calc,52));
             });
 
 
@@ -796,7 +796,7 @@ describe('Quantity Calculator', () => {
                     it('1: inc should go up from 0 to 4', inc(4,calc,0));
                     it('2: inc should go up from 4 to 6', inc(6,calc,4));
                     it('3: inc should go up from 6 to 8', inc(8,calc,6));
-                    it('4: inc should stay 8', inc(8,calc,8));
+                    it('4: inc should go up to 10', inc(10,calc,8));
                 });
                 describe ('2: dec tests:', () => {
                     it('1: dec should go down from 8 to 6', dec(6,calc,8));
@@ -813,13 +813,13 @@ describe('Quantity Calculator', () => {
                 describe ('4: combine tests inc,set,dec:', () => {
                     it('1: set to 9 expected: 9', set(9,calc,9));
                     it('2: dec expected: 8 ', dec(8,calc,9));
-                    it('3: inc expected: 8', inc(8,calc,8));
+                    it('3: inc expected: 10', inc(10,calc,8));
                     it('4: set to to 3 expected: 3', set(3,calc,3));
                     it('5: dec expected: 0 ', dec(0,calc,3));
                     it('6: inc expected: 4', inc(4,calc,0));
                     it('7: set to to 51 expected: 51', set(51,calc,51));
-                    it('8: inc expected: 51', inc(51,calc,51));
-                    it('5: dec expected: 8 ', dec(8,calc,51));
+                    it('8: inc expected: 52', inc(52,calc,51));
+                    it('5: dec expected: 50 ', dec(50,calc,52));
                     it('7: set to to -1 expected: 0', set(0,calc,-1));
                 });
             });
@@ -840,13 +840,13 @@ describe('Quantity Calculator', () => {
                     it('1: inc should go up from 0 to 4', inc(4,calc,0));
                     it('2: inc should go up from 4 to 6', inc(6,calc,4));
                     it('3: inc should go up from 6 to 8', inc(8,calc,6));
-                    it('4: inc should stay 8', inc(8,calc,8));
+                    it('4: inc should go up to 10', inc(10,calc,8));
                 });
                 describe ('2: dec tests:', () => {
                     it('1: dec should go down from 8 to 6', dec(6,calc,8));
                     it('2: dec should go down from 6 to 4', dec(4,calc,6));
                     it('3: dec should go down from 4 to 0', dec(0,calc,4));
-                    it('4: inc should stay 0', dec(0,calc,0));
+                    it('4: dec should stay 0', dec(0,calc,0));
                 });
                 describe ('3: set tests:', () => {
                     it('1: set to 9 expected: 10', set(10,calc,10));
@@ -857,13 +857,13 @@ describe('Quantity Calculator', () => {
                 describe ('4: combine tests inc,set,dec:', () => {
                     it('1: set to 9 expected: 10', set(10,calc,9));
                     it('2: dec expected: 8 ', dec(8,calc,10));
-                    it('3: inc expected: 8', inc(8,calc,8));
+                    it('3: inc expected: 10', inc(10,calc,8));
                     it('4: set to to 3 expected: 4', set(4,calc,3));
                     it('5: dec expected: 0 ', dec(0,calc,4));
                     it('6: inc expected: 4', inc(4,calc,0));
                     it('7: set to to 51 expected: 52', set(52,calc,51));
-                    it('8: inc expected: 52', inc(52,calc,52));
-                    it('5: dec expected: 8 ', dec(8,calc,52));
+                    it('8: inc expected: 54', inc(54,calc,52));
+                    it('5: dec expected: 52 ', dec(52,calc,54));
                     it('7: set to to -1 expected: 0', set(0,calc,-1));
                 });
             });

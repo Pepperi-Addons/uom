@@ -35,6 +35,8 @@ export class QuantityCalculator {
     }
 
     getRealMax():number {
+        if(this.invBehavior != 'Fix')
+            return Number.MAX_SAFE_INTEGER;
         //so inventory&cq != 0 therefore we need the max number x s.t x<inv and x%cq == 0
         //that x can be getting from floor(inv/cq)*cq
         return this.cq != 0 ? Math.floor(this.normalizedInv/this.cq)*this.cq: this.normalizedInv;
