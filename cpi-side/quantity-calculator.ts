@@ -20,8 +20,8 @@ export class QuantityCalculator {
         return this.factor;
     }
 
-    toColor(num:number, total:number):boolean{
-        return  (this.caseBehavior === 'Color' && num%this.cq != 0) || (this.minBehavior === 'Color' && num < this.getRealMin() && num > 0); 
+    toColor(num:number, total:number, inventory:number ):boolean{
+        return  (this.caseBehavior === 'Color' && num%this.cq != 0) || (this.minBehavior === 'Color' && num < this.getRealMin() && num > 0) || (this.invBehavior === 'Color' && total > inventory); 
     }
     
     getRealMin():number {

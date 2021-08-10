@@ -52,7 +52,7 @@ class UOMManager {
     
     async colorField(dd1: UIField | undefined, dd2: UIField | undefined, uq1: UIField | undefined, uq2: UIField|undefined, uiObject:UIObject){
         const dataObject = uiObject.dataObject!;
-        const itemConfig = await this.getItemConfig(uiObject.dataObject!);
+        const itemConfig = await this.getItemConfig(dataObject!);
         const inventory: number = (await dataObject?.getFieldValue(this.config.InventoryFieldID)) || 0;
         const total: number = (await dataObject?.getFieldValue(UNIT_QUANTITY)) || 0;
         let uom: Uom | undefined = undefined;
@@ -68,7 +68,7 @@ class UOMManager {
                   //get relevant data build calc and check if he needs to color
                   uom = dd1.value ? uoms.get(dd1.value) : undefined;
                   const calc = new QuantityCalculator(this.getUomConfig(uom, itemConfig),inventory,this.config.CaseQuantityType, this.config.MinQuantityType, this.config.InventoryType);
-                      if(calc.toColor(Number(uq1.value), total))
+                      if(calc.toColor(Number(uq1.value), total, inventory))
                       {
                           uq1 ? uq1.textColor = "#FF0000" : null;  
                       }
@@ -253,21 +253,7 @@ class UOMManager {
                         dd2.readonly = true;
                     }
                 }
-                const itemConfig = await this.getItemConfig(uiObject.dataObject!);
-                const inventory: number = (await dataObject?.getFieldValue(this.config.InventoryFieldID)) || 0;
-                const total: number = (await dataObject?.getFieldValue(UNIT_QUANTITY)) || 0;
-                let uom: Uom | undefined = undefined;
                 await this.colorField(dd1,dd2,uq1,uq2,uiObject);
-                //paint in red if total > inventory
-                if (this.config.InventoryType === "Color") {
-                    const inventory: number = (await dataObject?.getFieldValue(this.config.InventoryFieldID)) || 0;
-                    const total: number = (await dataObject?.getFieldValue(UNIT_QUANTITY)) || 0;
-                    if(total > inventory) {
-                        uq1 ? uq1.textColor = "#FF0000" : null;
-                        uq2 ? uq2.textColor = "#FF0000" : null;
-                    }
-                }
-
             }
             else {
                 dd1 ? dd1.visible = false : null;
@@ -292,7 +278,7 @@ class UOMManager {
         }
         return JSON.parse(str);
     }
-    //this is not working
+   
     async getItemConfig(dataObject: DataObject): Promise<UomItemConfiguration[]> {
         let str = await dataObject.getFieldValue(this.config.ItemConfigFieldID);
         if (!str) {
@@ -301,20 +287,12 @@ class UOMManager {
         return JSON.parse(str);
     }
     getUomConfig(uom: Uom | undefined, itemConfig: UomItemConfiguration[]) : UomItemConfiguration{
-        if(!uom){
-            return {
-                UOMKey:"",
-                Factor: 1,
-                Min: 0,
-                Case: 1
-            };
-        }
-        const config = itemConfig.find(item => item.UOMKey === uom.Key);
+        const config = itemConfig.find(item => item.UOMKey === uom?.Key);
         return {
-            UOMKey: uom.Key,
-            Factor: (config != undefined && config.Factor!= undefined)? (Number(config.Factor) == 0? 1: Number(config.Factor))  || uom.Multiplier: uom.Multiplier,
-            Min: (config != undefined && config.Min != undefined)? Number(config.Min): 0,
-            Case: (config != undefined && config.Case != undefined)? Number(config.Case) == 0? 1: Number(config.Case) :1
+            UOMKey: uom?.Key || "",
+            Factor: Number(config?.Factor || uom?.Multiplier || 1),
+            Min: Number(config?.Min || 0),
+            Case: Number(config?.Case || 1)
         }; 
     }
     getUomMinQuantity(uom: Uom | undefined, itemConfig: UomItemConfiguration[]) : number{
