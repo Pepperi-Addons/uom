@@ -699,9 +699,24 @@ describe('Quantity Calculator', () => {
                 it('8: inc expected: 52', inc(52,calc,50));
                 it('9: dec expected: 50 ', dec(50,calc,52));
             });
-
-
         });
+        describe ('CASE 2: factor = 24 inv = 1 case = 1 min = 0', () => {
+            let  config: UomItemConfiguration = {'UOMKey': "", 'Case':1, 'Min': 0, 'Factor':24};
+            let inventory: number = 1;
+            let calc = new QuantityCalculator(config,inventory,caseBehavior,minBehavior,invBehavior);
+            describe ('1: combine tests:', () => {
+                it('1: inc should go up from 0 to 1', inc(1,calc,0));
+                it('2: inc should go up from 1 to 2', inc(2,calc,1));
+                it('3: inc should go up from 2 to 3', inc(3,calc,2));
+                it('3: set to 24 should set to 24', set(24,calc,24));
+                it('3: dec should go from 24 to 23', dec(23,calc,24));
+                it('3: dec should go from 23 to 22', dec(22,calc,23));
+                it('3: dec should go from 23 to 22', dec(22,calc,23));
+                it('3: dec should go from 22 to 21', dec(21,calc,22));
+                it('3: dec should go from 21 to 20', dec(20,calc,21));
+            });
+        });
+        
     });
 
 

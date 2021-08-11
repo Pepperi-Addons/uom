@@ -19,20 +19,21 @@ export class QuantityCalculator {
             getFactor():number {
                 return this.factor;
             }
-
+            //determince if field needs to be colored
             toColor(num:number, total:number, inventory:number ):boolean{
                 return  (this.caseBehavior === 'Color' && num%this.cq != 0) || (this.minBehavior === 'Color' && num < this.getRealMin() && num > 0) || (this.invBehavior === 'Color' && total > inventory); 
             }
-    
+            //return the min assume min = fix and case = fix;
             getRealMin():number {
                 //now min > cq and min%cq != 0 therefore we need  the min number x s.t x>=min but x%cq == 0 
                 //such x we cant get from cail(min/cq)*cq
-                return this.cq != 0? Math.ceil(this.originalMin/this.cq)*this.cq: this.originalMin;
+                return Math.ceil(this.originalMin/this.cq)*this.cq;
             }
-
+            //return the max quantity assume inv = fix and case = fix;
             getRealMax():number {
                 return  Math.floor(this.normalizedInv/this.cq)*this.cq;
             }
+            //fix the number that will be divided by case, return a number that is not divded by iff action=set and case != fix
             FixByCase(value: number, action:ItemAction):number{
                 switch(action){
                 case ItemAction.Increment:
@@ -46,6 +47,11 @@ export class QuantityCalculator {
                     break;
                 }
             }
+            //fix the number by min, if number bellow min:
+            //if add its up to min  
+            //if dec its down to 0
+            //if set and min=fix its up to min
+            //otherwise return value;
             FixByMin(value:number, action: ItemAction):number{
                 switch(action){
                     case ItemAction.Increment:
@@ -60,8 +66,9 @@ export class QuantityCalculator {
                         return this.minBehavior === 'Fix' && value < this.getRealMin() && value > 0 ? this.getRealMin(): value;
                         break;
                 }
-               
             }
+            //fix the number by max
+            //
             fixByMax(value: number, action: ItemAction):number{
                 switch (action){
                     case ItemAction.Set:
@@ -85,7 +92,7 @@ export class QuantityCalculator {
                 const prevLegalValue = this.FixByCase(value,ItemAction.Decrement) + this.cq;
                 //should return an integer that is no less than value
                 //case there is no interval;
-                if(this.getRealMax() < this.getRealMin() || this.getRealMax() === 0)
+                if((this.getRealMax() < this.getRealMin() || this.getRealMax() === 0) && this.invBehavior === 'Fix')
                    return this.resultBuilder(value);
                 //otherwise we need to fix result
                 return this.resultBuilder(this.fixByMax(this.FixByCase(this.FixByMin(prevLegalValue, ItemAction.Increment),ItemAction.Increment),ItemAction.Increment));        
