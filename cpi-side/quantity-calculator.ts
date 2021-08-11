@@ -25,7 +25,6 @@ export class QuantityCalculator {
             }
             //return the min assume min = fix and case = fix;
             getRealMin():number {
-                //now min > cq and min%cq != 0 therefore we need  the min number x s.t x>=min but x%cq == 0 
                 //such x we cant get from cail(min/cq)*cq
                 return Math.ceil(this.originalMin/this.cq)*this.cq;
             }
@@ -34,17 +33,15 @@ export class QuantityCalculator {
                 return  Math.floor(this.normalizedInv/this.cq)*this.cq;
             }
             //fix the number that will be divided by case, return a number that is not divded by iff action=set and case != fix
-            FixByCase(value: number, action:ItemAction):number{
+            //change Fix functions to fix.
+            fixByCase(value: number, action:ItemAction):number{
                 switch(action){
                 case ItemAction.Increment:
-                    return  value % this.cq != 0? Math.ceil(value/this.cq)*this.cq: value;
-                    break;
+                    return  Math.ceil(value/this.cq)*this.cq;
                 case ItemAction.Decrement:
-                    return value % this.cq != 0 ? Math.floor(value/this.cq)*this.cq : value;
-                    break;
+                    return Math.floor(value/this.cq)*this.cq;
                 case ItemAction.Set:
                     return this.caseBehavior === 'Fix'? Math.ceil(value/this.cq)*this.cq: value;
-                    break;
                 }
             }
             //fix the number by min, if number bellow min:
@@ -52,19 +49,18 @@ export class QuantityCalculator {
             //if dec its down to 0
             //if set and min=fix its up to min
             //otherwise return value;
-            FixByMin(value:number, action: ItemAction):number{
+            fixByMin(value:number, action: ItemAction):number{
                 switch(action){
                     case ItemAction.Increment:
                         return value < this.getRealMin()? this.getRealMin(): value;
-                        break;
                     case ItemAction.Decrement:
                         return  value < this.getRealMin() ? 0: value;
-                        break;
                     case ItemAction.Set:
-                        if(this.caseBehavior != 'Fix')
-                        return this.minBehavior === 'Fix' && value < this.originalMin && value > 0 ? this.originalMin: value;
-                        return this.minBehavior === 'Fix' && value < this.getRealMin() && value > 0 ? this.getRealMin(): value;
-                        break;
+                        if(value === 0){
+                            return value;
+                        }
+                        const min = this.caseBehavior != 'Fix'? this.originalMin: this.getRealMin();
+                        return this.minBehavior === 'Fix' && value < min  ? min: value;
                 }
             }
             //fix the number by max
@@ -85,27 +81,26 @@ export class QuantityCalculator {
             resultBuilder(value:number){
                 return {'curr': value, 'total': value*this.factor};
             }
+
             //value is non negative integer
             //always fix in case and min
             //if after the increment by case he is less than real minimum than he should be mean;
             //if after increment by case he is not divided by case, he should be the next non negative number that divided by case(unless he is bigger than max and inv = fix)
             getIncrementValue(value: number):QuantityResult {
-                const prevLegalValue = this.FixByCase(value,ItemAction.Decrement) + this.cq;
+                const prevLegalValue = this.fixByCase(value,ItemAction.Decrement) + this.cq;
                 //should return an integer that is no less than value
                 //case there is no interval;
-                if((this.getRealMax() < this.getRealMin() || this.getRealMax() === 0) && this.invBehavior === 'Fix')
+                if((this.getRealMax() < this.getRealMin()) && this.invBehavior === 'Fix')
                    return this.resultBuilder(value);
                 //otherwise we need to fix result
-                return this.resultBuilder(this.fixByMax(this.FixByCase(this.FixByMin(prevLegalValue, ItemAction.Increment),ItemAction.Increment),ItemAction.Increment));        
+                return this.resultBuilder(this.fixByMax(this.fixByCase(this.fixByMin(prevLegalValue, ItemAction.Increment),ItemAction.Increment),ItemAction.Increment));        
             }
             getDecrementValue(value: number):QuantityResult{
-                const nextLegalValue = this.FixByCase(value, ItemAction.Increment) - this.cq;
-                // if(this.inInterval(nextLegalValue))
-                //     return this.resultBuilder(nextLegalValue);
-                return this.resultBuilder(this.fixByMax(this.FixByCase(this.FixByMin(nextLegalValue,ItemAction.Decrement),ItemAction.Decrement),ItemAction.Decrement));
+                const nextLegalValue = this.fixByCase(value, ItemAction.Increment) - this.cq;
+                return this.resultBuilder(this.fixByMax(this.fixByCase(this.fixByMin(nextLegalValue,ItemAction.Decrement),ItemAction.Decrement),ItemAction.Decrement));
             }
             setValue(num: number):QuantityResult{
-                return this.resultBuilder(this.FixByCase(this.FixByMin(this.fixByMax(Math.max(num,0), ItemAction.Set),ItemAction.Set),ItemAction.Set));
+                return this.resultBuilder(this.fixByCase(this.fixByMin(this.fixByMax(Math.max(num,0), ItemAction.Set),ItemAction.Set),ItemAction.Set));
     }
 }
 
