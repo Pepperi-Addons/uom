@@ -1,8 +1,5 @@
 import { ItemAction, QuantityResult } from './uom-app';
 import { InventoryAction, UomItemConfiguration } from './../shared/entities';
-import { Z_FIXED } from 'zlib';
-
-
 
 export class QuantityCalculator { 
             private currInv: number;

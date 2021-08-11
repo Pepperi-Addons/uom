@@ -668,6 +668,13 @@ describe('Quantity Calculator', () => {
                 it('2: inc should go up from 4 to 6', inc(6,calc,4));
                 it('3: inc should go up from 6 to 8', inc(8,calc,6));
                 it('4: inc should go up 10', inc(10,calc,8));
+                it('5: inc should go up 12', inc(12,calc,10));
+                it('6: inc should go up 14', inc(14,calc,12));
+                it('7: inc should go up 16', inc(16,calc,14));
+                it('8: inc should go up 18', inc(18,calc,16));
+                it('9: inc should go up 20', inc(20,calc,18));
+                it('10: inc should go up 22', inc(22,calc,20));
+                it('11: inc should go up 24', inc(24,calc,22));
             });
             describe ('2: dec tests:', () => {
                 it('1: dec should go down from 8 to 6', dec(6,calc,8));
