@@ -68,7 +68,8 @@ export class QuantityCalculator {
                 }
             }
             //fix the number by max
-            //
+            //if action = inc or dec and invBehavior = fix and value > max so we change it to max
+            // if action = set and not case behavior(cause otherwise we need to fix by case) and value > max and inBehave = fix then he return the max
             fixByMax(value: number, action: ItemAction):number{
                 switch (action){
                     case ItemAction.Set:
@@ -80,7 +81,7 @@ export class QuantityCalculator {
                         return (value > this.getRealMax() && this.invBehavior === 'Fix') ? this.getRealMax(): value;
                 }
             }
-
+            //build the return type that the uom-app expect to
             resultBuilder(value:number){
                 return {'curr': value, 'total': value*this.factor};
             }
@@ -97,18 +98,14 @@ export class QuantityCalculator {
                 //otherwise we need to fix result
                 return this.resultBuilder(this.fixByMax(this.FixByCase(this.FixByMin(prevLegalValue, ItemAction.Increment),ItemAction.Increment),ItemAction.Increment));        
             }
-
             getDecrementValue(value: number):QuantityResult{
                 const nextLegalValue = this.FixByCase(value, ItemAction.Increment) - this.cq;
                 // if(this.inInterval(nextLegalValue))
                 //     return this.resultBuilder(nextLegalValue);
                 return this.resultBuilder(this.fixByMax(this.FixByCase(this.FixByMin(nextLegalValue,ItemAction.Decrement),ItemAction.Decrement),ItemAction.Decrement));
             }
-
             setValue(num: number):QuantityResult{
-                return this.resultBuilder(this.FixByCase(this.FixByMin(this.fixByMax(Math.max(num,0), ItemAction.Set),ItemAction.Set),ItemAction.Set))
-
-         
+                return this.resultBuilder(this.FixByCase(this.FixByMin(this.fixByMax(Math.max(num,0), ItemAction.Set),ItemAction.Set),ItemAction.Set));
     }
 }
 

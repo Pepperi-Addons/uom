@@ -716,6 +716,21 @@ describe('Quantity Calculator', () => {
                 it('3: dec should go from 21 to 20', dec(20,calc,21));
             });
         });
+        describe ('CASE 3: factor = 80 inv = 1 case = 8 min = 0', () => {
+            let  config: UomItemConfiguration = {'UOMKey': "", 'Case':1, 'Min': 0, 'Factor':24};
+            let inventory: number = 1;
+            let calc = new QuantityCalculator(config,inventory,caseBehavior,minBehavior,invBehavior);
+            describe ('1: combine tests:', () => {
+                it('2: set to 24 should set to 24', set(24,calc,24));
+                it('3: inc should go from 24 to 25', dec(23,calc,24));
+                it('4: dec should go from 25 to 24', dec(24,calc,25));
+                it('5: dec should go from 24 to 23', dec(23,calc,24));
+                it('6: dec should go from 23 to 22', dec(22,calc,23));
+                it('7: dec should go from 23 to 22', dec(22,calc,23));
+                it('8: dec should go from 22 to 21', dec(21,calc,22));
+                it('9: dec should go from 21 to 20', dec(20,calc,21));
+            });
+        });
         
     });
 
