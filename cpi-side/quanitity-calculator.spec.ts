@@ -335,7 +335,7 @@ describe('Quantity Calculator', () => {
                 it('1: inc should go to 2', inc(2,calc,0));
             });
             describe ('2: dec tests:', () => {
-                it('1: dec should stay on 2', dec(2,calc,2));
+                it('1: dec should go to 0', dec(0,calc,2));
             });
             describe ('3: set tests:', () => {
                 it('1: set to 0 should be 0', set(0,calc,0));
@@ -350,17 +350,17 @@ describe('Quantity Calculator', () => {
             describe ('4: set inc dec cobination:', () => {
                 it('1: set to 0', set(0,calc,0));
                 it('2: inc should go to 2', inc(2,calc,0));
-                it('3: inc should stay 2', inc(2,calc,2));
-                it('4: dec should stay 2', dec(2,calc,2));
-                it('5: dec should stay on 2', dec(2,calc,2));
+                it('3: inc should go to 3', inc(3,calc,2));
+                it('4: dec should go to 2', dec(2,calc,3));
+                it('5: dec should go to 0', dec(0,calc,2));
                 it('6: set to 9 should set 3', set(3,calc, 9));
                 it('7: inc should stay on 3 ', inc(3,calc,3));
                 it('8: set to 1 should set to 2 ', set(2,calc,1));
-                it('9: inc should stay on 2 ', inc(2,calc,2));
+                it('9: inc should go to 3 ', inc(3,calc,2));
                 it('10: set to 5 should set to 3 ', set(3,calc,5));
-                it('11: dec should stay on 3', dec(3,calc,3));
+                it('11: dec should go to 2', dec(2,calc,3));
                 it('12: set to 1 should set to 2 ', set(2,calc,1));
-                it('13: dec should stay on 2', dec(2,calc,2));
+                it('13: dec should go to 0', dec(0,calc,2));
             });
         });
        
@@ -887,6 +887,116 @@ describe('Quantity Calculator', () => {
         });
         
     });
+
+    describe('Test 11: Inv= fix, Case = fix, Min = fix', ()=>{
+        let invBehavior:InventoryAction = 'Fix';
+        let caseBehavior: InventoryAction = 'Fix';
+        let minBehavior: InventoryAction = 'Fix';
+  
+        describe ('CASE 1: default inc,dec,set with inv = 10 case = -5 factor = 1, min = 0', () => {
+            let  config: UomItemConfiguration = {'UOMKey': "", 'Case':-5, 'Min': 0, 'Factor':1};
+            let inventory: number = 10;
+            let calc = new QuantityCalculator(config,inventory,caseBehavior,minBehavior,invBehavior);
+            describe ('1: inc tests:', () => {
+                it('1: inc should go up from 0 to 1', inc(1,calc,0));
+                it('2: inc should go up from 1 to 2', inc(2,calc,1));
+                it('3: inc should go up from 2 to 3', inc(3,calc,2));
+                it('4: inc should go up from 3 to 4', inc(4,calc,3));
+                it('5: inc should go up from 4 to 5', inc(5,calc,4));
+                it('6: inc should go up from 5 to 6', inc(6,calc,5));
+                it('7: inc should go up from 6 to 7', inc(7,calc,6));
+                it('8: inc should go up from 7 to 8', inc(8,calc,7));
+                it('9: inc should go up from 8 to 9', inc(9,calc,8));
+                it('10: inc should go up from 9 to 10', inc(10,calc,9));
+                it('11: inc should stay on 10', inc(10,calc,10));
+            });
+            describe ('2: dec tests:', () => {
+                it('1: dec should go down from 10 to 9', dec(9,calc,10));
+                it('2: dec should go down from 9 to 8', dec(8,calc,9));
+                it('3: dec should go down from 8 to 7', dec(7,calc,8));
+                it('4: dec should go down from 7 to 6', dec(6,calc,7));
+                it('5: dec should go down from 6 to 5', dec(5,calc,6));
+                it('6: dec should go down from 5 to 4', dec(4,calc,5));
+                it('7: dec should go down from 4 to 3', dec(3,calc,4));
+                it('8: dec should go down from 3 to 2', dec(2,calc,3));
+                it('9: dec should go down from 2 to 1', dec(1,calc,2));
+                it('10: dec should go down from 1 to 0', dec(0,calc,1));
+                it('11: dec should stay on 0', dec(0,calc,0));
+            });
+            describe ('3: set tests:', () => {
+                it('1: set to 0', set(0,calc,0));
+                it('2: set to 10', set(10,calc,10));
+                it('3: set to 5', set(5,calc,5));
+                it('4: set to 11 should set 10', set(10,calc,11));
+                it('5: set to -1 should set 0', set(0,calc, -1));
+                it('6: set to 999 should set to 10 ', set(10,calc,999));
+                it('6: set to 10 should set to 10 ', set(10,calc,999));
+            });
+            describe ('4: set inc dec cobination:', () => {
+                it('1: set to 0', set(0,calc,0));
+                it('2: inc should go up to 1', inc(1,calc,0));
+                it('3: dec should go down to 0', dec(0,calc,1));
+                it('4: dec should stay on 0', dec(0,calc,0));
+                it('5: set to 9 should set 9', set(9,calc, 9));
+                it('6: inc should go to 10 ', inc(10,calc,9));
+                it('6: set to 999 should set to 10 ', set(10,calc,999));
+                it('6: inc should stay on 10 ', inc(10,calc,10));
+            });
+        });
+
+        describe ('CASE 1: default inc,dec,set with inv = 10 case = -5 factor = -7, min = -8', () => {
+            let  config: UomItemConfiguration = {'UOMKey': "", 'Case':-5, 'Min': -8, 'Factor':1};
+            let inventory: number = 10;
+            let calc = new QuantityCalculator(config,inventory,caseBehavior,minBehavior,invBehavior);
+            describe ('1: inc tests:', () => {
+                it('1: inc should go up from 0 to 1', inc(1,calc,0));
+                it('2: inc should go up from 1 to 2', inc(2,calc,1));
+                it('3: inc should go up from 2 to 3', inc(3,calc,2));
+                it('4: inc should go up from 3 to 4', inc(4,calc,3));
+                it('5: inc should go up from 4 to 5', inc(5,calc,4));
+                it('6: inc should go up from 5 to 6', inc(6,calc,5));
+                it('7: inc should go up from 6 to 7', inc(7,calc,6));
+                it('8: inc should go up from 7 to 8', inc(8,calc,7));
+                it('9: inc should go up from 8 to 9', inc(9,calc,8));
+                it('10: inc should go up from 9 to 10', inc(10,calc,9));
+                it('11: inc should stay on 10', inc(10,calc,10));
+            });
+            describe ('2: dec tests:', () => {
+                it('1: dec should go down from 10 to 9', dec(9,calc,10));
+                it('2: dec should go down from 9 to 8', dec(8,calc,9));
+                it('3: dec should go down from 8 to 7', dec(7,calc,8));
+                it('4: dec should go down from 7 to 6', dec(6,calc,7));
+                it('5: dec should go down from 6 to 5', dec(5,calc,6));
+                it('6: dec should go down from 5 to 4', dec(4,calc,5));
+                it('7: dec should go down from 4 to 3', dec(3,calc,4));
+                it('8: dec should go down from 3 to 2', dec(2,calc,3));
+                it('9: dec should go down from 2 to 1', dec(1,calc,2));
+                it('10: dec should go down from 1 to 0', dec(0,calc,1));
+                it('11: dec should stay on 0', dec(0,calc,0));
+            });
+            describe ('3: set tests:', () => {
+                it('1: set to 0', set(0,calc,0));
+                it('2: set to 10', set(10,calc,10));
+                it('3: set to 5', set(5,calc,5));
+                it('4: set to 11 should set 10', set(10,calc,11));
+                it('5: set to -1 should set 0', set(0,calc, -1));
+                it('6: set to 999 should set to 10 ', set(10,calc,999));
+                it('6: set to 10 should set to 10 ', set(10,calc,999));
+            });
+            describe ('4: set inc dec cobination:', () => {
+                it('1: set to 0', set(0,calc,0));
+                it('2: inc should go up to 1', inc(1,calc,0));
+                it('3: dec should go down to 0', dec(0,calc,1));
+                it('4: dec should stay on 0', dec(0,calc,0));
+                it('5: set to 9 should set 9', set(9,calc, 9));
+                it('6: inc should go to 10 ', inc(10,calc,9));
+                it('6: set to 999 should set to 10 ', set(10,calc,999));
+                it('6: inc should stay on 10 ', inc(10,calc,10));
+            });
+        });
+    });
+    
+    
 
 
 });

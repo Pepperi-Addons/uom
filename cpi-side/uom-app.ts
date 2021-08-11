@@ -9,7 +9,7 @@ import { AtdConfiguration,
 import { DataObject, EventData, UIObject, TransactionLines, UIField  } from '@pepperi-addons/cpi-node';
 import config from '../addon.config.json';
 import { QuantityCalculator } from './quantity-calculator';
-enum ItemAction{
+export enum ItemAction{
     Increment,
     Decrement,
     Set
