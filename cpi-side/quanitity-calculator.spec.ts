@@ -885,6 +885,7 @@ describe('Quantity Calculator', () => {
                 it('2: inc should stay on 1', inc(1,calc,1));
             });
         });
+        
     });
 
 

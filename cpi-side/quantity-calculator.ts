@@ -1,6 +1,6 @@
-
 import { QuantityResult } from './uom-app';
 import { InventoryAction, UomItemConfiguration } from './../shared/entities';
+import { Z_FIXED } from 'zlib';
 export class QuantityCalculator { 
     private currInv: number;
     private normalizedInv:number;
@@ -35,71 +35,38 @@ export class QuantityCalculator {
     }
 
     getRealMax():number {
-        if(this.invBehavior != 'Fix')
-            return Number.MAX_SAFE_INTEGER;
-        //so inventory&cq != 0 therefore we need the max number x s.t x<inv and x%cq == 0
-        //that x can be getting from floor(inv/cq)*cq
-        return this.cq != 0 ? Math.floor(this.normalizedInv/this.cq)*this.cq: this.normalizedInv;
+        return  Math.floor(this.normalizedInv/this.cq)*this.cq;
     }
 
-    getIncrementValue(value: number):QuantityResult {   
-        const  min = this.getRealMin();
-        const max  = this.getRealMax();
-
-        //rare case, stay with same value
-        if((min > this.normalizedInv || value > max) && this.invBehavior === 'Fix')
-            return {'curr': value, 'total': value*this.factor}
-
-
-        // thats rare case where we cannot inc
-        if(this.cq  > this.normalizedInv && this.invBehavior === 'Fix')
-            return {'curr': 0, 'total': 0};
-        //if curr is 0 so we need to round him up to the real min who is f(case,min)  unless min is zero and than we should inc him to the case 
-        if(value == 0)
-        {
-            value = min === 0? 1: min
-            return {'curr': value, 'total': value*this.factor}
-        }
-        //thats can happen just after set with some behavior that is not fixed
-        if(value % this.cq != 0 )
-        {
-            // if he less than min he should be min
-            if(value < min)
-            {
-                value = min;
-                return {'curr': value, 'total': value*this.factor};
-            }
-            //so he needs to be real max
-            if(value > max)
-            {
-                value = max;
-                return { 'curr': value, 'total': value * this.factor};
-            }
-            //otherwise we need to round him up to the closest value x s.t x%cq == 0
-            value = this.cq != 0 ? Math.ceil(value/this.cq) * this.cq: value;
-            value = value > max ? max: value;
-            return { 'curr': value, 'total': value * this.factor};
-        }
-        value = value + this.cq;
-        //if curr is in interval so he is legal and therefor we return him as is.
-        if(this.inInterval(value))
-        {
-            return {'curr': value, 'total': value*this.factor};
-        }
-        // here curr is not in interval after updated so x is above max or x is below min
-        //case curr > max: we need to update him to be real max that is f(case.min)
-        if(value > max)
-        {
-            value = max;
-            return {'curr': value, 'total': value*this.factor};
-        }
-        //case curr is less than min: curr need to be the real min who is f(case,min)
-        if(value < min)
-        {
-            value = min;
-            return {'curr': value, 'total': value*this.factor};
-        }
-        return {'curr':0, 'total': 0};
+    fix(result: number):number{
+        if(this.cq > this.getRealMax())
+            return result;
+        if(this.inInterval(result+this.cq))
+            return result+this.cq;
+        return this.invBehavior === 'Fix'? this.fixByCase(this.fixByMin(result)): this.fixByCase(this.fixByMin(result)); 
+    }
+    fixByCase(result: number):number{
+        return result > this.getRealMin()? Math.ceil(result/this.cq) * this.cq: result;
+    }
+    fixByMin(result:number){
+        return result < this.getRealMin()? this.getRealMin(): result;
+    }
+    fixByMax(result: number):number{
+        return result > this.getRealMax()? this.getRealMax(): result;
+    }
+    resultBuilder(result: number):QuantityResult{
+        return{'curr':result, 'total': result*this.factor};
+    }
+    //Math.ceil(value/this.cq) * this.cq: value;
+    //value is non negative integer
+    //should return an integer that is no less than value
+    //always fix in case and min
+    //if after the increment by case he is less than real minimum than he should be mean;
+    //if after increment by case he is not divided by case, he should be the next non negative number that divided by case(unless he is bigger than max and inv = fix)
+    getIncrementValue(value: number):QuantityResult {
+        if(value > this.getRealMax())
+            return this.resultBuilder(value);
+        return  this.invBehavior != 'Fix'? this.resultBuilder(this.fixByCase(this.fixByMin(value))) : this.resultBuilder(this.fix(value));
     }
     getDecrementValue(value: number):QuantityResult{
         //in every action we build an interval of legal values, *this is not continuous interval
