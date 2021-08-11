@@ -689,8 +689,8 @@ describe('Quantity Calculator', () => {
                 it('5: dec expected: 0 ', dec(0,calc,4));
                 it('6: inc expected: 4', inc(4,calc,0));
                 it('7: set to to 50 expected: 50', set(50,calc,50));
-                it('8: inc expected: 50', inc(52,calc,50));
-                it('9: dec expected: 8 ', dec(50,calc,52));
+                it('8: inc expected: 52', inc(52,calc,50));
+                it('9: dec expected: 50 ', dec(50,calc,52));
             });
 
 
