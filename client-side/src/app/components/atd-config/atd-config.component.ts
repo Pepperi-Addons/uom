@@ -133,10 +133,10 @@ export class AtdConfigComponent implements OnInit {
             }
             case 'ItemConfig': {
                 this.Configuration.ItemConfigFieldID = $event;
-                if($event == '') {
-                    this.Configuration.CaseQuantityType = 'DoNothing';
-                    this.Configuration.MinQuantityType = 'DoNothing';
-                } 
+                // if($event == '') {
+                //     this.Configuration.CaseQuantityType = 'DoNothing';
+                //     this.Configuration.MinQuantityType = 'DoNothing';
+                // } 
                 break;
             }
             case 'CaseAction': {

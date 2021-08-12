@@ -18,7 +18,7 @@ export interface AtdConfiguration {
 
 export const InventoryActions = {
     DoNothing: 'Do Nothing',
-    Fix: 'Fix Inventory',
+    Fix: 'Fix',
     Color: 'Color',
 }
 
