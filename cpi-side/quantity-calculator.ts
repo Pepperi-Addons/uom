@@ -59,12 +59,13 @@ export class QuantityCalculator {
                         if(value === 0){
                             return value;
                         }
+                const min = this.caseBehavior != 'Fix'? this.originalMin: this.getRealMin();
                 //when min > inventory and minx=fix and inv=fix we cannot buy even 1 item
-                if(this.originalMin> this.normalizedInv && this.invBehavior === 'Fix' && this.minBehavior === 'Fix')
+                if(min > this.normalizedInv && this.invBehavior === 'Fix' && this.minBehavior === 'Fix')
                 {
                     return 0;
                 }
-                        const min = this.caseBehavior != 'Fix'? this.originalMin: this.getRealMin();
+                        
                         return this.minBehavior === 'Fix' && value < min  ? min: value;
                 }
             }
@@ -108,8 +109,8 @@ export class QuantityCalculator {
                 return this.fix(Math.max(num,0),ItemAction.Set);
     }
             fix(num: number, action: ItemAction){
-                let res = this.fixByMin(num,action);
-                res = this.fixByCase(res,action);
+                let res = this.fixByCase(num,action);
+                res = this.fixByMin(res,action);
                 res = this.fixByMax(res, action);
                 return this.resultBuilder(res);
             }

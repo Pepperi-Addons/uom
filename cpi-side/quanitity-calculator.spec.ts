@@ -1065,6 +1065,21 @@ describe('Quantity Calculator', () => {
                 });
             });
         });
+        describe('Test 14: Inv= fix, Case = fix, Min = Fix', ()=>{
+            let invBehavior:InventoryAction = 'Fix';
+            let caseBehavior: InventoryAction = 'Fix';
+            let minBehavior: InventoryAction = 'Fix';
+      
+            describe ('CASE 1:inv = 36, min = 36, case = 13, factor = 1', () => {
+                let  config: UomItemConfiguration = {'UOMKey': "", 'Case':13, 'Min': 36, 'Factor':1};
+                let inventory: number = 36;
+                let calc = new QuantityCalculator(config,inventory,caseBehavior,minBehavior,invBehavior);
+                describe ('1: combine tests:', () => {
+                    it('1: increment should stay on 0 ', inc(0,calc,0));
+                    it('1: set to 27 should set to 0', set(0,calc,27));
+                });
+            });
+        });
     });
     
     
