@@ -1036,6 +1036,37 @@ describe('Quantity Calculator', () => {
             });
         });
     });
+    //here
+    
+    describe('Test 12: Inv= fix, Case = doNothing, Min = fix', ()=>{
+        let invBehavior:InventoryAction = 'Fix';
+        let caseBehavior: InventoryAction = 'DoNothing';
+        let minBehavior: InventoryAction = 'Fix';
+  
+        describe ('CASE 1: min > inv: min = 22, inv = 21, case = 10, factor = 2', () => {
+            let  config: UomItemConfiguration = {'UOMKey': "", 'Case':10, 'Min': 22, 'Factor':2};
+            let inventory: number = 21;
+            let calc = new QuantityCalculator(config,inventory,caseBehavior,minBehavior,invBehavior);
+            describe ('1: combine tests:', () => {
+                it('1: set to 27 should set to 0 ', set(0,calc,27));
+            });
+        });
+        describe('Test 13: Inv= fix, Case = fix, Min = DoNothing', ()=>{
+            let invBehavior:InventoryAction = 'Fix';
+            let caseBehavior: InventoryAction = 'Fix';
+            let minBehavior: InventoryAction = 'DoNothing';
+      
+            describe ('CASE 1:inv = 80, min = 3, case = 1, factor = 1', () => {
+                let  config: UomItemConfiguration = {'UOMKey': "", 'Case':1, 'Min': 3, 'Factor':1};
+                let inventory: number = 80;
+                let calc = new QuantityCalculator(config,inventory,caseBehavior,minBehavior,invBehavior);
+                describe ('1: combine tests:', () => {
+                    it('1: increment should go from 0 to 3 ', inc(3,calc,0));
+                });
+            });
+        });
+    });
+    
     
     
 

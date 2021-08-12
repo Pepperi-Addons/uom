@@ -59,6 +59,11 @@ export class QuantityCalculator {
                         if(value === 0){
                             return value;
                         }
+                //when min > inventory and minx=fix and inv=fix we cannot buy even 1 item
+                if(this.originalMin> this.normalizedInv && this.invBehavior === 'Fix' && this.minBehavior === 'Fix')
+                {
+                    return 0;
+                }
                         const min = this.caseBehavior != 'Fix'? this.originalMin: this.getRealMin();
                         return this.minBehavior === 'Fix' && value < min  ? min: value;
                 }
@@ -93,14 +98,20 @@ export class QuantityCalculator {
                 if((this.getRealMax() < this.getRealMin()) && this.invBehavior === 'Fix')
                    return this.resultBuilder(value);
                 //otherwise we need to fix result
-                return this.resultBuilder(this.fixByMax(this.fixByCase(this.fixByMin(prevLegalValue, ItemAction.Increment),ItemAction.Increment),ItemAction.Increment));        
+                return this.fix(prevLegalValue,ItemAction.Increment)    
             }
             getDecrementValue(value: number):QuantityResult{
                 const nextLegalValue = this.fixByCase(value, ItemAction.Increment) - this.cq;
-                return this.resultBuilder(this.fixByMax(this.fixByCase(this.fixByMin(nextLegalValue,ItemAction.Decrement),ItemAction.Decrement),ItemAction.Decrement));
+                return this.fix(nextLegalValue,ItemAction.Decrement);
             }
             setValue(num: number):QuantityResult{
-                return this.resultBuilder(this.fixByCase(this.fixByMin(this.fixByMax(Math.max(num,0), ItemAction.Set),ItemAction.Set),ItemAction.Set));
+                return this.fix(Math.max(num,0),ItemAction.Set);
     }
+            fix(num: number, action: ItemAction){
+                let res = this.fixByMin(num,action);
+                res = this.fixByCase(res,action);
+                res = this.fixByMax(res, action);
+                return this.resultBuilder(res);
+            }
 }
 

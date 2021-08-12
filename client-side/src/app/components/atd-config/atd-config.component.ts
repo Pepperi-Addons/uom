@@ -122,6 +122,7 @@ export class AtdConfigComponent implements OnInit {
                 this.Configuration.InventoryFieldID = $event;
                 if($event == '') {
                     this.Configuration.InventoryType = 'DoNothing'
+                   
                 }
                 break;
             }
@@ -132,8 +133,10 @@ export class AtdConfigComponent implements OnInit {
             case 'ItemConfig': {
                 this.Configuration.ItemConfigFieldID = $event;
                 if($event == '') {
+                    this,this.Configuration.InventoryType = 'DoNothing'
                     this.Configuration.CaseQuantityType = 'DoNothing';
                     this.Configuration.MinQuantityType = 'DoNothing';
+                    
                 } 
                 break;
             }
@@ -171,10 +174,10 @@ export class AtdConfigComponent implements OnInit {
                 Key: this.AtdID.toString(),
                 UOMFieldID: '',
                 InventoryFieldID: 'ItemInStockQuantity',
-                InventoryType: 'Fix',
+                InventoryType: 'Color',
                 ItemConfigFieldID: '',
-                CaseQuantityType: "DoNothing",
-                MinQuantityType: "DoNothing"
+                CaseQuantityType: "Color",
+                MinQuantityType: "Color"
             }
         })
         this.emitClose();
