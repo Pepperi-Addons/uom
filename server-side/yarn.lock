@@ -2,20 +2,20 @@
 # yarn lockfile v1
 
 
-"@pepperi-addons/debug-server@0.0.30":
-  version "0.0.30"
-  resolved "https://registry.yarnpkg.com/@pepperi-addons/debug-server/-/debug-server-0.0.30.tgz#3385fa4eeceb8dd3ef6d2a5bfde2f13e12586c35"
-  integrity sha512-EB8J8WWBxDGfWQe3AjZYSz35eY3bGEX7OT947t2c5bOTm+8BBOCb+JHgRW1d1re1A+7iTZ0YG1IcCcXfLEqjEA==
+"@pepperi-addons/debug-server@0.0.32":
+  version "0.0.32"
+  resolved "https://registry.yarnpkg.com/@pepperi-addons/debug-server/-/debug-server-0.0.32.tgz#4190fd3a94f1acf3ef086d5112bf22b3965eb3ef"
+  integrity sha512-YC/DWH9yQsWqnEO2dRvUhpQlzvvgFac0X3EFEBTG8Rja85uoXjmaB0UGn5PaVbsnQt5c8DH6av0UPRWnTFti0A==
   dependencies:
     body-parser "^1.19.0"
     cors "^2.8.5"
     express "^4.17.1"
     jwt-decode "^2.2.0"
 
-"@pepperi-addons/papi-sdk@^1.22.1":
-  version "1.22.1"
-  resolved "https://registry.yarnpkg.com/@pepperi-addons/papi-sdk/-/papi-sdk-1.22.1.tgz#b63762cfd3b8cc5c00e4ac7ac930fb60bed84fc9"
-  integrity sha512-8EjehWCkHcEdloLCeOJXkE6N+CrLZ4asX8HrY3cYoVX/9teqSDPGQIFX3IVJcsTqzn9uqpLRwgRppRGZl0ksug==
+"@pepperi-addons/papi-sdk@^1.26.4":
+  version "1.27.6"
+  resolved "https://registry.yarnpkg.com/@pepperi-addons/papi-sdk/-/papi-sdk-1.27.6.tgz#4cf5e88e6b50d8b4fe0fed8c84fb77054453244f"
+  integrity sha512-nWGYQxKAw+6Kgmbo8ghbgXJRLERErqQueBy2T2w+gP4ZuzM5m/6uhWrA3DvbqQpuc97FndJSXF5zoBnzftXZtQ==
   dependencies:
     node-fetch "^2.6.0"
 
@@ -1093,9 +1093,9 @@ path-is-absolute@^1.0.0:
   integrity sha1-F0uSaHNVNP+8es5r9TpanhtcX18=
 
 path-parse@^1.0.6:
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/path-parse/-/path-parse-1.0.6.tgz#d62dbb5679405d72c4737ec58600e9ddcf06d24c"
-  integrity sha512-GSmOT2EbHrINBf9SR7CDELwlJ8AENk3Qn7OikK4nFYAu3Ote2+JYNVvkpAEQm3/TLNEJFD/xZJjzyxg3KBWOzw==
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/path-parse/-/path-parse-1.0.7.tgz#fbc114b60ca42b30d9daf5858e4bd68bbedb6735"
+  integrity sha512-LDJzPVEEEPR+y48z93A0Ed0yXb8pAByGWo/k5YYdYgpY2/2EsOsksJrq7lOHxryrVOn1ejG6oAp8ahvOIQD8sw==
 
 path-to-regexp@0.1.7:
   version "0.1.7"
