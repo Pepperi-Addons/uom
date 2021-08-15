@@ -133,13 +133,17 @@ export class QuantityCalculator {
                 return this.fix(nextLegalValue,ItemAction.Decrement);
             }
             setValue(num: number):QuantityResult{
-                return this.fix(Math.max(num,0),ItemAction.Set);
+                num = this.negative ? num : Math.max(num,0);
+                return this.fix(num,ItemAction.Set);
             }
             fix(num: number, action: ItemAction){
                 // this.convertFieldsToInteger(this.decimal);
                 // this.convertToInteger(this.decimal,num);
                 let res = this.fixByCase(num,action);
-                res = this.fixByMin(res,action);
+                if(!this.negative)
+                {
+                    res = this.fixByMin(res,action);
+                }
                 res = this.fixByMax(res, action);
                 return this.resultBuilder(res)
             }

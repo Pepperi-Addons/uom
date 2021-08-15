@@ -1091,6 +1091,20 @@ describe('Quantity Calculator', () => {
                     it('4:set to 7.2 shuld go to 7.5', set(7.5,calc,7.2));
                 });
             })
+            describe ('CASE 3:inv = 9, min = 1.5, case = 0.5, factor = 1', () => {
+                let  config: UomItemConfiguration = {'UOMKey': "", 'Case':0.5, 'Min': 1.5, 'Factor':1, 'Decimal': 1, 'Negative': true};
+                let inventory: number = 9;
+                let calc = new QuantityCalculator(config,inventory,caseBehavior,minBehavior,invBehavior);
+                describe ('1: combine tests:', () => {
+                    it('1: dec should go to -0.5', dec(-0.5,calc,0));
+                    it('2:dec should go to -1', dec(-1,calc,-0.5));
+                    it('3:dec should go to -1.5', dec(-1.5,calc,-1));
+                    it('3:inc should go to -1', inc(-1,calc,-1.5));
+                    // it('4:dec should go to 2', dec(2,calc,2.5));
+                    it('4:set to -909.4 shuld go to -909.4', set(-909,calc,-909));
+                    it('4:set to -0 shuld go to 0', set(0,calc,-0));
+                });
+            })
         });
     });
 });
