@@ -133,7 +133,6 @@ export class AtdConfigComponent implements OnInit {
             case 'ItemConfig': {
                 this.Configuration.ItemConfigFieldID = $event;
                 if($event == '') {
-                    this,this.Configuration.InventoryType = 'DoNothing'
                     this.Configuration.CaseQuantityType = 'DoNothing';
                     this.Configuration.MinQuantityType = 'DoNothing';
                     
@@ -161,7 +160,6 @@ export class AtdConfigComponent implements OnInit {
         const config = this.dialogService.getDialogConfig({}, 'inline')
         this.dialogService.openDefaultDialog(data, config);
         this.AtdID = this.Configuration = undefined
-        //this.emitClose();
     }
 
     emitClose() {

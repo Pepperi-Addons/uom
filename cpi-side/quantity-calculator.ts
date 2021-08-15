@@ -44,6 +44,8 @@ export class QuantityCalculator {
                     return this.caseBehavior === 'Fix'? Math.ceil(value/this.cq)*this.cq: value;
                 }
             }
+            
+
             //fix the number by min, if number bellow min:
             //if add its up to min  
             //if dec its down to 0
@@ -59,12 +61,12 @@ export class QuantityCalculator {
                         if(value === 0){
                             return value;
                         }
-                const min = this.caseBehavior != 'Fix'? this.originalMin: this.getRealMin();
-                //when min > inventory and minx=fix and inv=fix we cannot buy even 1 item
-                if(min > this.normalizedInv && this.invBehavior === 'Fix' && this.minBehavior === 'Fix')
-                {
-                    return 0;
-                }
+                        const min = this.caseBehavior != 'Fix'? this.originalMin: this.getRealMin();
+                        //when min > inventory and minx=fix and inv=fix we cannot buy even 1 item
+                        if(min > this.normalizedInv && this.invBehavior === 'Fix' && this.minBehavior === 'Fix')
+                        {
+                            return 0;
+                        }
                         
                         return this.minBehavior === 'Fix' && value < min  ? min: value;
                 }
