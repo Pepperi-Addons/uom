@@ -118,7 +118,7 @@ export class QuantityCalculator {
             }
             setValue(num: number):QuantityResult{
                 return this.fix(Math.max(num,0),ItemAction.Set);
-    }
+            }
             fix(num: number, action: ItemAction){
                 let res = this.fixByCase(num,action);
                 res = this.fixByMin(res,action);
