@@ -528,10 +528,10 @@ describe('Quantity Calculator', () => {
                 it('9: inc should go up from 8 to 9', inc(9,calc,8));
                 it('10: inc should go up from 9 to 10', inc(10,calc,9));
                 it('11: inc should stay on 10', inc(10,calc,10));
-                it('11: inc should go to 10', inc(10,calc,30));
-                it('11: inc should go to 10', inc(10,calc,50));
-                it('11: inc should go to 10', inc(0,calc,-7));
-                it('11: inc should go to 10', inc(10,calc,9));
+                it('12: inc should go to 10', inc(30,calc,30));
+                it('13: inc should go to 10', inc(50,calc,50));
+                it('14: inc should go to 10', inc(0,calc,-7));
+                it('15: inc should go to 10', inc(10,calc,9));
             });
             describe ('2: dec tests:', () => {
                 it('1: dec should go down from 10 to 9', dec(9,calc,10));
@@ -1081,11 +1081,6 @@ describe('Quantity Calculator', () => {
             });
         });
     });
-    
-    
-    
-
-
 });
 
 

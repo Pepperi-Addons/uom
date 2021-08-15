@@ -19,6 +19,15 @@ export class QuantityCalculator {
             getFactor():number {
                 return this.factor;
             }
+            getSetMin():number{
+                return this.caseBehavior != 'Fix'? this.originalMin: this.getRealMin();
+            }
+
+            getSetMax():number{
+                return this.caseBehavior != 'Fix'? this.normalizedInv: this.getRealMax();
+            }
+
+
             //determince if field needs to be colored
             toColor(num:number, total:number, inventory:number ):boolean{
                 return  (this.caseBehavior === 'Color' && num%this.cq != 0) || (this.minBehavior === 'Color' && num < this.getRealMin() && num > 0) || (this.invBehavior === 'Color' && total > inventory); 
@@ -60,9 +69,8 @@ export class QuantityCalculator {
                     case ItemAction.Set:
                         if(value === 0){
                             return value;
-                        }
-                        const min = this.caseBehavior != 'Fix'? this.originalMin: this.getRealMin(); 
-                        return this.minBehavior === 'Fix' && value < min  ? min: value;
+                        } 
+                        return this.minBehavior === 'Fix' && value < this.getSetMin()  ? this.getSetMin(): value;
                 }
             }
             //fix the number by max
@@ -71,10 +79,19 @@ export class QuantityCalculator {
             fixByMax(value: number, action: ItemAction):number{
                 switch (action){
                     case ItemAction.Set:
-                        let max = 0;
-                        if(this.caseBehavior != 'Fix')
-                            return (this.invBehavior === 'Fix' && value > this.normalizedInv)? this.normalizedInv: value;
-                        return (this.invBehavior === 'Fix' && value > this.getRealMax())? this.getRealMax(): value;
+                        // const max = this.caseBehavior != 'Fix'? this.normalizedInv : this.getRealMax();
+                        // const min = this.caseBehavior != 'Fix'? this.originalMin: this.getRealMin();
+                        if(this.getSetMax() < this.getSetMin() && this.minBehavior === 'Fix')
+                        {
+                            return 0;
+                        }
+                        return (this.invBehavior === 'Fix' && value > this.getSetMax())? this.getSetMax(): value;
+                    case ItemAction.Increment:
+                        if(this.getRealMax() < this.getRealMin())
+                        {
+                            return 0;
+                        }
+
                     default:
                         return (value > this.getRealMax() && this.invBehavior === 'Fix') ? this.getRealMax(): value;
                 }
@@ -91,24 +108,15 @@ export class QuantityCalculator {
             getIncrementValue(value: number):QuantityResult {
                 const prevLegalValue = this.fixByCase(value,ItemAction.Decrement) + this.cq;
                 //should return an integer that is no less than value
-                //case there is no interval;
-                if((this.getRealMax() < this.getRealMin()) && this.invBehavior === 'Fix')
-                   return this.resultBuilder(value);
                 //otherwise we need to fix result
-                return this.fix(prevLegalValue,ItemAction.Increment)    
+                let result = this.fix(prevLegalValue,ItemAction.Increment);
+                return result.curr < value ? this.resultBuilder(value): result;
             }
             getDecrementValue(value: number):QuantityResult{
                 const nextLegalValue = this.fixByCase(value, ItemAction.Increment) - this.cq;
                 return this.fix(nextLegalValue,ItemAction.Decrement);
             }
             setValue(num: number):QuantityResult{
-                const min = this.caseBehavior != 'Fix'? this.originalMin: this.getRealMin();
-                //when min > inventory and minx=fix and inv=fix we cannot buy even 1 item
-                if(min > this.normalizedInv && this.invBehavior === 'Fix' && this.minBehavior === 'Fix')
-                {
-                    return this.resultBuilder(0);
-                }
-
                 return this.fix(Math.max(num,0),ItemAction.Set);
     }
             fix(num: number, action: ItemAction){
