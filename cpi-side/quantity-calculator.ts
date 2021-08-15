@@ -7,13 +7,27 @@ export class QuantityCalculator {
             private factor:number;
             private cq:number;
             private originalMin:number;
+            private decimal: number;
     
             constructor(itemConfig: UomItemConfiguration, private inventory: number, private caseBehavior: InventoryAction ,private minBehavior: InventoryAction,private invBehavior: InventoryAction){  
+                this.decimal = Math.round(itemConfig.Decimal || 0); 
                 this.originalMin = Math.max(itemConfig.Min,0);
-                this.factor = Math.max(itemConfig.Factor,1);
+                this.factor = itemConfig.Factor > 0 ? itemConfig.Factor: 1;
                 this.currInv = Math.max(0,this.inventory);
-                this.cq = Math.max(itemConfig.Case, 1);
+                this.cq = itemConfig.Case > 0 ? itemConfig.Case: 1;
                 this.normalizedInv =  Math.floor(this.inventory/this.factor);
+            }
+            convertFieldsToInteger(decimal: number){
+                this.factor = decimal > 0 ? this.factor * Math.pow(10,decimal): this.factor;
+                this.cq = decimal > 0 ? this.cq * Math.pow(10,decimal): this.cq;
+                this.originalMin = decimal > 0 ? this.originalMin * Math.pow(10,decimal): this.originalMin;
+                this.normalizedInv = decimal > 0 ? (this.inventory * Math.pow(10,decimal))/this.factor: this.normalizedInv;
+            }
+            convertToInteger(decimal: number, num: number){
+                return decimal > 0 ? Number(num.toFixed(decimal)) * Math.pow(10,decimal): num;
+            }
+            convertToDecimal(decimal: number, num: number){
+                return decimal > 0 ? num/Math.pow(10,decimal): num
             }
             //function for tests
             getFactor():number {
@@ -120,10 +134,12 @@ export class QuantityCalculator {
                 return this.fix(Math.max(num,0),ItemAction.Set);
             }
             fix(num: number, action: ItemAction){
+                this.convertFieldsToInteger(this.decimal);
+                this.convertToInteger(this.decimal,num);
                 let res = this.fixByCase(num,action);
                 res = this.fixByMin(res,action);
                 res = this.fixByMax(res, action);
-                return this.resultBuilder(res);
+                return this.resultBuilder(this.convertToDecimal(this.decimal,res));
             }
 }
 

@@ -27,7 +27,8 @@ export interface UomItemConfiguration {
     UOMKey: string,
     Factor: number,
     Case: number,
-    Min: number
+    Min: number,
+    Decimal?: number
 }
 
 export type InventoryAction = keyof typeof InventoryActions;
