@@ -2,22 +2,34 @@ import { ItemAction, QuantityResult } from './uom-app';
 import { InventoryAction, UomItemConfiguration } from './../shared/entities';
 
 export class QuantityCalculator { 
-            private currInv: number;
             private normalizedInv:number;
             private factor:number;
             private cq:number;
             private originalMin:number;
-    
+            private negative:boolean;
+            private decimal:number;
+            private caseIsZero: boolean;
             constructor(itemConfig: UomItemConfiguration, private inventory: number, private caseBehavior: InventoryAction ,private minBehavior: InventoryAction,private invBehavior: InventoryAction){  
-                this.originalMin = Math.max(itemConfig.Min,0);
-                this.factor = Math.max(itemConfig.Factor,1);
-                this.currInv = Math.max(0,this.inventory);
-                this.cq = Math.max(itemConfig.Case, 1);
-                this.normalizedInv =  Math.floor(this.inventory/this.factor);
+                this.negative = !!itemConfig.Negative
+                this.decimal = Math.round(itemConfig.Decimal || 0);
+                this.originalMin = this.negative? itemConfig.Min: Math.max(itemConfig.Min,0);
+                this.factor = this.negative? itemConfig.Factor: Math.max(itemConfig.Factor,0);
+                this.cq = this.negative? itemConfig.Case: Math.max(itemConfig.Case, 0);
+                this.normalizedInv =  this.factor != 0? Math.abs(Math.floor(this.inventory/this.factor)): Number.MAX_SAFE_INTEGER;
+                this.caseIsZero = this.cq === 0;
+            }
+            //convert the related fields to be a decimal number with a $this.decimal digits after the dot.
+            sliceByDec():void{
+                this.factor = Number(this.factor.toFixed(this.decimal));
+                this.cq = Number(this.cq.toFixed(this.decimal));
+                this.originalMin = Number(this.originalMin.toFixed(this.decimal));
             }
             //function for tests
             getFactor():number {
                 return this.factor;
+            }
+            getCq() {
+                return this.cq;
             }
             //determince if field needs to be colored
             toColor(num:number, total:number, inventory:number ):boolean{
@@ -26,15 +38,17 @@ export class QuantityCalculator {
             //return the min assume min = fix and case = fix;
             getRealMin():number {
                 //such x we cant get from cail(min/cq)*cq
-                return Math.ceil(this.originalMin/this.cq)*this.cq;
+                return this.caseIsZero? this.originalMin: Math.ceil(this.originalMin/this.cq)*this.cq;
             }
             //return the max quantity assume inv = fix and case = fix;
             getRealMax():number {
-                return  Math.floor(this.normalizedInv/this.cq)*this.cq;
+                return  this.caseIsZero? this.normalizedInv: Math.floor(this.normalizedInv/this.cq)*this.cq;
             }
             //fix the number that will be divided by case, return a number that is not divded by iff action=set and case != fix
             //change Fix functions to fix.
             fixByCase(value: number, action:ItemAction):number{
+                if(this.caseIsZero)
+                    return value;
                 switch(action){
                 case ItemAction.Increment:
                     return  Math.ceil(value/this.cq)*this.cq;
