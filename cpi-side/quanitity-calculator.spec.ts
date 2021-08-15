@@ -1080,7 +1080,7 @@ describe('Quantity Calculator', () => {
                 });
             });
             describe ('CASE 2:inv = 9, min = 1.5, case = 0.5, factor = 1', () => {
-                let  config: UomItemConfiguration = {'UOMKey': "", 'Case':0.5, 'Min': 1.5, 'Factor':1};
+                let  config: UomItemConfiguration = {'UOMKey': "", 'Case':0.5, 'Min': 1.5, 'Factor':1, 'Decimal': 1};
                 let inventory: number = 9;
                 let calc = new QuantityCalculator(config,inventory,caseBehavior,minBehavior,invBehavior);
                 describe ('1: combine tests:', () => {
