@@ -90,7 +90,6 @@ export class QuantityCalculator {
                         {
                             return 0;
                         }
-
                         return (value > this.getRealMax() && this.invBehavior === 'Fix') ? this.getRealMax(): value;
                 }
             }
