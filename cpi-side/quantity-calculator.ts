@@ -4,12 +4,16 @@ export class QuantityCalculator {
             private factor:number;
             private cq:number;
             private originalMin:number;
+            private decimal: number
+            private negative: boolean
     
             constructor(itemConfig: UomItemConfiguration, private inventory: number, private caseBehavior: InventoryAction ,private minBehavior: InventoryAction,private invBehavior: InventoryAction){  
-                this.originalMin = Math.max(itemConfig.Min,0);
-                this.factor = Math.max(itemConfig.Factor,1);
-                this.cq = Math.max(itemConfig.Case, 1);
-                this.normalizedInv =  Math.floor(this.inventory/this.factor);
+                this.negative = !!itemConfig.Negative;
+                this.decimal = Number((itemConfig.Decimal || 0).toFixed()); 
+                this.originalMin = Number(Math.max(itemConfig.Min,0).toFixed(this.decimal));
+                this.factor = itemConfig.Factor > 0 ? Number(itemConfig.Factor.toFixed(this.decimal)): 1;
+                this.cq = itemConfig.Case > 0 ? Number(itemConfig.Case.toFixed(this.decimal)): 1;
+                this.normalizedInv =  Number(Math.floor(this.inventory/this.factor).toFixed(this.decimal));
             }
             //function for tests
             getFactor():number {
