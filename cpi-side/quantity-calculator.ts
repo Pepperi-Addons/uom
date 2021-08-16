@@ -79,14 +79,14 @@ export class QuantityCalculator {
             fixByMin(value:number, action: ItemAction):number{
                 switch(action){
                     case ItemAction.Increment:
-                        return value < this.getRealMin()? this.getRealMin(): value;
+                        return value < this.getRealMin() && (!this.negative || value > 0)? this.getRealMin(): value;
                     case ItemAction.Decrement:
-                        return  value < this.getRealMin() ? 0: value;
+                        return  value < this.getRealMin() && (!this.negative || value > 0) ? 0: value;
                     case ItemAction.Set:
                         if(value === 0){
                             return value;
                         } 
-                        return this.minBehavior === 'Fix' && value < this.getSetMin()  ? this.getSetMin(): value;
+                        return this.minBehavior === 'Fix' && value < this.getSetMin() && (!this.negative || value > 0) ? this.getSetMin(): value;
                 }
             }
             //fix the number by max
@@ -137,15 +137,26 @@ export class QuantityCalculator {
                 return this.fix(num,ItemAction.Set);
             }
             fix(num: number, action: ItemAction){
-                // this.convertFieldsToInteger(this.decimal);
-                // this.convertToInteger(this.decimal,num);
+                num = this.convertToInteger(num);
                 let res = this.fixByCase(num,action);
-                if(!this.negative)
-                {
-                    res = this.fixByMin(res,action);
-                }
+                res = this.fixByMin(res,action);
                 res = this.fixByMax(res, action);
+                res = this.convertToDec(res);
                 return this.resultBuilder(res)
+            }
+            convertToInteger(num:number):number{
+                let shifter = Math.pow(10,this.decimal);
+                this.originalMin = this.originalMin * shifter;
+                this.cq = this.cq * shifter;
+                this.normalizedInv = this.normalizedInv * shifter;
+                return num * shifter;
+            }
+            convertToDec(res: number):number{
+                let shifter = Math.pow(10,this.decimal);
+                this.originalMin = Number((this.originalMin / shifter).toFixed(this.decimal));
+                this.cq = Number((this.cq / shifter).toFixed(this.decimal));
+                this.normalizedInv = Number((this.normalizedInv / shifter).toFixed(this.decimal));
+                return Number((res/shifter).toFixed(this.decimal));
             }
 }
 

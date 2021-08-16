@@ -1104,7 +1104,15 @@ describe('Quantity Calculator', () => {
                     it('4:set to -909.4 shuld go to -909.4', set(-909,calc,-909));
                     it('4:set to -0 shuld go to 0', set(0,calc,-0));
                 });
-            })
+            });
+            describe ('CASE 4:inv = 9, min = 3.33, case = 0.11, factor = 1', () => {
+                let  config: UomItemConfiguration = {'UOMKey': "", 'Case':0.11, 'Min': 3.33, 'Factor':1, 'Decimal': 2, 'Negative': true};
+                let inventory: number = 9;
+                let calc = new QuantityCalculator(config,inventory,caseBehavior,minBehavior,invBehavior);
+                describe ('1: combine tests:', () => {
+                    it('1: inc should go to 3.33', inc(3.41,calc,0));
+                });
+            });
         });
     });
 });
