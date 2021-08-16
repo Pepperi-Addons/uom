@@ -63,14 +63,15 @@ export class QuantityCalculator {
             fixByMin(value:number, action: ItemAction):number{
                 switch(action){
                     case ItemAction.Increment:
-                        return value < this.getRealMin()? this.getRealMin(): value;
+                        //if value is <=0 and negative is on, so we dont need to go up to min
+                        return value < this.getRealMin() && (!this.negative || value > 0)? this.getRealMin(): value;
                     case ItemAction.Decrement:
-                        return  value < this.getRealMin() ? 0: value;
+                        return  value < this.getRealMin() && (!this.negative || value > 0) ? 0: value;
                     case ItemAction.Set:
                         if(value === 0){
                             return value;
                         } 
-                        return this.minBehavior === 'Fix' && value < this.getSetMin()  ? this.getSetMin(): value;
+                        return this.minBehavior === 'Fix' && value < this.getSetMin() && (!this.negative || value > 0) ? this.getSetMin(): value;
                 }
             }
             //fix the number by max
@@ -118,7 +119,8 @@ export class QuantityCalculator {
                 return this.fix(nextLegalValue,ItemAction.Decrement);
             }
             setValue(num: number):QuantityResult{
-                return this.fix(Math.max(num,0),ItemAction.Set);
+                num = this.negative ? num : Math.max(num,0);
+                return this.fix(num,ItemAction.Set);
             }
             fix(num: number, action: ItemAction){
                 //first shift left everything by decimal

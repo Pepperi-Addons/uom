@@ -1079,6 +1079,49 @@ describe('Quantity Calculator', () => {
                     it('1: set to 27 should set to 0', set(0,calc,27));
                 });
             });
+            describe ('CASE 2:inv = 9, min = 1.5, case = 0.5, factor = 1', () => {
+                let  config: UomItemConfiguration = {'UOMKey': "", 'Case':0.5, 'Min': 1.5, 'Factor':1, 'Decimal': 1};
+                let inventory: number = 9;
+                let calc = new QuantityCalculator(config,inventory,caseBehavior,minBehavior,invBehavior);
+                describe ('1: combine tests:', () => {
+                    it('1: increment go to 1.5 ', inc(1.5,calc,0));
+                    it('2:inc should go to 2', inc(2,calc,1.5));
+                    it('3:inc should go to 2.5', inc(2.5,calc,2));
+                    it('4:dec should go to 2', dec(2,calc,2.5));
+                    it('4:set to 7.2 shuld go to 7.5', set(7.5,calc,7.2));
+                });
+            })
+            describe ('CASE 3:inv = 9, min = 1.5, case = 0.5, factor = 1', () => {
+                let  config: UomItemConfiguration = {'UOMKey': "", 'Case':0.5, 'Min': 1.5, 'Factor':1, 'Decimal': 1, 'Negative': true};
+                let inventory: number = 9;
+                let calc = new QuantityCalculator(config,inventory,caseBehavior,minBehavior,invBehavior);
+                describe ('1: combine tests:', () => {
+                    it('1: dec should go to -0.5', dec(-0.5,calc,0));
+                    it('2:dec should go to -1', dec(-1,calc,-0.5));
+                    it('3:dec should go to -1.5', dec(-1.5,calc,-1));
+                    it('3:inc should go to -1', inc(-1,calc,-1.5));
+                    // it('4:dec should go to 2', dec(2,calc,2.5));
+                    it('4:set to -909.4 shuld go to -909.4', set(-909,calc,-909));
+                    it('4:set to -0 shuld go to 0', set(0,calc,-0));
+                });
+            });
+            describe ('CASE 4:inv = 9, min = 3.33, case = 0.11, factor = 1', () => {
+                let  config: UomItemConfiguration = {'UOMKey': "", 'Case':0.11, 'Min': 3.33, 'Factor':1, 'Decimal': 2, 'Negative': true};
+                let inventory: number = 9;
+                let calc = new QuantityCalculator(config,inventory,caseBehavior,minBehavior,invBehavior);
+                describe ('1: combine tests:', () => {
+                    it('1: inc should go to 3.33', inc(3.41,calc,0));
+                    it('2: inc should go to 3.52', inc(3.52,calc,3.41));
+                    it('3: inc should go to 3.63', inc(3.63,calc,3.52));
+                    it('4: inc should go to 3.74', inc(3.74,calc,3.63));
+                    it('5: inc should go to 3.85', inc(3.85,calc,3.74));
+                    it('6: inc should go to 3.96', inc(3.96,calc,3.85));
+                    it('7: inc should go to 4.07', inc(4.07,calc,3.96));
+                    it('8:set to 7 should set to ', set(7.04,calc,7));
+                    it('9:set to 9 should set to ', set(8.91,calc,9));
+                    it('10:set to -10 should set to ', set(-9.90,calc,-10));
+                });
+            })
         });
     });
 });
