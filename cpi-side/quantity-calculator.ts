@@ -2,7 +2,6 @@ import { ItemAction, QuantityResult } from './uom-app';
 import { InventoryAction, UomItemConfiguration } from './../shared/entities';
 
 export class QuantityCalculator { 
-            private currInv: number;
             private normalizedInv:number;
             private factor:number;
             private cq:number;
@@ -11,7 +10,6 @@ export class QuantityCalculator {
             constructor(itemConfig: UomItemConfiguration, private inventory: number, private caseBehavior: InventoryAction ,private minBehavior: InventoryAction,private invBehavior: InventoryAction){  
                 this.originalMin = Math.max(itemConfig.Min,0);
                 this.factor = Math.max(itemConfig.Factor,1);
-                this.currInv = Math.max(0,this.inventory);
                 this.cq = Math.max(itemConfig.Case, 1);
                 this.normalizedInv =  Math.floor(this.inventory/this.factor);
             }
