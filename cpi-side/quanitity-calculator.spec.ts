@@ -1117,9 +1117,21 @@ describe('Quantity Calculator', () => {
                     it('5: inc should go to 3.85', inc(3.85,calc,3.74));
                     it('6: inc should go to 3.96', inc(3.96,calc,3.85));
                     it('7: inc should go to 4.07', inc(4.07,calc,3.96));
-                    it('8:set to 7 should set to ', set(7.04,calc,7));
-                    it('9:set to 9 should set to ', set(8.91,calc,9));
-                    it('10:set to -10 should set to ', set(-9.90,calc,-10));
+                    it('8:set to 7 should set to 7.04', set(7.04,calc,7));
+                    it('9:set to 9 should set to 8.91 ', set(8.91,calc,9));
+                    it('10:set to -10 should set to -9.90', set(-9.90,calc,-10));
+                    it('11:dec should go to -10.01', dec(-10.01,calc,-10));
+                    it('12:set to -1 should set to - 0.99 ', set(-0.99,calc,-1));
+                    it('13: inc should go to -0.88', inc(-0.88,calc,-0.99));
+                    it('14: inc should go to -0.77', inc(-0.77,calc,-0.88));
+                    it('15: inc should go to -0.66', inc(-0.66,calc,-0.77));
+                    it('16: inc should go to -0.55', inc(-0.55,calc,-0.66));
+                    it('17: inc should go to -0.44', inc(-0.44,calc,-0.55));
+                    it('18: inc should go to -0.33', inc(-0.33,calc,-0.44));
+                    it('19: inc should go to -0.22', inc(-0.22,calc,-0.33));
+                    it('19: inc should go to -0.11', inc(-0.11,calc,-0.22));
+                    it('19: inc should go to 0', inc(0.00,calc,-0.11));
+                    it('19: inc should go to 3.41', inc(3.41,calc,-0.00));
                 });
             })
         });
