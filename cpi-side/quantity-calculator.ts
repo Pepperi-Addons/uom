@@ -84,13 +84,13 @@ export class QuantityCalculator {
                             return 0;
                         }
                         return (this.invBehavior === 'Fix' && value > this.getSetMax())? this.getSetMax(): value;
-                    case ItemAction.Increment:
-                        if(this.getRealMax() < this.getRealMin())
+
+                    default:
+                        if(this.getRealMax() < this.getRealMin() && action === ItemAction.Increment)
                         {
                             return 0;
                         }
 
-                    default:
                         return (value > this.getRealMax() && this.invBehavior === 'Fix') ? this.getRealMax(): value;
                 }
             }
