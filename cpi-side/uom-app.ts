@@ -284,7 +284,9 @@ class UOMManager {
             UOMKey: uom?.Key || "",
             Factor: Number(config?.Factor || uom?.Multiplier || 1),
             Min: Number(config?.Min || 0),
-            Case: Number(config?.Case || 1)
+            Case: Number(config?.Case || 1),
+            Decimal: Number(config?.Decimal || 0),
+            Negative: Boolean(!!config?.Negative)
         }; 
     }
     getUomMinQuantity(uom: Uom | undefined, itemConfig: UomItemConfiguration[]) : number{
