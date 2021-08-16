@@ -103,15 +103,15 @@ export class QuantityCalculator {
             //if after the increment by case he is less than real minimum than he should be mean;
             //if after increment by case he is not divided by case, he should be the next non negative number that divided by case(unless he is bigger than max and inv = fix)
             getIncrementValue(value: number):QuantityResult {
-                const prevLegalValue = this.fixByCase(value,ItemAction.Decrement) + this.cq;
+                const nextLegalValue = this.fixByCase(value,ItemAction.Decrement) + this.cq;
                 //should return an integer that is no less than value
                 //otherwise we need to fix result
-                let result = this.fix(prevLegalValue,ItemAction.Increment);
+                let result = this.fix(nextLegalValue,ItemAction.Increment);
                 return result.curr < value ? this.resultBuilder(value): result;
             }
             getDecrementValue(value: number):QuantityResult{
-                const nextLegalValue = this.fixByCase(value, ItemAction.Increment) - this.cq;
-                return this.fix(nextLegalValue,ItemAction.Decrement);
+                const prevLegalValue = this.fixByCase(value, ItemAction.Increment) - this.cq;
+                return this.fix(prevLegalValue,ItemAction.Decrement);
             }
             setValue(num: number):QuantityResult{
                 return this.fix(Math.max(num,0),ItemAction.Set);
