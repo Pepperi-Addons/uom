@@ -1,6 +1,4 @@
-import { ItemAction, QuantityResult } from './uom-app';
-import { InventoryAction, UomItemConfiguration } from './../shared/entities';
-
+import { InventoryAction, UomItemConfiguration, ItemAction, QuantityResult } from './../shared/entities';
 export class QuantityCalculator { 
             private normalizedInv:number;
             private factor:number;
@@ -77,19 +75,21 @@ export class QuantityCalculator {
             fixByMax(value: number, action: ItemAction):number{
                 switch (action){
                     case ItemAction.Set:
-                        // const max = this.caseBehavior != 'Fix'? this.normalizedInv : this.getRealMax();
-                        // const min = this.caseBehavior != 'Fix'? this.originalMin: this.getRealMin();
+                        //case we dont have an interval because min > max so if min behavior is fix we should not be able to set any value, so the max is zero
                         if(this.getSetMax() < this.getSetMin() && this.minBehavior === 'Fix')
                         {
                             return 0;
                         }
+                        //the usual set case, if the inv fix so the max is setMax, otherwise if value > setMax and inv != fix so the value is the current max.
                         return (this.invBehavior === 'Fix' && value > this.getSetMax())? this.getSetMax(): value;
 
                     default:
+                        //when we dont have an interval in increment, the max is zero.
                         if(this.getRealMax() < this.getRealMin() && action === ItemAction.Increment)
                         {
                             return 0;
                         }
+                        //usual case of fix by max on dec/inc
                         return (value > this.getRealMax() && this.invBehavior === 'Fix') ? this.getRealMax(): value;
                 }
             }

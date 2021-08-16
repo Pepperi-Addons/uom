@@ -29,6 +29,16 @@ export interface UomItemConfiguration {
     Case: number,
     Min: number
 }
+export enum ItemAction{
+    Increment,
+    Decrement,
+    Set
+}
+
+export interface QuantityResult{
+    curr:number;
+    total:number
+}
 
 export type InventoryAction = keyof typeof InventoryActions;
 

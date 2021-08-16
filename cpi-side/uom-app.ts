@@ -9,15 +9,9 @@ import { AtdConfiguration,
 import { DataObject, EventData, UIObject, TransactionLines, UIField  } from '@pepperi-addons/cpi-node';
 import config from '../addon.config.json';
 import { QuantityCalculator } from './quantity-calculator';
-export enum ItemAction{
-    Increment,
-    Decrement,
-    Set
-}
-export interface QuantityResult{
-    curr:number;
-    total:number
-}
+import { ItemAction, QuantityResult } from './../shared/entities';
+
+
 /** The Real UQ Field - Holds the quantity in Baseline */
 const UNIT_QUANTITY = 'UnitsQuantity';
 /** A list of Order Center Data Views */ 
