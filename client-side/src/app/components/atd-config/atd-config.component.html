@@ -45,12 +45,12 @@
                 </div>
                 <div>
                     <pep-select #pepSelect [value]="Configuration?.CaseQuantityType"
-                        [options]="Actions" [disabled]="Configuration?.InventoryFieldID == '' || Configuration?.ItemConfigFieldID == ''" [emptyOption]='false' [label]="'Uom_AtdConfig_CaseActionTitle' | translate" 
+                        [options]="Actions" [disabled]="Configuration?.ItemConfigFieldID == ''" [emptyOption]='false' [label]="'Uom_AtdConfig_CaseActionTitle' | translate" 
                         (valueChange)="onValueChanged('CaseAction', $event)"></pep-select>
                 </div>
                 <div>
                     <pep-select #pepSelect [value]="Configuration?.MinQuantityType"
-                        [options]="Actions" [disabled]="Configuration?.InventoryFieldID == '' || Configuration?.ItemConfigFieldID == ''" [emptyOption]='false' [label]="'Uom_AtdConfig_MinActionTitle' | translate" 
+                        [options]="Actions" [disabled]="Configuration?.ItemConfigFieldID == ''" [emptyOption]='false' [label]="'Uom_AtdConfig_MinActionTitle' | translate" 
                         (valueChange)="onValueChanged('MinAction', $event)"></pep-select>
                 </div>
                 <!-- <div class="mat-dialog-actions pep-spacing-element-negative">

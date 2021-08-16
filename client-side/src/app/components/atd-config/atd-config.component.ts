@@ -88,10 +88,10 @@ export class AtdConfigComponent implements OnInit {
                 Key: this.AtdID.toString(),
                 UOMFieldID: '',
                 InventoryFieldID: 'ItemInStockQuantity',
-                InventoryType: "Fix",
+                InventoryType: "Color",
                 ItemConfigFieldID: '',
-                CaseQuantityType: "DoNothing",
-                MinQuantityType: "DoNothing"
+                CaseQuantityType: "Color",
+                MinQuantityType: "Color"
             }
             this.isUomFieldValid = this.Configuration.UOMFieldID != '';
         })
@@ -122,8 +122,7 @@ export class AtdConfigComponent implements OnInit {
                 this.Configuration.InventoryFieldID = $event;
                 if($event == '') {
                     this.Configuration.InventoryType = 'DoNothing'
-                    this.Configuration.CaseQuantityType = 'DoNothing';
-                    this.Configuration.MinQuantityType = 'DoNothing';
+                   
                 }
                 break;
             }
@@ -136,6 +135,7 @@ export class AtdConfigComponent implements OnInit {
                 if($event == '') {
                     this.Configuration.CaseQuantityType = 'DoNothing';
                     this.Configuration.MinQuantityType = 'DoNothing';
+                    
                 } 
                 break;
             }
@@ -160,7 +160,6 @@ export class AtdConfigComponent implements OnInit {
         const config = this.dialogService.getDialogConfig({}, 'inline')
         this.dialogService.openDefaultDialog(data, config);
         this.AtdID = this.Configuration = undefined
-        //this.emitClose();
     }
 
     emitClose() {
@@ -173,10 +172,10 @@ export class AtdConfigComponent implements OnInit {
                 Key: this.AtdID.toString(),
                 UOMFieldID: '',
                 InventoryFieldID: 'ItemInStockQuantity',
-                InventoryType: 'Fix',
+                InventoryType: 'Color',
                 ItemConfigFieldID: '',
-                CaseQuantityType: "DoNothing",
-                MinQuantityType: "DoNothing"
+                CaseQuantityType: "Color",
+                MinQuantityType: "Color"
             }
         })
         this.emitClose();
