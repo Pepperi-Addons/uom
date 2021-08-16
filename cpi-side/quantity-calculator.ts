@@ -19,18 +19,6 @@ export class QuantityCalculator {
                 this.cq = itemConfig.Case > 0 ? Number(itemConfig.Case.toFixed(this.decimal)): 1;
                 this.normalizedInv =  Number(Math.floor(this.inventory/this.factor).toFixed(this.decimal));
             }
-            // convertFieldsToInteger(decimal: number){
-            //     // this.factor = decimal > 0 ? this.factor * Math.pow(10,decimal): this.factor;
-            //     this.cq = decimal > 0 ? this.cq * Math.pow(10,decimal): this.cq;
-            //     this.originalMin = decimal > 0 ? this.originalMin * Math.pow(10,decimal): this.originalMin;
-            //     this.normalizedInv = decimal > 0 ? (this.inventory * Math.pow(10,decimal))/this.factor: this.normalizedInv;
-            // }
-            // convertToInteger(decimal: number, num: number){
-            //     return decimal > 0 ? Number(num.toFixed(decimal)) * Math.pow(10,decimal): num;
-            // }
-            // convertToDecimal(decimal: number, num: number){
-            //     return decimal > 0 ? num/Math.pow(10,decimal): num
-            // }
             //function for tests
             getFactor():number {
                 return this.factor;
@@ -79,6 +67,7 @@ export class QuantityCalculator {
             fixByMin(value:number, action: ItemAction):number{
                 switch(action){
                     case ItemAction.Increment:
+                        //if value is <=0 and negative is on, so we dont need to go up to min
                         return value < this.getRealMin() && (!this.negative || value > 0)? this.getRealMin(): value;
                     case ItemAction.Decrement:
                         return  value < this.getRealMin() && (!this.negative || value > 0) ? 0: value;
@@ -137,13 +126,16 @@ export class QuantityCalculator {
                 return this.fix(num,ItemAction.Set);
             }
             fix(num: number, action: ItemAction){
+                //first shift left everything by decimal
                 num = this.convertToInteger(num);
                 let res = this.fixByCase(num,action);
                 res = this.fixByMin(res,action);
                 res = this.fixByMax(res, action);
+                //shift right back to the original base by decimal
                 res = this.convertToDec(res);
                 return this.resultBuilder(res)
             }
+            //in order to support frac we just sfhit left $decimal digits, and then work on integers
             convertToInteger(num:number):number{
                 let shifter = Math.pow(10,this.decimal);
                 this.originalMin = this.originalMin * shifter;
@@ -151,6 +143,7 @@ export class QuantityCalculator {
                 this.normalizedInv = this.normalizedInv * shifter;
                 return num * shifter;
             }
+            // here we shift right to go back to the original base of the number.
             convertToDec(res: number):number{
                 let shifter = Math.pow(10,this.decimal);
                 this.originalMin = Number((this.originalMin / shifter).toFixed(this.decimal));
