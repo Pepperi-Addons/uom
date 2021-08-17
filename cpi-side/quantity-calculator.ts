@@ -20,6 +20,8 @@ export class QuantityCalculator {
             }
 
             getSetMax():number{
+                if(this.invBehavior != 'Fix')
+                    return Number.MAX_SAFE_INTEGER;
                 return this.caseBehavior != 'Fix'? this.normalizedInv: this.getRealMax();
             }
 
@@ -35,6 +37,8 @@ export class QuantityCalculator {
             }
             //return the max quantity assume inv = fix and case = fix;
             getRealMax():number {
+                if(this.invBehavior != 'Fix')
+                    return Number.MAX_SAFE_INTEGER;
                 return  Math.floor(this.normalizedInv/this.cq)*this.cq;
             }
             //fix the number that will be divided by case, return a number that is not divded by iff action=set and case != fix
