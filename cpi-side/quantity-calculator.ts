@@ -20,8 +20,8 @@ export class QuantityCalculator {
             }
 
             getSetMax():number{
-                if(this.invBehavior != 'Fix')
-                    return Number.MAX_SAFE_INTEGER;
+                // if(this.invBehavior != 'Fix')
+                //     return Number.MAX_SAFE_INTEGER;
                 return this.caseBehavior != 'Fix'? this.normalizedInv: this.getRealMax();
             }
 
@@ -37,8 +37,8 @@ export class QuantityCalculator {
             }
             //return the max quantity assume inv = fix and case = fix;
             getRealMax():number {
-                if(this.invBehavior != 'Fix')
-                    return Number.MAX_SAFE_INTEGER;
+                // if(this.invBehavior != 'Fix')
+                //     return Number.MAX_SAFE_INTEGER;
                 return  Math.floor(this.normalizedInv/this.cq)*this.cq;
             }
             //fix the number that will be divided by case, return a number that is not divded by iff action=set and case != fix
@@ -80,7 +80,7 @@ export class QuantityCalculator {
                 switch (action){
                     case ItemAction.Set:
                         //case we dont have an interval because min > max so if min behavior is fix we should not be able to set any value, so the max is zero
-                        if(this.getSetMax() < this.getSetMin() && this.minBehavior === 'Fix')
+                        if(this.getSetMax() < this.getSetMin() && this.minBehavior === 'Fix'  && this.invBehavior === 'Fix')
                         {
                             return 0;
                         }
@@ -89,7 +89,7 @@ export class QuantityCalculator {
 
                     default:
                         //when we dont have an interval in increment, the max is zero.
-                        if(this.getRealMax() < this.getRealMin() && action === ItemAction.Increment)
+                        if(this.getRealMax() < this.getRealMin() && action === ItemAction.Increment && this.invBehavior === 'Fix')
                         {
                             return 0;
                         }
