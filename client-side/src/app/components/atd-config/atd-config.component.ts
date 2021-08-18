@@ -30,7 +30,7 @@ export class AtdConfigComponent implements OnInit {
     constructor(
         public pluginService: AtdConfigService,
         private translate: TranslateService,
-        public routeParams: ActivatedRoute,
+        // public routeParams: ActivatedRoute,
         private cd: ChangeDetectorRef,
         private dialogService: PepDialogService
     ) {
@@ -40,7 +40,7 @@ export class AtdConfigComponent implements OnInit {
 
     ngOnInit() {
         console.log('host object is:', this.hostObject);
-        this.pluginService.pluginUUID = this.routeParams.snapshot.params['addon_uuid'];
+        this.pluginService.pluginUUID = '1238582e-9b32-4d21-9567-4e17379f41bb';
 
         // this.pluginService.pluginUUID = this.hostObject?.UUID;
         // this.AtdID = this.hostObject?.addonData.atd.InternalID;
@@ -158,12 +158,15 @@ export class AtdConfigComponent implements OnInit {
         const content = this.translate.instant("Uom_saveConfig_Paragraph");
         const data = new PepDialogData({title: title, content: content, actionsType: 'close'});
         const config = this.dialogService.getDialogConfig({}, 'inline')
-        this.dialogService.openDefaultDialog(data, config);
+        // this.dialogService.openDefaultDialog(data, config).afterClosed().subscribe(() => {
+        //     this.emitClose();
+        // });
+        this.emitClose();
         this.AtdID = this.Configuration = undefined
     }
 
     emitClose() {
-        this.hostEvents.emit({closeDialog:true});
+        this.hostEvents.emit({acion:'close-dialog'});
     }
 
     Cancel() {
