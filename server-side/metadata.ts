@@ -36,7 +36,7 @@ export const relations: relation[] = [
         ModuleName: "AtdConfigModule",
         ComponentName: "AtdConfigComponent",
         Type:"NgComponent",
-        AddonRelativeURL:"atd_config"
+        AddonRelativeURL:"config"
     },
     // {
     //     RelationName: "TransactionTypeListMenu",

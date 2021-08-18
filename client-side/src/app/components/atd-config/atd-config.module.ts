@@ -40,14 +40,14 @@ export function createTranslateLoader(http: HttpClient, fileService: PepFileServ
         CommonModule,
         MaterialModule,
         HttpClientModule,
-        PepUIModule
-        // TranslateModule.forRoot({
-        //     loader: {
-        //         provide: TranslateLoader,
-        //         useFactory: createSubAddonTranslateLoader,
-        //         deps: [HttpClient, PepFileService]
-        //     }
-        // })
+        PepUIModule,
+        TranslateModule.forRoot({
+            loader: {
+                provide: TranslateLoader,
+                useFactory: createTranslateLoader,
+                deps: [HttpClient, PepFileService]
+            }
+        })
     ],
     exports:[AtdConfigComponent],
     providers: [
