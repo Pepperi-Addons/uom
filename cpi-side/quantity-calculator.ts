@@ -79,6 +79,7 @@ export class QuantityCalculator {
             fixByMax(value: number, action: ItemAction):number{
                 switch (action){
                     case ItemAction.Set:
+                        //should consider on the none interval case only if inv=fix
                         //case we dont have an interval because min > max so if min behavior is fix we should not be able to set any value, so the max is zero
                         if(this.getSetMax() < this.getSetMin() && this.minBehavior === 'Fix'  && this.invBehavior === 'Fix')
                         {
