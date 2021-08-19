@@ -17,12 +17,13 @@
             <p class="body-md">
                 {{ "Uom_AtdConfig_Instructions" | translate }}
             </p>
-            <div>
+            <!-- <div>
                 <pep-select #pepSelect [value]="AtdID"
                     [options]="TransactionTypes" [label]="'Uom_AtdConfig_AtdIdTitle' | translate"
                     (valueChange)="onValueChanged('AtdId', $event)"></pep-select>
-            </div>
-            <div *ngIf="Configuration">
+            </div> -->
+            <!-- <div *ngIf="Configuration"> -->
+            <div>
                 <div>
                     <pep-select #pepSelect [value]="Configuration?.UOMFieldID"
                         [options]="TSAStringfields" [label]="'Uom_AtdConfig_AllowedUomsTitle' | translate"

@@ -98,6 +98,7 @@ export class AtdConfigComponent implements OnInit {
     }
 
     ngAfterViewInit(){
+        this.loadAtdData();
     }
 
     onValueChanged(element, $event) {
@@ -166,7 +167,7 @@ export class AtdConfigComponent implements OnInit {
     }
 
     emitClose() {
-        this.hostEvents.emit({acion:'close-dialog'});
+        this.hostEvents.emit({action:'close-dialog'});
     }
 
     Cancel() {
