@@ -1,3 +1,4 @@
+import { atdConfigScheme } from './../../../../../server-side/metadata';
 import { AtdConfiguration, InventoryActions, InventoryAction } from './../../../../../shared/entities';
 import { KeyValuePair, PepGuid } from '@pepperi-addons/ngx-lib';
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild, ViewChildren } from "@angular/core";
@@ -23,7 +24,6 @@ export class AtdConfigComponent implements OnInit {
     AtdID: number;
     Configuration: AtdConfiguration;
     obs$: Observable<any>;
-    isUomFieldValid: boolean = false;
     @Input() hostObject: any;
     @Output() hostEvents: EventEmitter<any> = new EventEmitter<any>();
 
@@ -39,11 +39,13 @@ export class AtdConfigComponent implements OnInit {
 
 
     ngOnInit() {
+        const AtdUUID = this.hostObject.objectList[0];
         console.log('host object is:', this.hostObject);
         this.pluginService.pluginUUID = '1238582e-9b32-4d21-9567-4e17379f41bb';
         // this.pluginService.pluginUUID = this.routeParams.snapshot.params['addon_uuid'];
         // this.pluginService.pluginUUID = this.hostObject?.UUID;
         // this.AtdID = this.hostObject?.addonData.atd.InternalID;
+        // action table of key and value (0,'Fix')...
         this.Actions = Object.keys(InventoryActions)?.map(key => {
             return {
                 key: key,
@@ -54,11 +56,15 @@ export class AtdConfigComponent implements OnInit {
         this.pluginService.getTransactionTypes().then(types => {
             this.TransactionTypes = types;
         });
-        this.loadAtdData();
-
+        // this.AtdID = this.TransactionTypes.filter((type) => {
+        //     return type.value === AtdUUID;
+        // })[0].key;
+        // console.log(this.AtdID)
+        // this.loadAtdData();
     }
 
     loadAtdData() {
+        console.log('this is the transaction types: ', this.TransactionTypes)
         console.log('inside load Atd data. AtdID:', this.AtdID);
         this.pluginService.getAtdFields(this.AtdID).then(fields => {
             this.TSAStringfields = fields?.filter(field=> {
@@ -93,33 +99,34 @@ export class AtdConfigComponent implements OnInit {
                 ItemConfigFieldID: '',
                 CaseQuantityType: "Color",
                 MinQuantityType: "Color"
-            }
-            
+            }         
         })
     }
 
     ngAfterViewInit(){
-        // this.loadAtdData();
+        this.loadAtdData();
         // this.isUomFieldValid = true; // ?
     }
 
     onValueChanged(element, $event) {
         switch(element) {
-            case 'AtdId': {
-                this.AtdID = $event;
-                if (this.AtdID) {
-                    this.loadAtdData();
-                    this.isUomFieldValid = true;
-                }
+            // case 'AtdId': {
+            //     this.AtdID = $event;
+            //     if (this.AtdID) {
+            //         this.loadAtdData();
+            //         this.isUomFieldValid = true;
+            //     }
                 // else {
                 //     this.Configuration = undefined;
                 //     this.isUomFieldValid = false;
                 // }
-                break;
-            }
+            //     break;
+            // }
             case 'AllowedUoms': {
+                // this.loadAtdData();
+                // this.isUomFieldValid = true;
                 this.Configuration.UOMFieldID = $event;
-                this.isUomFieldValid = $event != ''
+                // this.isUomFieldValid = $event != ''
                 break;
             }
             case 'Inventory': {
@@ -165,7 +172,6 @@ export class AtdConfigComponent implements OnInit {
         this.dialogService.openDefaultDialog(data, config).afterClosed().subscribe(() => {
             this.emitClose();
         });
-        this.emitClose();
         this.AtdID = this.Configuration = undefined
     }
 
