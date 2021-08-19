@@ -4,10 +4,7 @@
         <div header-start-content>
             
         </div>
-        <div header-end-content>
-            <pep-button [value]="'Uom_AtdConfig_Save' | translate" [sizeType]="'md'" [styleType]="'strong'"
-            [classNames]="'pep-spacing-element '" [disabled]='Configuration == undefined || isUomFieldValid == false' (click)="SaveConfig()"></pep-button>                    
-        </div>
+
     </pep-top-bar>
     <div id="mainContent" class="main-content">
         <div class="content" style="margin-top: 20px;">
@@ -23,7 +20,8 @@
                     (valueChange)="onValueChanged('AtdId', $event)"></pep-select>
             </div> -->
             <!-- <div *ngIf="Configuration"> -->
-            <div>
+                <div>
+                <div class="left">
                 <div>
                     <pep-select #pepSelect [value]="Configuration?.UOMFieldID"
                         [options]="TSAStringfields" [label]="'Uom_AtdConfig_AllowedUomsTitle' | translate"
@@ -34,6 +32,8 @@
                         [options]="TSANumberfields" [label]="'Uom_AtdConfig_InventoryTitle' | translate"
                         (valueChange)="onValueChanged('Inventory', $event)"></pep-select>
                 </div>
+                </div>
+                <div class="left">
                 <div>
                     <pep-select #pepSelect [value]="Configuration?.ItemConfigFieldID"
                     [options]="TSAStringfields" [label]="'Uom_AtdConfig_ItemConfigTitle' | translate"
@@ -44,6 +44,8 @@
                         [options]="Actions" [disabled]="Configuration?.InventoryFieldID == ''" [emptyOption]='false' [label]="'Uom_AtdConfig_InventoryActionTitle' | translate" 
                         (valueChange)="onValueChanged('InventoryAction', $event)"></pep-select>
                 </div>
+            </div>
+        <div class="left">
                 <div>
                     <pep-select #pepSelect [value]="Configuration?.CaseQuantityType"
                         [options]="Actions" [disabled]="Configuration?.ItemConfigFieldID == ''" [emptyOption]='false' [label]="'Uom_AtdConfig_CaseActionTitle' | translate" 
@@ -53,6 +55,15 @@
                     <pep-select #pepSelect [value]="Configuration?.MinQuantityType"
                         [options]="Actions" [disabled]="Configuration?.ItemConfigFieldID == ''" [emptyOption]='false' [label]="'Uom_AtdConfig_MinActionTitle' | translate" 
                         (valueChange)="onValueChanged('MinAction', $event)"></pep-select>
+                </div>
+            </div>
+                <div class="wrapper">
+                    <div>
+                        <pep-button [value]="'Uom_AtdConfig_Save' | translate" [sizeType]="'md'" [styleType]="'strong'"
+                        [classNames]="'pep-spacing-element '" [disabled]='Configuration == undefined || isUomFieldValid == false' (click)="SaveConfig()"></pep-button>                    
+                        <pep-button [value]="'Uom_AtdConfig_Cancel' | translate" [sizeType]="'md'" [styleType]="'weak'"
+                        [classNames]="'pep-spacing-element '"  (click)="Cancel()"></pep-button>                    
+                    </div>
                 </div>
                 <!-- <div class="mat-dialog-actions pep-spacing-element-negative">
                     <pep-button [value]="'Uom_AtdConfig_Cancel' | translate" [sizeType]="'md'" [styleType]="'weak'"

@@ -54,6 +54,7 @@ export class AtdConfigComponent implements OnInit {
         this.pluginService.getTransactionTypes().then(types => {
             this.TransactionTypes = types;
         });
+        this.loadAtdData();
 
     }
 
@@ -93,12 +94,13 @@ export class AtdConfigComponent implements OnInit {
                 CaseQuantityType: "Color",
                 MinQuantityType: "Color"
             }
-            this.isUomFieldValid = this.Configuration.UOMFieldID != '';
+            
         })
     }
 
     ngAfterViewInit(){
-        this.loadAtdData();
+        // this.loadAtdData();
+        // this.isUomFieldValid = true; // ?
     }
 
     onValueChanged(element, $event) {
@@ -107,11 +109,12 @@ export class AtdConfigComponent implements OnInit {
                 this.AtdID = $event;
                 if (this.AtdID) {
                     this.loadAtdData();
+                    this.isUomFieldValid = true;
                 }
-                else {
-                    this.Configuration = undefined;
-                    this.isUomFieldValid = false;
-                }
+                // else {
+                //     this.Configuration = undefined;
+                //     this.isUomFieldValid = false;
+                // }
                 break;
             }
             case 'AllowedUoms': {
