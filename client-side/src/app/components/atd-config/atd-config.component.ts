@@ -9,6 +9,7 @@ import { TranslateService } from "@ngx-translate/core";
 import { PepSelectComponent } from '@pepperi-addons/ngx-lib/select';
 import { Observable } from 'rxjs';
 import { PepDialogData, PepDialogService } from '@pepperi-addons/ngx-lib/dialog';
+import { ContentObserver } from '@angular/cdk/observers';
 
 @Component({
     selector: 'atd-config-addon',
@@ -60,7 +61,8 @@ export class AtdConfigComponent implements OnInit {
                 key: key,
                 value: InventoryActions[key]
             }
-        })  
+        })
+        this.loadAtdData();  
         
         // this.pluginService.getTransactionTypes().then(types => {
         //     this.TransactionTypes = types;
@@ -118,11 +120,12 @@ export class AtdConfigComponent implements OnInit {
     }
 
     ngAfterViewInit(){
-        this.loadAtdData();
+        //this.loadAtdData();
         // this.isUomFieldValid = true; // ?
     }
 
     onValueChanged(element, $event) {
+        console.log("in onValueChanged function");
         switch(element) {
             // case 'AtdId': {
             //     this.AtdID = $event;
@@ -137,6 +140,7 @@ export class AtdConfigComponent implements OnInit {
             //     break;
             // }
             case 'AllowedUoms': {
+                console.log("Case AllowedUoms");
                 // this.loadAtdData();
                 // this.isUomFieldValid = true;
                 this.Configuration.UOMFieldID = $event;
@@ -144,7 +148,9 @@ export class AtdConfigComponent implements OnInit {
                 break;
             }
             case 'Inventory': {
+                console.log("Case Inventory");
                 this.Configuration.InventoryFieldID = $event;
+                console.log('here is the inv id:       ', $event);
                 if($event == '') {
                     this.Configuration.InventoryType = 'DoNothing'
                    
@@ -152,10 +158,12 @@ export class AtdConfigComponent implements OnInit {
                 break;
             }
             case 'InventoryAction': {
+                console.log("Case Inventory Action");
                 this.Configuration.InventoryType = $event;
                 break;
             }
             case 'ItemConfig': {
+                console.log("Case ItemConfig");
                 this.Configuration.ItemConfigFieldID = $event;
                 if($event == '') {
                     this.Configuration.CaseQuantityType = 'DoNothing';
@@ -165,10 +173,12 @@ export class AtdConfigComponent implements OnInit {
                 break;
             }
             case 'CaseAction': {
+                console.log("Case Case Action");
                 this.Configuration.CaseQuantityType = $event;
                 break;
             }
             case 'MinAction': {
+                console.log("Case Min Action");
                 this.Configuration.MinQuantityType = $event;
                 break;
             }
