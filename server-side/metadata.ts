@@ -31,7 +31,7 @@ export const relations: relation[] = [
         RelationName: "TransactionTypeListMenu",
         AddonUUID: "1238582e-9b32-4d21-9567-4e17379f41bb",
         Name:"UomRelations",
-        Description:"Configure UOM",
+        Description:"Quantity Configuration",
         SubType: "NG11",
         ModuleName: "AtdConfigModule",
         ComponentName: "AtdConfigComponent",

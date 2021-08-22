@@ -22,38 +22,32 @@
             <div *ngIf="Configuration"> -->
             
             <div class="left">
+                <!--Section 1 ----------------------------------------------------------------------------------> 
                <h4>Configuration Fields</h4>
-               <hr>
+               <div class= "allscreen"><hr></div>
                 <div>
                     <pep-select #pepSelect [value]="Configuration?.UOMFieldID"
                         [options]="TSAStringfields" [label]="'Uom_AtdConfig_AllowedUomsTitle' | translate"
                         (valueChange)="onValueChanged('AllowedUoms', $event)" [mandatory]='true'></pep-select>
                 </div>
                 <div>
-                    <pep-select #pepSelect [value]="Configuration?.InventoryFieldID"
-                        [options]="TSANumberfields" [label]="'Uom_AtdConfig_InventoryTitle' | translate"
-                        (valueChange)="onValueChanged('Inventory', $event)"></pep-select>
-                </div>
-            
-            
-            
-            
-            
-                <h4>Data Fields</h4>
-                <hr>
-             
-                <div>
                     <pep-select #pepSelect [value]="Configuration?.ItemConfigFieldID"
                     [options]="TSAStringfields" [label]="'Uom_AtdConfig_ItemConfigTitle' | translate"
                     (valueChange)="onValueChanged('ItemConfig', $event)"></pep-select>
                 </div>
-     
-          
-            
-
-      
-                <h4>Units Quantity Fields</h4>
-                <hr>
+                <br>
+                <!--Section 2 ----------------------------------------------------------------------------------> 
+                <h4>Data Fields</h4>
+                <div class= "allscreen"> <hr></div>
+                <div>
+                    <pep-select #pepSelect [value]="Configuration?.InventoryFieldID"
+                        [options]="TSANumberfields" [label]="'Uom_AtdConfig_InventoryTitle' | translate"
+                        (valueChange)="onValueChanged('Inventory', $event)"></pep-select>
+                </div>
+                <br>
+                <!--Section 3 ----------------------------------------------------------------------------------> 
+                <h4>Units Quantity Fields</h4> 
+                <div class= "allscreen"> <hr></div>
                 <div>
                     <pep-select #pepSelect [value]="Configuration?.InventoryType"
                         [options]="Actions" [disabled]="Configuration?.InventoryFieldID == ''" [emptyOption]='false' [label]="'Uom_AtdConfig_InventoryActionTitle' | translate" 
@@ -69,8 +63,7 @@
                         [options]="Actions" [disabled]="Configuration?.ItemConfigFieldID == ''" [emptyOption]='false' [label]="'Uom_AtdConfig_MinActionTitle' | translate" 
                         (valueChange)="onValueChanged('MinAction', $event)"></pep-select>
                 </div>
-           
-
+           <!--Save and Cancel buttons--> 
             <div>
                 <div class="wrapper">
                     <div>
