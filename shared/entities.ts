@@ -9,7 +9,8 @@ export interface Uom {
 export interface AtdConfiguration {
     Key: string, 
     UOMFieldID: string,
-    InventoryFieldID: string, 
+    InventoryFieldID: string,
+    // PriceField: string, 
     InventoryType: InventoryAction,
     ItemConfigFieldID: string,
     CaseQuantityType: InventoryAction

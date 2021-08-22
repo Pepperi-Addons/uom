@@ -25,6 +25,18 @@
                 <!--Section 1 ----------------------------------------------------------------------------------> 
                <h4>Configuration Fields</h4>
                <div class= "allscreen"><hr></div>
+               <p class = "allscreen"> Select the fields wich contains the item's UOM information. The fields can be an item level fields or a UDT/Calculated transaction line fields, with the folowing content for exmaple:</p>
+               <ul class="allscreen">
+                   <li>
+                    Allowed UOMs field = "["EA","CS","BO"]"
+                   </li>
+                   <li>
+                        UOM Configuration field = "[&#123;"UOMkey": "CS", "Factor": 6, "Min": 4, "Case": 1, "Decimal": 2, "Negative": false&#125;, &#123;"UOMKey": "EA", "Case": 6]"
+                   </li>
+               </ul>
+               <br>
+               
+               
                 <div>
                     <pep-select #pepSelect [value]="Configuration?.UOMFieldID"
                         [options]="TSAStringfields" [label]="'Uom_AtdConfig_AllowedUomsTitle' | translate"
@@ -39,15 +51,24 @@
                 <!--Section 2 ----------------------------------------------------------------------------------> 
                 <h4>Data Fields</h4>
                 <div class= "allscreen"> <hr></div>
-                <div>
-                    <pep-select #pepSelect [value]="Configuration?.InventoryFieldID"
+                <p class="allscreen">Select the fields which contain the item's data </p>
+                <br>
+                <!-- <div>
+                    <pep-select #pepSelect [value]="Configuration?.PriceField"
                         [options]="TSANumberfields" [label]="'Uom_AtdConfig_InventoryTitle' | translate"
                         (valueChange)="onValueChanged('Inventory', $event)"></pep-select>
+                </div> -->
+                <div>
+                    <pep-select #pepSelect [value]="Configuration?.InventoryFieldID"
+                        [options]="TSANumberfields" [label]="'Uom_AtdConfig_PriceTitle' | translate"
+                        (valueChange)="onValueChanged('InventoryFieldID', $event)"></pep-select>
                 </div>
                 <br>
                 <!--Section 3 ----------------------------------------------------------------------------------> 
                 <h4>Units Quantity Fields</h4> 
                 <div class= "allscreen"> <hr></div>
+                <p class="allscreen">Define the behavior of the Units Quantity Field when it is set with an out of bounds value</p>
+                <br>
                 <div>
                     <pep-select #pepSelect [value]="Configuration?.InventoryType"
                         [options]="Actions" [disabled]="Configuration?.InventoryFieldID == ''" [emptyOption]='false' [label]="'Uom_AtdConfig_InventoryActionTitle' | translate" 
@@ -63,8 +84,10 @@
                         [options]="Actions" [disabled]="Configuration?.ItemConfigFieldID == ''" [emptyOption]='false' [label]="'Uom_AtdConfig_MinActionTitle' | translate" 
                         (valueChange)="onValueChanged('MinAction', $event)"></pep-select>
                 </div>
-           <!--Save and Cancel buttons--> 
-            <div>
+                <!--Save and Cancel buttons--> 
+                <div>
+                <div class="allscreen"><hr></div>
+                
                 <div class="wrapper">
                     <div>
                         <pep-button [value]="'Uom_AtdConfig_Save' | translate" [sizeType]="'md'" [styleType]="'strong'"

@@ -111,6 +111,7 @@ export class AtdConfigComponent implements OnInit {
                 Key: this.AtdID.toString(),
                 UOMFieldID: '',
                 InventoryFieldID: 'ItemInStockQuantity',
+                // PriceField: '',
                 InventoryType: "Color",
                 ItemConfigFieldID: '',
                 CaseQuantityType: "Color",
@@ -157,6 +158,16 @@ export class AtdConfigComponent implements OnInit {
                 }
                 break;
             }
+            // case 'Price': {
+            //     console.log("Case Price");
+            //     this.Configuration.PriceField = $event;
+            //     console.log('here is the price field:       ', $event);
+            //     // if($event == '') {
+            //     //     this.Configuration.PriceField = ''
+                   
+            //     // }
+            //     break;
+            // }
             case 'InventoryAction': {
                 console.log("Case Inventory Action");
                 this.Configuration.InventoryType = $event;
@@ -209,6 +220,7 @@ export class AtdConfigComponent implements OnInit {
                 Key: this.AtdID.toString(),
                 UOMFieldID: '',
                 InventoryFieldID: 'ItemInStockQuantity',
+                // PriceField: '',
                 InventoryType: 'Color',
                 ItemConfigFieldID: '',
                 CaseQuantityType: "Color",

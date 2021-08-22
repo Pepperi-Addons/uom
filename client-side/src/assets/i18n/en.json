@@ -1,5 +1,6 @@
 {
     "Components_Example_Title": "@pep-addons/ngx-lib : Pepperi Components - Library components written with Angular10",
+    "Configuration_Fields_Explanation": "Select the fields wich contains the item's UOM information. The fields can be an item level fields or a UDT/Calculated transaction line fields, with the folowing content for exmaple:" , 
     "List_Example_Title": "Pep list example",
     "Uom_Table_Title":"UOM List",
     "Uom_Table_AddAction":"Add",
@@ -38,7 +39,8 @@
     "Uom_AtdConfig_Instructions": "Please notify that after saving the configuration, several fields with AOQM prefix will be added to the selected transaction. Place those fields in the relevant order center and cart views.",
     "Uom_duplicateKey_Title": "Duplicate Key",
     "Uom_duplicateKey_Paragraph": "Cannot add uom that already exist. To edit it, please select it from the list",
-    "Uom_AtdConfig_ItemConfigTitle": "Config Item Field",
+    "Uom_AtdConfig_ItemConfigTitle": "UOM Configuration Field",
+    "Uom_AtdConfig_PriceTitle": "Unit Price Field",
     "Uom_AtdConfig_CaseActionTitle": "Case Quantity Action",
     "Uom_AtdConfig_MinActionTitle": "Min Quantity Action"
 
