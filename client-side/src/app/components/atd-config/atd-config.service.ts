@@ -36,6 +36,7 @@ export class AtdConfigService {
         return await this.papiClient.addons.api.uuid(this.pluginUUID).file('api').func('atdConfiguration').get({where:'Key=' + atdID});
     }
 
+
     async updateConfiguration(config: AtdConfiguration) {
         return await this.papiClient.addons.api.uuid(this.pluginUUID).file('api').func('atdConfiguration').post(undefined, config);
     }
@@ -54,7 +55,16 @@ export class AtdConfigService {
             return {
                 key: item.TypeID,
                 value: item.ExternalID
+                // uuid: item.UUID
             }
         })
+    }
+
+    async getTypeInternalID(uuid: string) {
+        return  await this.papiClient.types.find({
+            where: `UUID='${uuid}'`
+        }).then((types) => {
+            return types[0].InternalID;
+        });
     }
 }

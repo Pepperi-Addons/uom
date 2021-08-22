@@ -1,13 +1,10 @@
 <!-- <div>Component works</div> -->
 <div  class="addon-page-container">
-    <pep-top-bar [title]="'Uom_Config_Title' | translate" >
+    <pep-top-bar [title]="'Uom_Config_Title' | translate" [inline] ="true" >
         <div header-start-content>
             
         </div>
-        <div header-end-content>
-            <pep-button [value]="'Uom_AtdConfig_Save' | translate" [sizeType]="'md'" [styleType]="'strong'"
-            [classNames]="'pep-spacing-element '" [disabled]='Configuration == undefined || isUomFieldValid == false' (click)="SaveConfig()"></pep-button>                    
-        </div>
+
     </pep-top-bar>
     <div id="mainContent" class="main-content">
         <div class="content" style="margin-top: 20px;">
@@ -17,27 +14,61 @@
             <p class="body-md">
                 {{ "Uom_AtdConfig_Instructions" | translate }}
             </p>
-            <div>
+            <!-- <div>
                 <pep-select #pepSelect [value]="AtdID"
                     [options]="TransactionTypes" [label]="'Uom_AtdConfig_AtdIdTitle' | translate"
                     (valueChange)="onValueChanged('AtdId', $event)"></pep-select>
             </div>
-            <div *ngIf="Configuration">
+            <div *ngIf="Configuration"> -->
+            
+            <div class="left">
+                <!--Section 1 ----------------------------------------------------------------------------------> 
+               <h4>Configuration Fields</h4>
+               <div class= "allscreen"><hr></div>
+               <p class = "allscreen"> Select the fields wich contains the item's UOM information. The fields can be an item level fields or a UDT/Calculated transaction line fields, with the folowing content for exmaple:</p>
+               <ul class="allscreen">
+                   <li>
+                    Allowed UOMs field = "["EA","CS","BO"]"
+                   </li>
+                   <li>
+                        UOM Configuration field = "[&#123;"UOMkey": "CS", "Factor": 6, "Min": 4, "Case": 1, "Decimal": 2, "Negative": false&#125;, &#123;"UOMKey": "EA", "Case": 6]"
+                   </li>
+               </ul>
+               <br>
+               
+               
                 <div>
                     <pep-select #pepSelect [value]="Configuration?.UOMFieldID"
                         [options]="TSAStringfields" [label]="'Uom_AtdConfig_AllowedUomsTitle' | translate"
                         (valueChange)="onValueChanged('AllowedUoms', $event)" [mandatory]='true'></pep-select>
                 </div>
                 <div>
-                    <pep-select #pepSelect [value]="Configuration?.InventoryFieldID"
-                        [options]="TSANumberfields" [label]="'Uom_AtdConfig_InventoryTitle' | translate"
-                        (valueChange)="onValueChanged('Inventory', $event)"></pep-select>
-                </div>
-                <div>
                     <pep-select #pepSelect [value]="Configuration?.ItemConfigFieldID"
                     [options]="TSAStringfields" [label]="'Uom_AtdConfig_ItemConfigTitle' | translate"
                     (valueChange)="onValueChanged('ItemConfig', $event)"></pep-select>
                 </div>
+                <br>
+                <!--Section 2 ----------------------------------------------------------------------------------> 
+                <h4>Data Fields</h4>
+                <div class= "allscreen"> <hr></div>
+                <p class="allscreen">Select the fields which contain the item's data </p>
+                <br>
+                <!-- <div>
+                    <pep-select #pepSelect [value]="Configuration?.PriceField"
+                        [options]="TSANumberfields" [label]="'Uom_AtdConfig_InventoryTitle' | translate"
+                        (valueChange)="onValueChanged('Inventory', $event)"></pep-select>
+                </div> -->
+                <div>
+                    <pep-select #pepSelect [value]="Configuration?.InventoryFieldID"
+                        [options]="TSANumberfields" [label]="'Uom_AtdConfig_PriceTitle' | translate"
+                        (valueChange)="onValueChanged('InventoryFieldID', $event)"></pep-select>
+                </div>
+                <br>
+                <!--Section 3 ----------------------------------------------------------------------------------> 
+                <h4>Units Quantity Fields</h4> 
+                <div class= "allscreen"> <hr></div>
+                <p class="allscreen">Define the behavior of the Units Quantity Field when it is set with an out of bounds value</p>
+                <br>
                 <div>
                     <pep-select #pepSelect [value]="Configuration?.InventoryType"
                         [options]="Actions" [disabled]="Configuration?.InventoryFieldID == ''" [emptyOption]='false' [label]="'Uom_AtdConfig_InventoryActionTitle' | translate" 
@@ -52,6 +83,19 @@
                     <pep-select #pepSelect [value]="Configuration?.MinQuantityType"
                         [options]="Actions" [disabled]="Configuration?.ItemConfigFieldID == ''" [emptyOption]='false' [label]="'Uom_AtdConfig_MinActionTitle' | translate" 
                         (valueChange)="onValueChanged('MinAction', $event)"></pep-select>
+                </div>
+                <!--Save and Cancel buttons--> 
+                <div>
+                <div class="allscreen"><hr></div>
+                
+                <div class="wrapper">
+                    <div>
+                        <pep-button [value]="'Uom_AtdConfig_Save' | translate" [sizeType]="'md'" [styleType]="'strong'"
+                        [classNames]="'pep-spacing-element '"  (click)="SaveConfig()"></pep-button> 
+                                           
+                        <pep-button [value]="'Uom_AtdConfig_Cancel' | translate" [sizeType]="'md'" [styleType]="'weak'"
+                        [classNames]="'pep-spacing-element '"  (click)="Cancel()"></pep-button>                    
+                    </div>
                 </div>
                 <!-- <div class="mat-dialog-actions pep-spacing-element-negative">
                     <pep-button [value]="'Uom_AtdConfig_Cancel' | translate" [sizeType]="'md'" [styleType]="'weak'"

@@ -1,19 +1,25 @@
+// import { atdConfigScheme } from './../../../../../server-side/metadata';
+// import { RouterModule, ActivatedRoute } from '@angular/router';
+// import { PepTopBarModule } from '@pepperi-addons/ngx-lib/top-bar';
 import { PepUIModule } from './../../modules/pepperi.module';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { MaterialModule } from './../../modules/material.module';
-import { PepSelectModule } from '@pepperi-addons/ngx-lib/select';
-import { PepButtonModule } from '@pepperi-addons/ngx-lib/button';
+// import { PepSelectModule } from '@pepperi-addons/ngx-lib/select';
+// import { PepButtonModule } from '@pepperi-addons/ngx-lib/button';
 import { TranslateLoader, TranslateModule, TranslateService, TranslateStore } from '@ngx-translate/core';
 import { PepHttpService, PepFileService, PepNgxLibModule, PepAddonService, PepCustomizationService } from '@pepperi-addons/ngx-lib';
 import { MultiTranslateHttpLoader } from 'ngx-translate-multi-http-loader';
 import { AtdConfigComponent } from './index';
+import {PepAddonLoaderService} from '@pepperi-addons/ngx-remote-loader'
+import { PepDialogModule, PepDialogService } from '@pepperi-addons/ngx-lib/dialog';
 
-export function createTranslateLoader(http: HttpClient, fileService: PepFileService, addonService: PepAddonService) {
+export function createTranslateLoader(http: HttpClient, fileService: PepFileService, addonService: PepAddonLoaderService) {
     const translationsPath: string = fileService.getAssetsTranslationsPath();
     const translationsSuffix: string = fileService.getAssetsTranslationsSuffix();
-    const addonStaticFolder = addonService.getAddonStaticFolder();
+    // const addonStaticFolder = addonService.getAddonStaticFolder();
+    const addonStaticFolder = addonService.getAddonPath("1238582e-9b32-4d21-9567-4e17379f41bb"); //here is the problem
 
     return new MultiTranslateHttpLoader(http, [
         {
@@ -40,21 +46,27 @@ export function createTranslateLoader(http: HttpClient, fileService: PepFileServ
         CommonModule,
         MaterialModule,
         HttpClientModule,
-        PepUIModule
-        // TranslateModule.forRoot({
-        //     loader: {
-        //         provide: TranslateLoader,
-        //         useFactory: createSubAddonTranslateLoader,
-        //         deps: [HttpClient, PepFileService]
-        //     }
-        // })
+        // PepSelectModule,
+        // PepButtonModule,
+        // PepTopBarModule,
+        // PepDialogModule,
+        PepUIModule,
+
+        TranslateModule.forRoot({
+            loader: {
+                provide: TranslateLoader,
+                useFactory: createTranslateLoader,
+                deps: [HttpClient, PepFileService, PepAddonLoaderService]
+            }
+        })
     ],
     exports:[AtdConfigComponent],
     providers: [
         TranslateStore,
         PepHttpService,
         PepAddonService,
-        PepCustomizationService
+        PepCustomizationService,
+        PepDialogService
     ]
 })
 

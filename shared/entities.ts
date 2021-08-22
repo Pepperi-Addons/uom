@@ -9,7 +9,8 @@ export interface Uom {
 export interface AtdConfiguration {
     Key: string, 
     UOMFieldID: string,
-    InventoryFieldID: string, 
+    InventoryFieldID: string,
+    // PriceField: string, 
     InventoryType: InventoryAction,
     ItemConfigFieldID: string,
     CaseQuantityType: InventoryAction
@@ -27,7 +28,9 @@ export interface UomItemConfiguration {
     UOMKey: string,
     Factor: number,
     Case: number,
-    Min: number
+    Min: number,
+    Decimal?: number,
+    Negative?: boolean
 }
 export enum ItemAction{
     Increment,
