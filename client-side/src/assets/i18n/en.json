@@ -34,7 +34,7 @@
     "Uom_AtdConfig_AtdIdTitle": "Transaction Type",
     "Uom_saveConfig_Title": "Save configuration",
     "Uom_saveConfig_Paragraph": "Configuration Saved successfully",
-    "Uom_AtdConfig_Paragraph": "Select transaction to apply the Quantity module and configure the fields used by it.",
+    "Uom_AtdConfig_Paragraph": "Configure the quantity module fields and behavior.",
     "Uom_AtdConfig_Instructions": "Please notify that after saving the configuration, several fields with AOQM prefix will be added to the selected transaction. Place those fields in the relevant order center and cart views.",
     "Uom_duplicateKey_Title": "Duplicate Key",
     "Uom_duplicateKey_Paragraph": "Cannot add uom that already exist. To edit it, please select it from the list",
