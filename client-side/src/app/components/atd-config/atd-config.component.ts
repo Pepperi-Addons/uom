@@ -1,3 +1,4 @@
+import { AddonService } from './../addon/addon.service';
 import { atdConfigScheme } from './../../../../../server-side/metadata';
 import { AtdConfiguration, InventoryActions, InventoryAction } from './../../../../../shared/entities';
 import { KeyValuePair, PepGuid } from '@pepperi-addons/ngx-lib';
@@ -19,13 +20,14 @@ export class AtdConfigComponent implements OnInit {
 
     TSAStringfields: {key:string, value:string}[] = [];
     TSANumberfields: {key:string, value:string}[] = [];
-    TransactionTypes: {key:number, value:string}[] = [];
+    // TransactionTypes: {key:number, value:string}[] = [];
     Actions: {key:string, value:string}[] = [];
     AtdID: number;
     Configuration: AtdConfiguration;
     obs$: Observable<any>;
     @Input() hostObject: any;
     @Output() hostEvents: EventEmitter<any> = new EventEmitter<any>();
+    configID: string;
 
     constructor(
         public pluginService: AtdConfigService,
@@ -39,13 +41,20 @@ export class AtdConfigComponent implements OnInit {
 
 
     ngOnInit() {
-        const AtdUUID = this.hostObject.objectList[0];
+        this.configID = this.hostObject.objectList[0];
+        console.log('config id :               ', this.configID);
+        this.pluginService.getTypeInternalID(this.configID).then((atdId) => {
+            this.AtdID = atdId;
+            console.log('here is atdId', this.AtdID)
+        });
+        // const AtdUUID = this.hostObject.objectList[0];
         console.log('host object is:', this.hostObject);
         this.pluginService.pluginUUID = '1238582e-9b32-4d21-9567-4e17379f41bb';
         // this.pluginService.pluginUUID = this.routeParams.snapshot.params['addon_uuid'];
         // this.pluginService.pluginUUID = this.hostObject?.UUID;
         // this.AtdID = this.hostObject?.addonData.atd.InternalID;
         // action table of key and value (0,'Fix')...
+        // console.log(this.TransactionTypes)
         this.Actions = Object.keys(InventoryActions)?.map(key => {
             return {
                 key: key,
@@ -53,9 +62,13 @@ export class AtdConfigComponent implements OnInit {
             }
         })  
         
-        this.pluginService.getTransactionTypes().then(types => {
-            this.TransactionTypes = types;
-        });
+        // this.pluginService.getTransactionTypes().then(types => {
+        //     this.TransactionTypes = types;
+        //     console.log('there is the transaction types ', types)
+        // });
+        // this.AtdID = Number(this.TransactionTypes.filter((type) => {
+        //     return type.value === 'UOM'
+        // })[0].value);
         // this.AtdID = this.TransactionTypes.filter((type) => {
         //     return type.value === AtdUUID;
         // })[0].key;
@@ -64,7 +77,8 @@ export class AtdConfigComponent implements OnInit {
     }
 
     loadAtdData() {
-        console.log('this is the transaction types: ', this.TransactionTypes)
+
+        // console.log('this is the transaction types: ', this.TransactionTypes)
         console.log('inside load Atd data. AtdID:', this.AtdID);
         this.pluginService.getAtdFields(this.AtdID).then(fields => {
             this.TSAStringfields = fields?.filter(field=> {
