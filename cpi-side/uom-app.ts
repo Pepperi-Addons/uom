@@ -1,3 +1,4 @@
+import { DataViewFieldTypes } from '@pepperi-addons/papi-sdk';
 import '@pepperi-addons/cpi-node'
 import { AtdConfiguration,
         Uom,
@@ -112,7 +113,7 @@ class UOMManager {
                   
                     await next(async () => {
                         if(data && data.UIObject && data.UIObject && data.FieldID) {
-                            await this.setUQField(data.UIObject, data.FieldID, parseInt(data.Value),ItemAction.Set);
+                            await this.setUQField(data.UIObject, data.FieldID, parseFloat(data.Value),ItemAction.Set);
                         }
                     });
                 })
@@ -176,6 +177,7 @@ class UOMManager {
             // item with just one UOM - just set the UnitsQuantity & total
             await dataObject?.setFieldValue(UNIT_QUANTITY, total.toString(), true);
             await uiObject.setFieldValue(uqField, quantityResult.curr.toString(), true);
+            // console.log(await dataObject?.getFieldValue(uqField))
         }
         catch(err) {
             console.log('Error setting UQ field');
@@ -193,8 +195,12 @@ class UOMManager {
             // get the UIFields
             const dd1 = await uiObject.getUIField(UOM_KEY_FIRST_TSA);
             const dd2 = await uiObject.getUIField(UOM_KEY_SECOND_TSA);
-            const uq1 = await uiObject.getUIField(UNIT_QTY_FIRST_TSA);
-            const uq2 = await uiObject.getUIField(UNIT_QTY_SECOND_TSA);
+            let uq1 = await uiObject.getUIField(UNIT_QTY_FIRST_TSA);
+            let uq2 = await uiObject.getUIField(UNIT_QTY_SECOND_TSA);
+            // if(uq1 != undefined)
+            //     console.log(uq1['customField'].id)
+            uq1 != undefined? uq1['customField'].type = 29: uq1 = undefined;
+            uq2 != undefined? uq2['customField'].type = 29: uq2 = undefined;
 
             const optionalValues = arr.map(key => uoms.get(key)).filter(Boolean).map(uom => {
                 return {
