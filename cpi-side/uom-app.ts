@@ -209,30 +209,33 @@ class UOMManager {
             const itemConfig = await this.getItemConfig(dataObject!);
             const uomConfig = this.getUomConfig(uom, itemConfig);
             const otherUomConfig = this.getUomConfig(otherUom, itemConfig);
-            if(uomConfig && !uomConfig.Decimal)
-            {
-                uq1 != undefined? uq1['customField'].type = 28: uq1 = undefined;
-                if(uq1)
-                    console.log(uq1['customField'])
-            }
-            else if(uomConfig)
-            {
-                uq1 != undefined? uq1['customField'].type = 29: uq1 = undefined;
-                uq1 != undefined? uq1['customField'].decimalDigits = uomConfig.Decimal: uq1 = undefined;
-            }
-            if(otherUomConfig && !otherUomConfig.Decimal)
-            {
-                uq2 != undefined? uq2['customField'].type = 28: uq2 = undefined;
-            }
-            else if(uomConfig)
-            {
-                uq2 != undefined? uq2['customField'].decimalDigits = uomConfig.Decimal: uq2 = undefined;
-            }
-            console.log(uiObject);
-            console.log(dataObject);
-            console.log(data);
-            uq1 != undefined? uq1['customField'].type = 28: uq1 = undefined;
-            uq2 != undefined? uq2['customField'].type = 28: uq2 = undefined;
+            // if(uomConfig && !uomConfig.Decimal)
+            // {
+            //     uq1 != undefined? uq1['customField'].type = 28: uq1 = undefined;
+            //     uq1 != undefined? uq1['customField'].decimalDigits = 0: uq1 = undefined;
+            
+            //     if(uq1)
+            //         console.log("There is the customField obj" + uq1['customField'])
+            // }
+            // else if(uomConfig)
+            // {
+            //     uq1 != undefined? uq1['customField'].decimalDigits = uomConfig.Decimal: uq1 = undefined;
+            //     uq1 != undefined? uq1['customField'].type = 29: uq1 = undefined;
+            // }
+            // if(otherUomConfig && !otherUomConfig.Decimal)
+            // {
+            //     uq2 != undefined? uq2['customField'].type = 28: uq2 = undefined;
+            // }
+            // else if(uomConfig)
+            // {
+            //     uq2 != undefined? uq2['customField'].decimalDigits = 0: uq2 = undefined;
+            //     uq2 != undefined? uq2['customField'].decimalDigits = uomConfig.Decimal: uq2 = undefined;
+            // }
+            // console.log(uiObject);
+            // console.log(dataObject);
+            // console.log(data);
+            // uq1 != undefined? uq1['customField'].type = 28: uq1 = undefined;
+            // uq2 != undefined? uq2['customField'].type = 28: uq2 = undefined;
 
             const optionalValues = arr.map(key => uoms.get(key)).filter(Boolean).map(uom => {
                 return {
