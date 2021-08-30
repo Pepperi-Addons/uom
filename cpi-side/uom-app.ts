@@ -197,10 +197,42 @@ class UOMManager {
             const dd2 = await uiObject.getUIField(UOM_KEY_SECOND_TSA);
             let uq1 = await uiObject.getUIField(UNIT_QTY_FIRST_TSA);
             let uq2 = await uiObject.getUIField(UNIT_QTY_SECOND_TSA);
-            // if(uq1 != undefined)
-            //     console.log(uq1['customField'].id)
-            uq1 != undefined? uq1['customField'].type = 29: uq1 = undefined;
-            uq2 != undefined? uq2['customField'].type = 29: uq2 = undefined;
+            if(uq1 != undefined)
+                console.log(uq1['customField'])
+            //needs to get the uom and then if its not decimal than do this
+
+            //to function
+            const uomValue = await dataObject?.getFieldValue(UNIT_QTY_FIRST_TSA);
+            const otherUomValue = await dataObject?.getFieldValue(UNIT_QTY_SECOND_TSA);
+            const uom = uomValue ? uoms.get(uomValue) : undefined;
+            const otherUom = otherUomValue ? uoms.get(otherUomValue) : undefined;
+            const itemConfig = await this.getItemConfig(dataObject!);
+            const uomConfig = this.getUomConfig(uom, itemConfig);
+            const otherUomConfig = this.getUomConfig(otherUom, itemConfig);
+            if(uomConfig && !uomConfig.Decimal)
+            {
+                uq1 != undefined? uq1['customField'].type = 28: uq1 = undefined;
+                if(uq1)
+                    console.log(uq1['customField'])
+            }
+            else if(uomConfig)
+            {
+                uq1 != undefined? uq1['customField'].type = 29: uq1 = undefined;
+                uq1 != undefined? uq1['customField'].decimalDigits = uomConfig.Decimal: uq1 = undefined;
+            }
+            if(otherUomConfig && !otherUomConfig.Decimal)
+            {
+                uq2 != undefined? uq2['customField'].type = 28: uq2 = undefined;
+            }
+            else if(uomConfig)
+            {
+                uq2 != undefined? uq2['customField'].decimalDigits = uomConfig.Decimal: uq2 = undefined;
+            }
+            console.log(uiObject);
+            console.log(dataObject);
+            console.log(data);
+            uq1 != undefined? uq1['customField'].type = 28: uq1 = undefined;
+            uq2 != undefined? uq2['customField'].type = 28: uq2 = undefined;
 
             const optionalValues = arr.map(key => uoms.get(key)).filter(Boolean).map(uom => {
                 return {
