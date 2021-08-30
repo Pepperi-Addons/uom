@@ -83,34 +83,28 @@ export const UomTSAFields: ApiFieldObject[] = [
         }
     },
     {
-        FieldID: UNIT_QTY_FIRST_TSA,
-        Label: "AOQM_Quantity1",
-        Description: "The quantity for the 1st unit of measure",
-        IsUserDefinedField: true,
-        UIType: {
-            ID: 8,
-            Name: "NumberReal",
+            FieldID: UNIT_QTY_FIRST_TSA,
+            Label: "AOQM_Quantity1",
+            Description: "The quantity for the 1st unit of measure",
+            IsUserDefinedField: true,
+            UIType: {
+                ID: 28,
+                Name: "NumberIntegerQuantitySelector",
+            },
+            Type: "Integer",
+            Format: "Int64"
         },
-        Type: "Number",
-        Format: "Double",
-        TypeSpecificFields: {
-            "DecimalScale": 6
-        }
-    },
     {
         FieldID: UNIT_QTY_SECOND_TSA,
         Label: "AOQM_Quantity2",
         Description: "The quantity for the 2nd unit of measure",
         IsUserDefinedField: true,
         UIType: {
-            ID: 8,
-            Name: "NumberReal"
+            ID: 28,
+            Name: "NumberIntegerQuantitySelector"
         },
-        Type: "Number",
-        Format: "Double",
-        TypeSpecificFields: {
-            "DecimalScale": 6
-        }
+        Type: "Integer",
+        Format: "Int64",
     },
 ]
 
