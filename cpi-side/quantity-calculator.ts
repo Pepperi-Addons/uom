@@ -88,7 +88,7 @@ export class QuantityCalculator {
 
                     default:
                         //when we dont have an interval in increment, the max is zero.
-                        if(this.getRealMax() < this.getRealMin() && action === ItemAction.Increment)
+                        if(this.getRealMax() < this.getRealMin() && action === ItemAction.Increment && this.invBehavior === 'Fix')
                         {
                             return 0;
                         }
