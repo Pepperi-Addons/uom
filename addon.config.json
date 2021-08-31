@@ -1,6 +1,6 @@
 {
   "AddonUUID": "1238582e-9b32-4d21-9567-4e17379f41bb",
-  "AddonVersion": "1.2.37",
+  "AddonVersion": "1.2.38",
   "DebugPort": 4500,
   "WebappBaseUrl": "https://app.sandbox.pepperi.com",
   "DefaultEditor": "main",
@@ -34,11 +34,6 @@
         "ParentPackageName": "Quantity Module",
         "PackageName": "uom",
         "Description": "Quantity Module List"
-      },
-      {
-        "ParentPackageName": "Quantity Module",
-        "PackageName": "config",
-        "Description": "Quantity Module Configuration"
       }
     ],
     "Dependencies": {},
