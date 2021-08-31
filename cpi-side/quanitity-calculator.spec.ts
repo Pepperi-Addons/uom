@@ -1102,7 +1102,7 @@ describe('Quantity Calculator', () => {
                     it('3:inc should go to -1', inc(-1,calc,-1.5));
                     // it('4:dec should go to 2', dec(2,calc,2.5));
                     it('4:set to -909.4 shuld go to -909.4', set(-909,calc,-909));
-                    it('4:set to -0 shuld go to 0', set(0,calc,-0));
+                    it('4:set to -0 shuld go to 0', set(0,calc,0));
                 });
             });
             describe ('CASE 4:inv = 9, min = 3.33, case = 0.11, factor = 1', () => {
