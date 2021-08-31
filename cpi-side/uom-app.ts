@@ -11,6 +11,7 @@ import { DataObject, EventData, UIObject, TransactionLines, UIField  } from '@pe
 import config from '../addon.config.json';
 import { QuantityCalculator } from './quantity-calculator';
 import { ItemAction, QuantityResult } from './../shared/entities';
+import { Console } from 'console';
 
 
 /** The Real UQ Field - Holds the quantity in Baseline */
@@ -207,6 +208,7 @@ class UOMManager {
             const uom = uomValue ? uoms.get(uomValue) : undefined;
             const otherUom = otherUomValue ? uoms.get(otherUomValue) : undefined;
             const itemConfig = await this.getItemConfig(dataObject!);
+            console.log(itemConfig);
             const uomConfig = this.getUomConfig(uom, itemConfig);
             const otherUomConfig = this.getUomConfig(otherUom, itemConfig);
             // if(uomConfig && !uomConfig.Decimal)
