@@ -88,8 +88,8 @@ export const UomTSAFields: ApiFieldObject[] = [
             Description: "The quantity for the 1st unit of measure",
             IsUserDefinedField: true,
             UIType: {
-                ID: 28,
-                Name: "NumberIntegerQuantitySelector",
+                ID: 29,
+                Name: "NumberRealQuantitySelector",
             },
             Type: "Integer",
             Format: "Int64"
@@ -100,8 +100,8 @@ export const UomTSAFields: ApiFieldObject[] = [
         Description: "The quantity for the 2nd unit of measure",
         IsUserDefinedField: true,
         UIType: {
-            ID: 28,
-            Name: "NumberIntegerQuantitySelector"
+            ID: 29,
+            Name: "NumberRealQuantitySelector"
         },
         Type: "Integer",
         Format: "Int64",

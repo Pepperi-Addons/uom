@@ -199,6 +199,14 @@ class UOMManager {
                 uq1 != undefined? uq1['customField'].type = 29: uq1 = undefined;
             }
     }
+    fixFormattedValue(uq1: UIField | undefined){
+        if(uq1)
+        {
+            let customField = uq1['customField'];
+            let val = Number(customField['formattedValue']);
+            customField['formattedValue'] = val - Math.floor(val) === 0? val.toFixed(): val.toString();
+        }
+    }
 
 
     async recalculateOrderCenterItem(data: EventData) {
@@ -214,6 +222,8 @@ class UOMManager {
             const dd2 = await uiObject.getUIField(UOM_KEY_SECOND_TSA);
             let uq1 = await uiObject.getUIField(UNIT_QTY_FIRST_TSA);
             let uq2 = await uiObject.getUIField(UNIT_QTY_SECOND_TSA);
+            this.fixFormattedValue(uq1);
+            this.fixFormattedValue(uq2);
             if(uq1 != undefined)
                 console.log(uq1['customField'])
             //needs to get the uom and then if its not decimal than do this
