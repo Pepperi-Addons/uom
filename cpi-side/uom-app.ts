@@ -2,7 +2,6 @@ import { DataViewFieldTypes } from '@pepperi-addons/papi-sdk';
 import '@pepperi-addons/cpi-node'
 import { AtdConfiguration,
         Uom,
-        UomItemConfiguration,
         UNIT_QTY_FIRST_TSA,
         UNIT_QTY_SECOND_TSA,
         UOM_KEY_FIRST_TSA,
@@ -10,7 +9,7 @@ import { AtdConfiguration,
 import { DataObject, EventData, UIObject, TransactionLines, UIField  } from '@pepperi-addons/cpi-node';
 import config from '../addon.config.json';
 import { QuantityCalculator } from './quantity-calculator';
-import { ItemAction, QuantityResult } from './../shared/entities';
+import { ItemAction, QuantityResult, UomItemConfiguration } from './../shared/entities';
 import { Console } from 'console';
 
 
@@ -185,6 +184,23 @@ class UOMManager {
             console.error(err);
         }
     }
+    updateTSAField(uomConfig: UomItemConfiguration, uq1:UIField | undefined){
+            if(uomConfig && !uomConfig.Decimal)
+            {
+                uq1 != undefined? uq1['customField'].type = 28: uq1 = undefined;
+                uq1 != undefined? uq1['customField'].decimalDigits = 0: uq1 = undefined;
+            
+                if(uq1)
+                    console.log("There is the customField obj" + uq1['customField'])
+            }
+            else if(uomConfig)
+            {
+                uq1 != undefined? uq1['customField'].decimalDigits = uomConfig.Decimal: uq1 = undefined;
+                uq1 != undefined? uq1['customField'].type = 29: uq1 = undefined;
+            }
+    }
+
+
     async recalculateOrderCenterItem(data: EventData) {
         try {
             const uiObject = data.UIObject!;
@@ -211,6 +227,10 @@ class UOMManager {
             console.log(itemConfig);
             const uomConfig = this.getUomConfig(uom, itemConfig);
             const otherUomConfig = this.getUomConfig(otherUom, itemConfig);
+            //update the TSA Field 
+            this.updateTSAField(uomConfig,uq1);
+            this.updateTSAField(otherUomConfig,uq2);
+
             // if(uomConfig && !uomConfig.Decimal)
             // {
             //     uq1 != undefined? uq1['customField'].type = 28: uq1 = undefined;
