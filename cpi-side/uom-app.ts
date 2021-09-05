@@ -185,7 +185,7 @@ class UOMManager {
         }
     }
     updateTSAField(uomConfig: UomItemConfiguration, uq1:UIField | undefined){
-            if(uomConfig && !uomConfig.Decimal)
+            if(uomConfig && Number(uomConfig.Decimal) === 0)
             {
                 uq1 != undefined? uq1['customField'].type = 28: uq1 = undefined;
                 uq1 != undefined? uq1['customField'].decimalDigits = 0: uq1 = undefined;
@@ -227,10 +227,10 @@ class UOMManager {
             if(uq1 != undefined)
                 console.log(uq1['customField'])
             //needs to get the uom and then if its not decimal than do this
-
             //to function
-            const uomValue = await dataObject?.getFieldValue(UNIT_QTY_FIRST_TSA);
-            const otherUomValue = await dataObject?.getFieldValue(UNIT_QTY_SECOND_TSA);
+            //cant get here the uomValue
+            const uomValue = await dataObject?.getFieldValue(UOM_KEY_FIRST_TSA);
+            const otherUomValue = await dataObject?.getFieldValue(UOM_KEY_SECOND_TSA);
             const uom = uomValue ? uoms.get(uomValue) : undefined;
             const otherUom = otherUomValue ? uoms.get(otherUomValue) : undefined;
             const itemConfig = await this.getItemConfig(dataObject!);
