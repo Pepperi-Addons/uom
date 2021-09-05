@@ -204,7 +204,7 @@ class UOMManager {
         {
             let customField = uq1['customField'];
             let val = Number(customField['formattedValue']);
-            customField['formattedValue'] = val - Math.floor(val) === 0? val.toFixed(): val.toString();
+            customField['formattedValue'] = val - Math.floor(val) === 0? val | 0: val.toString();
         }
     }
 

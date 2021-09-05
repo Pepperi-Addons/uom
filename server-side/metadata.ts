@@ -91,7 +91,7 @@ export const UomTSAFields: ApiFieldObject[] = [
                 ID: 29,
                 Name: "NumberRealQuantitySelector",
             },
-            Type: "Integer",
+            Type: "Number",
             Format: "Int64"
         },
     {
@@ -103,7 +103,7 @@ export const UomTSAFields: ApiFieldObject[] = [
             ID: 29,
             Name: "NumberRealQuantitySelector"
         },
-        Type: "Integer",
+        Type: "Number",
         Format: "Int64",
     },
 ]
