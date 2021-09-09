@@ -114,6 +114,6 @@ export const atdConfigScheme: AddonDataScheme = {
 }
 
 export const uomsScheme: AddonDataScheme = {
-    Name: "Uoms",
+    Name: "UOMs List",
     Type: "cpi_meta_data",
 }
