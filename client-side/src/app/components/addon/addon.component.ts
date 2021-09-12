@@ -1,5 +1,5 @@
 import { UomListComponent } from './../uom-list/uom-list.component';
-import { Uom } from './../../../../../shared/entities';
+import { AtdConfiguration, Uom } from './../../../../../shared/entities';
 import { AddUomDialogComponent } from './../../dialogs/add-uom-dialog/add-uom-dialog.component';
 import {
     Component,
@@ -25,6 +25,7 @@ import { PepDialogActionButton } from "@pepperi-addons/ngx-lib/dialog";
   styleUrls: ['./addon.component.scss'],
   providers: [AddonService]
 })
+
 export class AddonComponent implements OnInit {
     screenSize: PepScreenSizeType;
     @ViewChild(UomListComponent, { static: false }) uomListComp: UomListComponent;
@@ -36,7 +37,7 @@ export class AddonComponent implements OnInit {
         public routeParams: ActivatedRoute,
         public router: Router,
         public compiler: Compiler,
-        public layoutService: PepLayoutService,
+        public layoutService: PepLayoutService
     ) {
 
         // Parameters sent from url
