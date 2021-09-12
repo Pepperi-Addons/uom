@@ -115,6 +115,7 @@ export class AddonComponent implements OnInit {
             Title: data.Title,
             Multiplier: data.Multiplier
         }
+        debugger;
         this.pluginService.updateUoms(uomObj).then((() => {
             this.uomListComp ? this.uomListComp.loadlist() : null;
         }));

@@ -1,4 +1,4 @@
-import { DataViewFieldTypes } from '@pepperi-addons/papi-sdk';
+
 import '@pepperi-addons/cpi-node'
 import { AtdConfiguration,
         Uom,
@@ -10,7 +10,7 @@ import { DataObject, EventData, UIObject, TransactionLines, UIField  } from '@pe
 import config from '../addon.config.json';
 import { QuantityCalculator } from './quantity-calculator';
 import { ItemAction, QuantityResult, UomItemConfiguration } from './../shared/entities';
-import { Console } from 'console';
+
 
 
 /** The Real UQ Field - Holds the quantity in Baseline */
@@ -175,7 +175,7 @@ class UOMManager {
             // add quantity to total
             total += quantityResult.total ;
             let resultValue = quantityResult.curr.toString();
-            // item with just one UOM - just set the UnitsQuantity & total
+            // format the value
             if(quantityCalc.getDecimal() && (quantityResult.curr - Math.floor(quantityResult.curr)) != 0 )
             {
                 resultValue = quantityResult.curr.toFixed(quantityCalc.getDecimal());
@@ -279,6 +279,7 @@ class UOMManager {
             // uq2 != undefined? uq2['customField'].type = 28: uq2 = undefined;
 
             const optionalValues = arr.map(key => uoms.get(key)).filter(Boolean).map(uom => {
+                debugger;
                 return {
                     Key: uom!.Key,
                     Value: uom!.Title
@@ -391,9 +392,10 @@ class UOMManager {
 }
 export async function load() {
     // get UOM table
+    debugger;
     console.log("Getting the UOM table");
     const list: Uom[] = (await pepperi.api.adal.getList({
-        table: 'Uoms',
+        table: 'UOMs List',
         addon: config.AddonUUID
     })).objects as Uom[];
     console.log("Retrieved ", list.length, " uoms");
