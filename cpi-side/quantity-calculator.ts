@@ -119,10 +119,12 @@ export class QuantityCalculator {
                 return this.fix(prevLegalValue,ItemAction.Decrement);
             }
             setValue(num: number):QuantityResult{
+                //here you need to format that to number.x where x.length == decimal
                 num = this.negative ? num : Math.max(num,0);
                 return this.fix(num,ItemAction.Set);
             }
             fix(num: number, action: ItemAction){
+                debugger;
                 //first shift left everything by decimal
                 num = this.convertToInteger(num);
                 let res = this.fixByCase(num,action);
@@ -131,6 +133,10 @@ export class QuantityCalculator {
                 //shift right back to the original base by decimal
                 res = this.convertToDec(res);
                 return this.resultBuilder(res)
+            }
+
+            getDecimal(){
+                return this.decimal;
             }
         
             // in order to support frac we just sfhit left $decimal digits, and then work on integers

@@ -174,9 +174,17 @@ class UOMManager {
             };
             // add quantity to total
             total += quantityResult.total ;
+            let resultValue = quantityResult.curr.toString();
             // item with just one UOM - just set the UnitsQuantity & total
+            if(quantityCalc.getDecimal() && (quantityResult.curr - Math.floor(quantityResult.curr)) != 0 )
+            {
+                resultValue = quantityResult.curr.toFixed(quantityCalc.getDecimal());
+
+            }
+
+
             await dataObject?.setFieldValue(UNIT_QUANTITY, total.toString(), true);
-            await uiObject.setFieldValue(uqField, quantityResult.curr.toString(), true);
+            await uiObject.setFieldValue(uqField, resultValue, true);
             // console.log(await dataObject?.getFieldValue(uqField))
         }
         catch(err) {
