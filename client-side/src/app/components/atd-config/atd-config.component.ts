@@ -10,6 +10,7 @@ import { PepSelectComponent } from '@pepperi-addons/ngx-lib/select';
 import { Observable } from 'rxjs';
 import { PepDialogData, PepDialogService } from '@pepperi-addons/ngx-lib/dialog';
 import { ContentObserver } from '@angular/cdk/observers';
+import { FactoryComponent } from '../factory interface/factory';
 
 @Component({
     selector: 'atd-config-addon',
@@ -17,8 +18,8 @@ import { ContentObserver } from '@angular/cdk/observers';
     styleUrls: ['./atd-config.component.scss']
 })
 
-export class AtdConfigComponent implements OnInit {
-
+export class AtdConfigComponent implements OnInit, FactoryComponent {
+    name = 'atd_config';
     TSAStringfields: {key:string, value:string}[] = [];
     TSANumberfields: {key:string, value:string}[] = [];
     // TransactionTypes: {key:number, value:string}[] = [];
