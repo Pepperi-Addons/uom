@@ -28,7 +28,7 @@ export const relations: relation[] = [
         AddonRelativeURL:"/api/exportUom"
     },
     {   //meta data for realtion of type NgComponent
-        RelationName: "TransactionTypeListTabs",
+        RelationName: "TransactionTypeListMenu",
         AddonUUID: "1238582e-9b32-4d21-9567-4e17379f41bb",
         Name:"UomRelations",
         Description:"Quantity Configuration",
