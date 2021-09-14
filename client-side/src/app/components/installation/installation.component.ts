@@ -14,6 +14,7 @@ export class InstallationComponent implements OnInit {
   }
 
   foo(){
+    console.log('at foo, install catch the click event !!!!!!!!')
     this.installEvent.emit(true);
   
   }

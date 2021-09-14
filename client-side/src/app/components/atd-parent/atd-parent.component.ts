@@ -6,15 +6,16 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./atd-parent.component.scss']
 })
 export class AtdParentComponent implements OnInit {
-  isInsatlled: boolean = false;
+  isInstalled: boolean = false;
   constructor() { }
 
   ngOnInit(): void {
-    
+
 
   }
   installedEvent($event){
-    this.isInsatlled = $event;
+    console.log('in installedEvent at parent. parent component catch the event and change the install to true' + $event)
+    this.isInstalled = $event;
   }
 
 }

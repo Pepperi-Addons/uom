@@ -28,15 +28,15 @@ export const relations: relation[] = [
         AddonRelativeURL:"/api/exportUom"
     },
     {   //meta data for realtion of type NgComponent
-        RelationName: "TransactionTypeListMenu",
+        RelationName: "TransactionTypesListTabs",
         AddonUUID: "1238582e-9b32-4d21-9567-4e17379f41bb",
         Name:"UomRelations",
         Description:"Quantity Configuration",
         SubType: "NG11",
         ModuleName: "AtdConfigModule",
-        ComponentName: "AtdConfigComponent",
+        ComponentName: "AtdParentComponent",
         Type:"NgComponent",
-        AddonRelativeURL:"atd_config"
+        AddonRelativeURL:"parent"
     },
     // {
     //     RelationName: "TransactionTypeListMenu",
