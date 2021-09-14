@@ -1,0 +1,2 @@
+<div *ngIf="{{isInstalled}}; else elseBlock"> <atd-config-addon> </atd-config-addon></div>
+<ng-template #elseBlock> <addon-installation (messageEvent) = "installedEvent($event)"> </addon-installation></ng-template>

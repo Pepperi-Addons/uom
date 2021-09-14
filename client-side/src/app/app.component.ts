@@ -25,6 +25,7 @@ export class AppComponent implements OnInit {
     }
 
     ngOnInit() {
+        debugger
         this.customizationService.setThemeVariables();
 
         this.customizationService.footerHeight.subscribe(footerHeight => {
