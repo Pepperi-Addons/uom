@@ -4,62 +4,68 @@
         <div header-start-content>
             
         </div>
-
-    <!-- </pep-top-bar> -->
-    <div id="mainContent" class="main-content">
-        <div class="content" style="margin-top: 20px;">
-            <p class="body-md">
-                {{ "Uom_AtdConfig_Paragraph" | translate }}
-            </p>
-            <p class="body-md">
-                {{ "Uom_AtdConfig_Instructions" | translate }}
-            </p>
-            <!-- <div>
-                <pep-select #pepSelect [value]="AtdID"
-                    [options]="TransactionTypes" [label]="'Uom_AtdConfig_AtdIdTitle' | translate"
-                    (valueChange)="onValueChanged('AtdId', $event)"></pep-select>
-            </div>
-            <div *ngIf="Configuration"> -->
-            
-            <div class="left">
-                <!--Section 1 ----------------------------------------------------------------------------------> 
-               <h4>Configuration Fields</h4>
-               <div class= "allscreen"><hr></div>
-               <p class = "allscreen"> Select the fields wich contains the item's UOM information. The fields can be an item level fields or a UDT/Calculated transaction line fields, with the folowing content for exmaple:</p>
-               <ul class="allscreen">
-                   <li>
-                    Allowed UOMs field = "["EA","CS","BO"]"
-                   </li>
-                   <li>
-                        UOM Configuration field = "[&#123;"UOMkey": "CS", "Factor": 6, "Min": 4, "Case": 1, "Decimal": 2, "Negative": false&#125;, &#123;"UOMKey": "EA", "Case": 6]"
-                   </li>
-               </ul>
-               <br>
-               
-               
-                <div>
-                    <pep-select #pepSelect [value]="Configuration?.UOMFieldID"
-                        [options]="TSAStringfields" [label]="'Uom_AtdConfig_AllowedUomsTitle' | translate"
-                        (valueChange)="onValueChanged('AllowedUoms', $event)" [mandatory]='true'></pep-select>
-                </div>
-                <div>
-                    <pep-select #pepSelect [value]="Configuration?.ItemConfigFieldID"
-                    [options]="TSAStringfields" [label]="'Uom_AtdConfig_ItemConfigTitle' | translate"
-                    (valueChange)="onValueChanged('ItemConfig', $event)"></pep-select>
-                </div>
-                <br>
-                <!--Section 2 ----------------------------------------------------------------------------------> 
-                <h4>Data Fields</h4>
-                <div class= "allscreen"> <hr></div>
-                <p class="allscreen">Select the fields which contain the item's data </p>
-                <br>
-                <!-- <div>
-                    <pep-select #pepSelect [value]="Configuration?.PriceField"
-                        [options]="TSANumberfields" [label]="'Uom_AtdConfig_InventoryTitle' | translate"
-                        (valueChange)="onValueChanged('Inventory', $event)"></pep-select>
-                </div> -->
-                <div>
-                    <pep-select #pepSelect [value]="Configuration?.InventoryFieldID"
+        
+        <!-- </pep-top-bar> -->
+        
+        
+        <div *ngIf="!isInstalled;">
+            <addon-installation></addon-installation>
+        </div>
+       <div *ngIf="isInstalled">
+        <div id="mainContent" class="main-content">
+            <div class="content" style="margin-top: 20px;">
+                    <p class="body-md">
+                        {{ "Uom_AtdConfig_Paragraph" | translate }}
+                    </p>
+                    <p class="body-md">
+                        {{ "Uom_AtdConfig_Instructions" | translate }}
+                    </p>
+                    <!-- <div>
+                        <pep-select #pepSelect [value]="AtdID"
+                        [options]="TransactionTypes" [label]="'Uom_AtdConfig_AtdIdTitle' | translate"
+                        (valueChange)="onValueChanged('AtdId', $event)"></pep-select>
+                    </div>
+                    <div *ngIf="Configuration"> -->
+                        
+                        <div class="left">
+                            <!--Section 1 ----------------------------------------------------------------------------------> 
+                            <h4>Configuration Fields</h4>
+                            <div class= "allscreen"><hr></div>
+                            <p class = "allscreen"> Select the fields wich contains the item's UOM information. The fields can be an item level fields or a UDT/Calculated transaction line fields, with the folowing content for exmaple:</p>
+                            <ul class="allscreen">
+                                <li>
+                                    Allowed UOMs field = "["EA","CS","BO"]"
+                                </li>
+                                <li>
+                                    UOM Configuration field = "[&#123;"UOMkey": "CS", "Factor": 6, "Min": 4, "Case": 1, "Decimal": 2, "Negative": false&#125;, &#123;"UOMKey": "EA", "Case": 6]"
+                                </li>
+                            </ul>
+                            <br>
+                            
+                            
+                            <div>
+                                <pep-select #pepSelect [value]="Configuration?.UOMFieldID"
+                                [options]="TSAStringfields" [label]="'Uom_AtdConfig_AllowedUomsTitle' | translate"
+                                (valueChange)="onValueChanged('AllowedUoms', $event)" [mandatory]='true'></pep-select>
+                            </div>
+                            <div>
+                                <pep-select #pepSelect [value]="Configuration?.ItemConfigFieldID"
+                                [options]="TSAStringfields" [label]="'Uom_AtdConfig_ItemConfigTitle' | translate"
+                                (valueChange)="onValueChanged('ItemConfig', $event)"></pep-select>
+                            </div>
+                            <br>
+                            <!--Section 2 ----------------------------------------------------------------------------------> 
+                            <h4>Data Fields</h4>
+                            <div class= "allscreen"> <hr></div>
+                            <p class="allscreen">Select the fields which contain the item's data </p>
+                            <br>
+                            <!-- <div>
+                                <pep-select #pepSelect [value]="Configuration?.PriceField"
+                                [options]="TSANumberfields" [label]="'Uom_AtdConfig_InventoryTitle' | translate"
+                                (valueChange)="onValueChanged('Inventory', $event)"></pep-select>
+                            </div> -->
+                            <div>
+                                <pep-select #pepSelect [value]="Configuration?.InventoryFieldID"
                         [options]="TSANumberfields" [label]="'Uom_AtdConfig_InventoryTitle' | translate"
                         (valueChange)="onValueChanged('Inventory', $event)"></pep-select>
                 </div>
@@ -73,11 +79,11 @@
                     <pep-select #pepSelect [value]="Configuration?.InventoryType"
                         [options]="Actions" [disabled]="Configuration?.InventoryFieldID == ''" [emptyOption]='false' [label]="'Uom_AtdConfig_InventoryActionTitle' | translate" 
                         (valueChange)="onValueChanged('InventoryAction', $event)"></pep-select>
-                </div>
+                    </div>
                 <div>
                     <pep-select #pepSelect [value]="Configuration?.CaseQuantityType"
-                        [options]="Actions" [disabled]="Configuration?.ItemConfigFieldID == ''" [emptyOption]='false' [label]="'Uom_AtdConfig_CaseActionTitle' | translate" 
-                        (valueChange)="onValueChanged('CaseAction', $event)"></pep-select>
+                    [options]="Actions" [disabled]="Configuration?.ItemConfigFieldID == ''" [emptyOption]='false' [label]="'Uom_AtdConfig_CaseActionTitle' | translate" 
+                    (valueChange)="onValueChanged('CaseAction', $event)"></pep-select>
                 </div>
                 <div>
                     <pep-select #pepSelect [value]="Configuration?.MinQuantityType"
@@ -106,4 +112,5 @@
             </div>
         </div>
     </div>
+</div>
 </div>

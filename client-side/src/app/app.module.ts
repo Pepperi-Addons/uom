@@ -10,16 +10,16 @@ import { MaterialModule } from './modules/material.module';
 import { AddonModule } from './components/addon/addon.module';
 import { AtdConfigModule } from './components/atd-config';
 import { HttpClient } from '@angular/common/http';
-import { PepAddonService, PepFileService } from '@pepperi-addons/ngx-lib';
+import { PepAddonService, PepFileService, PepLoaderService } from '@pepperi-addons/ngx-lib';
 import { PepAddonLoaderService } from '@pepperi-addons/ngx-remote-loader';
 import { MultiTranslateHttpLoader } from 'ngx-translate-multi-http-loader';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 
-export function createTranslateLoader(http: HttpClient, fileService: PepFileService, addonService: PepAddonService) {
+export function createTranslateLoader(http: HttpClient, fileService: PepFileService, addonService: PepAddonLoaderService) {
     const translationsPath: string = fileService.getAssetsTranslationsPath();
     const translationsSuffix: string = fileService.getAssetsTranslationsSuffix();
-    const addonStaticFolder = addonService.getAddonStaticFolder();
-    // const addonStaticFolder = addonService.getAddonPath("1238582e-9b32-4d21-9567-4e17379f41bb"); //here is the problem
+    // const addonStaticFolder = addonService.getAddonStaticFolder();
+    const addonStaticFolder = addonService.getAddonPath("1238582e-9b32-4d21-9567-4e17379f41bb");
 
     return new MultiTranslateHttpLoader(http, [
         {

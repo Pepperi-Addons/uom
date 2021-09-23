@@ -29,6 +29,7 @@ export class AtdConfigComponent implements OnInit {
     @Input() hostObject: any;
     @Output() hostEvents: EventEmitter<any> = new EventEmitter<any>();
     configID: string;
+    isInstalled: boolean;
 
     constructor(
         public pluginService: AtdConfigService,
@@ -37,6 +38,7 @@ export class AtdConfigComponent implements OnInit {
         private cd: ChangeDetectorRef,
         private dialogService: PepDialogService
     ) {
+        this.isInstalled = false;
 
     }
 
