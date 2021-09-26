@@ -1,6 +1,21 @@
+
+
 <div  class="addon-page-container">
     <div header-start-content>
-        <p> <b> <h3> UOM</h3> </b> </p>
+        <div class="header-uom">
+        <h3> UOM</h3>
+        <pep-button
+        value = "install"
+        styleType="strong"
+        styleStateType="system"
+        sizeType="lg"
+        classNames=""
+        [disabled]="false"
+        iconPosition="end"
+        [visible]="true"
+        (buttonClick)="onInstall($event)"
+        ></pep-button>
+    </div>
         <hr>
     </div>
     

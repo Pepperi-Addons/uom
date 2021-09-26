@@ -103,6 +103,21 @@ export async function createTSAFields(client: Client, request:Request) {
     return created;
 }
 
+export async function isInstalled(client:Client, request:Request):Promise<boolean>{
+    const papiClient = new PapiClient({
+        baseURL: client.BaseURL,
+        token: client.OAuthAccessToken,
+        addonUUID: client.AddonUUID,
+        addonSecretKey: client.AddonSecretKey,
+        actionUUID: client.ActionUUID
+
+    });
+    const service = new ObjectsService(papiClient);
+    let atdID = 'atdID' in request.query ? Number(request.query.atdID): -1;
+    return  await service.getField(atdID, 'TSAAOQM_UOM1') != undefined;
+
+}
+
 export async function importUom(client: Client, request:Request) {
     const papiClient = new PapiClient({
         baseURL: client.BaseURL,

@@ -11,6 +11,7 @@ import { Observable } from 'rxjs';
 import { PepDialogData, PepDialogService } from '@pepperi-addons/ngx-lib/dialog';
 import { ContentObserver } from '@angular/cdk/observers';
 
+
 @Component({
     selector: 'atd-config-addon',
     templateUrl: './atd-config.component.html',
@@ -18,7 +19,6 @@ import { ContentObserver } from '@angular/cdk/observers';
 })
 
 export class AtdConfigComponent implements OnInit {
-
     TSAStringfields: {key:string, value:string}[] = [];
     TSANumberfields: {key:string, value:string}[] = [];
     // TransactionTypes: {key:number, value:string}[] = [];
@@ -38,17 +38,29 @@ export class AtdConfigComponent implements OnInit {
         private cd: ChangeDetectorRef,
         private dialogService: PepDialogService
     ) {
+        // this.try = 5;
         this.isInstalled = false;
 
+    }
+    onInstallation($event){
+        console.log("in atd-config before setting isInstalled, isInstalled = ", this.isInstalled);
+        this.isInstalled = true;
+        console.log("in atd-config component on install event, isInstalled = ", this.isInstalled);
     }
 
 
     ngOnInit() {
+        console.log("isInstalled = ", this.isInstalled)
         this.configID = this.hostObject.objectList[0];
         console.log('config id :               ', this.configID);
         this.pluginService.getTypeInternalID(this.configID).then((atdId) => {
             this.AtdID = atdId;
             console.log('here is atdId', this.AtdID)
+        // }).then(() => {
+        //    this.pluginService.isInstalled(this.AtdID).then((installed) => {
+        //        console.log("inside ngOnInit in atd-config TSA already installed ? ", installed);
+        //        this.isInstalled = !installed;
+        //    })
         });
         // const AtdUUID = this.hostObject.objectList[0];
         console.log('host object is:', this.hostObject);

@@ -35,8 +35,9 @@ export class AtdConfigService {
     async getConfiguration(atdID: Number): Promise<AtdConfiguration[]> {
         return await this.papiClient.addons.api.uuid(this.pluginUUID).file('api').func('atdConfiguration').get({where:'Key=' + atdID});
     }
-
-
+    async isInstalled(atdID: number): Promise<boolean>{
+        return await this.papiClient.addons.api.uuid(this.pluginUUID).file('api').func('isInstalled').get({'atdID': atdID});
+    }
     async updateConfiguration(config: AtdConfiguration) {
         return await this.papiClient.addons.api.uuid(this.pluginUUID).file('api').func('atdConfiguration').post(undefined, config);
     }

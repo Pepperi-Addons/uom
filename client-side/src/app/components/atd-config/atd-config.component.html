@@ -9,7 +9,7 @@
         
         
         <div *ngIf="!isInstalled;">
-            <addon-installation></addon-installation>
+            <addon-installation [hostObj] = "hostObject" [pluginService] = "pluginService" (installEvent)="onInstallation($event)"></addon-installation>
         </div>
        <div *ngIf="isInstalled">
         <div id="mainContent" class="main-content">
