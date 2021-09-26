@@ -9,7 +9,7 @@ import { Output, EventEmitter } from '@angular/core';
   styleUrls: ['./installation.component.scss']
 })
 export class InstallationComponent implements OnInit {
-  configID: number;
+  configID: string;
   atdID: number;
   @Input() hostObj: any;
   @Input() pluginService: AtdConfigService;
@@ -18,19 +18,20 @@ export class InstallationComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
-    // this.configID = this.hostObj[0];
-    // console.log("inside installation component here is the hostObject -> " ,this.hostObj);
-    // console.log("Inside installation component, here is AtdConfigService - > ", this.pluginService);
+    this.configID = this.hostObj[0];
+    console.log("inside installation component here is the hostObject -> " ,this.hostObj);
+    console.log("Inside installation component, here is AtdConfigService - > ", this.pluginService);
+    this.pluginService.getTypeInternalID(this.configID).then((atdID) => {
+      this.atdID = atdID;
+    });
   }
-  onInstall($event){
+  async onInstall($event){
     //here i need to create the TSA's 
-    // this.pluginService.createTSAFields(this.atdID);
-
-    //after that i need to go back to the atd-config component with isInstalled set to true.
-
-
+      await this.atdID;
+      this.pluginService.createTSAFields(this.atdID).then((sucsses) => {
+        this.installEvent.emit('true');
+    });
     console.log("installed work !!")
-    this.installEvent.emit('true');
   }
 
 }

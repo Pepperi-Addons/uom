@@ -49,6 +49,7 @@ export class AtdConfigComponent implements OnInit {
     }
 
 
+
     ngOnInit() {
         console.log("isInstalled = ", this.isInstalled)
         this.configID = this.hostObject.objectList[0];
@@ -56,11 +57,11 @@ export class AtdConfigComponent implements OnInit {
         this.pluginService.getTypeInternalID(this.configID).then((atdId) => {
             this.AtdID = atdId;
             console.log('here is atdId', this.AtdID)
-        // }).then(() => {
-        //    this.pluginService.isInstalled(this.AtdID).then((installed) => {
-        //        console.log("inside ngOnInit in atd-config TSA already installed ? ", installed);
-        //        this.isInstalled = !installed;
-        //    })
+        }).then(() => {
+           this.pluginService.isInstalled(this.AtdID).then((installed) => {
+               console.log("inside ngOnInit in atd-config TSA already installed ? ", installed);
+               this.isInstalled = installed;
+           })
         });
         // const AtdUUID = this.hostObject.objectList[0];
         console.log('host object is:', this.hostObject);
@@ -213,7 +214,7 @@ export class AtdConfigComponent implements OnInit {
 
     async SaveConfig() {
         await this.pluginService.updateConfiguration(this.Configuration);
-        const created = await this.pluginService.createTSAFields(this.AtdID);
+        // const created = await this.pluginService.createTSAFields(this.AtdID);
         const title = this.translate.instant("Uom_saveConfig_Title");
         const content = this.translate.instant("Uom_saveConfig_Paragraph");
         const data = new PepDialogData({title: title, content: content, actionsType: 'close'});
