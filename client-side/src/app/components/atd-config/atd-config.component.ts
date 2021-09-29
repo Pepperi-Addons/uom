@@ -51,6 +51,7 @@ export class AtdConfigComponent implements OnInit {
 
 
     ngOnInit() {
+        console.log('Onint of atd-config start...');
         console.log("isInstalled = ", this.isInstalled)
         this.configID = this.hostObject.objectList[0];
         console.log('config id :               ', this.configID);
@@ -77,7 +78,8 @@ export class AtdConfigComponent implements OnInit {
                 value: InventoryActions[key]
             }
         })
-        this.loadAtdData();  
+        if(this.isInstalled)
+            this.loadAtdData();  
         
         // this.pluginService.getTransactionTypes().then(types => {
         //     this.TransactionTypes = types;

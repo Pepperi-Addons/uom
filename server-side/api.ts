@@ -114,7 +114,7 @@ export async function isInstalled(client:Client, request:Request):Promise<boolea
     });
     const service = new ObjectsService(papiClient);
     let atdID = 'atdID' in request.query ? Number(request.query.atdID): -1;
-    return  await service.getField(atdID, 'TSAAOQM_UOM1') != undefined;
+    return  await service.getField(atdID, 'TSAAOQMQuantity1') != undefined;
 
 }
 

@@ -9,16 +9,15 @@ import { Output, EventEmitter } from '@angular/core';
   styleUrls: ['./installation.component.scss']
 })
 export class InstallationComponent implements OnInit {
-  configID: string;
   atdID: number;
   @Input() hostObj: any;
   @Input() pluginService: AtdConfigService;
+  @Input() configID: string;
   @Output() installEvent = new EventEmitter<string>();
 
   constructor() { }
 
   ngOnInit(): void {
-    this.configID = this.hostObj[0];
     console.log("inside installation component here is the hostObject -> " ,this.hostObj);
     console.log("Inside installation component, here is AtdConfigService - > ", this.pluginService);
     this.pluginService.getTypeInternalID(this.configID).then((atdID) => {

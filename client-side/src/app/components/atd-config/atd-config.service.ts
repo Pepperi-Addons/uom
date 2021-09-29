@@ -65,7 +65,8 @@ export class AtdConfigService {
         return  await this.papiClient.types.find({
             where: `UUID='${uuid}'`
         }).then((types) => {
-            return types? types[0].InternalID: undefined;
+            console.log('uuid is' + uuid + 'types is', types);
+            return types[0].InternalID
         });
     }
 }
