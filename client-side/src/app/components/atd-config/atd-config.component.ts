@@ -30,6 +30,7 @@ export class AtdConfigComponent implements OnInit {
     @Output() hostEvents: EventEmitter<any> = new EventEmitter<any>();
     configID: string;
     isInstalled: boolean;
+    alreadyChecked: boolean;
 
     constructor(
         public pluginService: AtdConfigService,
@@ -40,6 +41,7 @@ export class AtdConfigComponent implements OnInit {
     ) {
         // this.try = 5;
         this.isInstalled = false;
+        this.alreadyChecked = false;
 
     }
     onInstallation($event){
@@ -47,6 +49,8 @@ export class AtdConfigComponent implements OnInit {
         this.isInstalled = true;
         console.log("in atd-config component on install event, isInstalled = ", this.isInstalled);
     }
+
+    
 
 
 
@@ -62,6 +66,17 @@ export class AtdConfigComponent implements OnInit {
            this.pluginService.isInstalled(this.AtdID).then((installed) => {
                console.log("inside ngOnInit in atd-config TSA already installed ? ", installed);
                this.isInstalled = installed;
+               this.alreadyChecked = true;
+               if(this.isInstalled){
+                this.pluginService.pluginUUID = '1238582e-9b32-4d21-9567-4e17379f41bb';
+                this.Actions = Object.keys(InventoryActions)?.map(key => {
+                    return {
+                        key: key,
+                        value: InventoryActions[key]
+                    }
+                })
+                this.loadAtdData();
+               }
            })
         });
         // const AtdUUID = this.hostObject.objectList[0];
@@ -72,14 +87,16 @@ export class AtdConfigComponent implements OnInit {
         // this.AtdID = this.hostObject?.addonData.atd.InternalID;
         // action table of key and value (0,'Fix')...
         // console.log(this.TransactionTypes)
-        this.Actions = Object.keys(InventoryActions)?.map(key => {
-            return {
-                key: key,
-                value: InventoryActions[key]
-            }
-        })
-        if(this.isInstalled)
-            this.loadAtdData();  
+        // this.Actions = Object.keys(InventoryActions)?.map(key => {
+        //     return {
+        //         key: key,
+        //         value: InventoryActions[key]
+        //     }
+        // })
+        // if(this.isInstalled){
+        //     console.log("going to call load Atd Data !!!!!!!!!!!!!")
+        //     this.loadAtdData();  
+        // }
         
         // this.pluginService.getTransactionTypes().then(types => {
         //     this.TransactionTypes = types;

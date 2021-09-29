@@ -8,7 +8,7 @@
         <!-- </pep-top-bar> -->
         
         
-        <div *ngIf="!isInstalled;">
+        <div *ngIf="!isInstalled && alreadyChecked;">
             <addon-installation [hostObj] = "hostObject" [pluginService] = "pluginService" (installEvent)="onInstallation($event)" [configID] = "this.configID"></addon-installation>
         </div>
        <div *ngIf="isInstalled">
