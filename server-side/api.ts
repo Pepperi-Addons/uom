@@ -6,7 +6,7 @@ import { ApiFieldObject, PapiClient } from '@pepperi-addons/papi-sdk';
 import { ConfigurationService } from './services/configuration.service';
 import { UomTSAFields } from './metadata';
 import { AtdConfiguration } from '../shared/entities';
-import { config } from 'process';
+
 
 export async function uoms(client: Client, request: Request) {
     const service = new UomsService(client);
@@ -133,7 +133,9 @@ export async function isInstalled(client:Client, request:Request):Promise<boolea
     });
     const service = new ObjectsService(papiClient);
     let atdID = 'atdID' in request.query ? Number(request.query.atdID): -1;
-    return  await service.getField(atdID, 'TSAAOQMQuantity1') != undefined;
+    return  await service.getField(atdID, 'TSAAOQMQuantity1').then((field: ApiFieldObject | undefined) => {
+        return field === undefined? false: !field.Hidden;
+    });
 
 }
 
