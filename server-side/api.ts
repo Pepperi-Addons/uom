@@ -2,7 +2,7 @@ import MyService from './my.service'
 import { Client, Request } from '@pepperi-addons/debug-server'
 import { UomsService } from './services/uom.service'
 import { ObjectsService } from './services/objects.service';
-import { PapiClient } from '@pepperi-addons/papi-sdk';
+import { ApiFieldObject, PapiClient } from '@pepperi-addons/papi-sdk';
 import { ConfigurationService } from './services/configuration.service';
 import { UomTSAFields } from './metadata';
 import { AtdConfiguration } from '../shared/entities';
@@ -68,6 +68,25 @@ export async function getAtdFields(client: Client, request: Request) {
 
     return [...await service.getAtdFields(atdID), ...items];
 };
+export async function removeTSAFields(client: Client, request: Request) {
+    const papiClient = new PapiClient({
+        baseURL: client.BaseURL,
+        token: client.OAuthAccessToken,
+        addonUUID: client.AddonUUID,
+        addonSecretKey: client.AddonSecretKey,
+        actionUUID: client.ActionUUID
+
+    });
+    const service = new ObjectsService(papiClient)
+    let atdID = -1;
+    if(request?.query) {
+        atdID = 'atdID' in request.query ? Number(request.query.atdID) : -1;
+    }  
+    return await service.createAtdTransactionLinesFields(atdID, UomTSAFields.map((field: ApiFieldObject) => {
+        field.Hidden = true;
+        return field;
+    }));
+}
 
 export async function createTSAFields(client: Client, request:Request) {
     debugger;

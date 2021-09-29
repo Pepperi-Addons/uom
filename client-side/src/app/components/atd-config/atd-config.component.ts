@@ -10,6 +10,7 @@ import { PepSelectComponent } from '@pepperi-addons/ngx-lib/select';
 import { Observable } from 'rxjs';
 import { PepDialogData, PepDialogService } from '@pepperi-addons/ngx-lib/dialog';
 import { ContentObserver } from '@angular/cdk/observers';
+import { IPepMenuItemClickEvent, PepMenuItem } from '@pepperi-addons/ngx-lib/menu';
 
 
 @Component({
@@ -31,6 +32,12 @@ export class AtdConfigComponent implements OnInit {
     configID: string;
     isInstalled: boolean;
     alreadyChecked: boolean;
+    items = [{key : 'uninstall', text: 'text'}];
+    @Input() selectedItem: PepMenuItem
+    @Input() disabled = false;
+    text = "text";
+    @Output() menuClick: EventEmitter<void> = new EventEmitter<void>();
+    @Output()  menuItemClick: EventEmitter<IPepMenuItemClickEvent> = new EventEmitter<IPepMenuItemClickEvent>();
 
     constructor(
         public pluginService: AtdConfigService,
@@ -49,9 +56,19 @@ export class AtdConfigComponent implements OnInit {
         this.isInstalled = true;
         console.log("in atd-config component on install event, isInstalled = ", this.isInstalled);
     }
-
-    
-
+    onMenuClicked($event){
+        this.menuClick.emit();
+    }
+    onMenuItemClicked($event: IPepMenuItemClickEvent){
+        this.selectedItem = $event.source;
+        console.log("on menuItemClick event!!!!");
+        this.pluginService.removeTSAFields(this.AtdID).then(() => {
+            this.isInstalled = false;
+            this.alreadyChecked = false;
+            this.menuItemClick.emit($event);
+        })
+        
+    }
 
 
     ngOnInit() {

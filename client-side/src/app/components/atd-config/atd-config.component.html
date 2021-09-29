@@ -2,6 +2,19 @@
 <div  class="addon-page-container">
     <!-- <pep-top-bar [title]="'Uom_Config_Title' | translate" [inline] ="true" > -->
         <div header-start-content>
+            <pep-menu
+            [text]="text"
+            iconName="system_menu"
+            type="action"
+            styleType="weak"
+            sizeType="md"
+            classNames=""
+            [items]="items"
+            [selectedItem]="selectedItem"
+            [disabled]="false"
+            (menuItemClick)="onMenuItemClicked($event)"
+            (menuClick)="onMenuClicked($event)"
+            ></pep-menu>
             
         </div>
         
