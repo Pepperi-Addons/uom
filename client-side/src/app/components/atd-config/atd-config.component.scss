@@ -1,12 +1,19 @@
-.wrapper {
-    text-align: center;
-}
+// .wrapper {
+//     text-align: center;
+// }
 
 // .button {
 //     display: block;
 //     position: absolute;
 //     top: 50%;
 // }
+
+.centerize{
+	width:80%;
+	margin-left:auto;
+	margin-right:auto;
+}
+
 
 .left
 {
@@ -15,5 +22,23 @@
 }
 .allscreen
 {
-	width: 200%;
+	width: 100%;
 }
+li{
+	padding: 0.2%;
+}
+br{
+	padding: 5%;
+}
+
+// li {
+//     list-style: none;
+//     font-size: 17px;
+// }
+// li:before {
+// 	content:"·";
+// 	font-size:70px;
+// 	vertical-align: middle;
+// 	line-height:50px;
+// }
+

@@ -24,7 +24,7 @@ export function createTranslateLoader(http: HttpClient, fileService: PepFileServ
     // debugger;
     // const addonStaticFolder = addonService.getAddonPath("1238582e-9b32-4d21-9567-4e17379f41bb"); //here is the problem
     //how can i doi that not hard coded?
-    const addonStaticFolder = 'https://cdn.pepperi.com/Addon/Public/1238582e-9b32-4d21-9567-4e17379f41bb/1.2.82/'
+    const addonStaticFolder = 'https://cdn.pepperi.com/Addon/Public/1238582e-9b32-4d21-9567-4e17379f41bb/1.2.87/'
 
     return new MultiTranslateHttpLoader(http, [
         {

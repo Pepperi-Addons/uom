@@ -1,34 +1,42 @@
 <!-- <div>Component works</div> -->
+
 <div  class="addon-page-container">
-    <!-- <pep-top-bar [title]="'Uom_Config_Title' | translate" [inline] ="true" > -->
-        <div header-start-content>
-            <pep-menu
-            [text]="text"
-            iconName="system_menu"
-            type="action"
-            styleType="weak"
-            sizeType="md"
-            classNames=""
-            [items]="items"
-            [selectedItem]="selectedItem"
-            [disabled]="false"
-            (menuItemClick)="onMenuItemClicked($event)"
-            (menuClick)="onMenuClicked($event)"
-            ></pep-menu>
-            
+        <div *ngIf="isInstalled">
+            <div header-start-content>
+                <div style="display: inline;">
+                <pep-menu style="float: right; display: inline;"
+                [text]="text"
+                iconName="system_menu"
+                type="action"
+                styleType="weak"
+                sizeType="md"
+                classNames=""
+                [items]="items"
+                [selectedItem]="selectedItem"
+                [disabled]="false"
+                (menuItemClick)="onMenuItemClicked($event)"
+                (menuClick)="onMenuClicked($event)"
+                ></pep-menu>
+                <b style="float: left;"><h2 style="display: inline;">UOM</h2></b>
+                </div>
+                <br>
+                <hr style="display: block;">
+            </div>
         </div>
+        </div>
+        
         
         <!-- </pep-top-bar> -->
         
         
-        <div *ngIf="!isInstalled && alreadyChecked;">
+        <div *ngIf="!isInstalled && alreadyChecked;" style="display: inline;">
             <addon-installation [hostObj] = "hostObject" [pluginService] = "pluginService" (installEvent)="onInstallation($event)" [configID] = "this.configID"></addon-installation>
         </div>
-       <div *ngIf="isInstalled">
-        <div id="mainContent" class="main-content">
-            <div class="content" style="margin-top: 20px;">
-                <b><h3>UOM</h3></b>
-                <hr>
+        
+       <div *ngIf="isInstalled" style="display: inline;">
+        <div id="mainContent" class="main-content" style="display: inline;">
+            <div class="content" style="margin-top: 20px; display: inline;">
+
                     <!-- <p class="body-md">
                         {{ "Uom_AtdConfig_Paragraph" | translate }}
                     </p>
@@ -44,7 +52,7 @@
                         
                         <div class="left">
                             <!--Section 1 ----------------------------------------------------------------------------------> 
-                            <h4>Configuration Fields</h4>
+                            <h4><b>Configuration Fields</b></h4>
                             <div class= "allscreen"><hr></div>
                             <p class = "allscreen"> Select the fields wich contains the item's UOM information. The fields can be an item level fields or a UDT/Calculated transaction line fields, with the folowing content for exmaple:</p>
                             <ul class="allscreen">
@@ -70,7 +78,7 @@
                             </div>
                             <br>
                             <!--Section 2 ----------------------------------------------------------------------------------> 
-                            <h4>Data Fields</h4>
+                            <h4><b>Data Fields</b></h4>
                             <div class= "allscreen"> <hr></div>
                             <p class="allscreen">Select the fields which contain the item's data </p>
                             <br>
@@ -86,7 +94,7 @@
                 </div>
                 <br>
                 <!--Section 3 ----------------------------------------------------------------------------------> 
-                <h4>Units Quantity Fields</h4> 
+                <h4><b>Units Quantity Fields</b></h4> 
                 <div class= "allscreen"> <hr></div>
                 <p class="allscreen">Define the behavior of the Units Quantity Field when it is set with an out of bounds value</p>
                 <br>
@@ -129,3 +137,4 @@
     </div>
 </div>
 </div>
+

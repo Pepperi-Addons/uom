@@ -77,6 +77,9 @@ export class AtdConfigComponent implements OnInit {
         console.log('Onint of atd-config start...');
         console.log("isInstalled = ", this.isInstalled)
         this.configID = this.hostObject.objectList[0];
+        console.log("there is host obj ->>>>>>>>>>>>>", this.hostObject);
+        console.log("here is options ->>>>>>>", this.hostObject.options);
+        console.log("here is uuid", this.hostObject.options.uuid)
         console.log('config id :               ', this.configID);
         this.pluginService.getTypeInternalID(this.configID).then((atdId) => {
             this.AtdID = atdId;
@@ -89,7 +92,7 @@ export class AtdConfigComponent implements OnInit {
             //    this.isInstalled = false;
                this.alreadyChecked = true;
                if(this.isInstalled){
-                this.pluginService.pluginUUID = '1238582e-9b32-4d21-9567-4e17379f41bb';
+                this.pluginService.pluginUUID = this.hostObject.options.uuid;
                 this.Actions = Object.keys(InventoryActions)?.map(key => {
                     return {
                         key: key,
