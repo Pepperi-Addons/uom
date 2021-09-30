@@ -64,6 +64,7 @@ export class AtdConfigComponent implements OnInit {
         console.log("on menuItemClick event!!!!");
         this.pluginService.removeTSAFields(this.AtdID).then(() => {
             this.isInstalled = false;
+            console.log("after remove TSAFields");
             this.alreadyChecked = false;
             this.menuItemClick.emit($event);
         })

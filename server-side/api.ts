@@ -84,6 +84,7 @@ export async function removeTSAFields(client: Client, request: Request) {
     }  
     return await service.createAtdTransactionLinesFields(atdID, UomTSAFields.map((field: ApiFieldObject) => {
         field.Hidden = true;
+        console.log(" we will remove this field ", field)
         return field;
     }));
 }
