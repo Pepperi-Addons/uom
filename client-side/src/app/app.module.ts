@@ -15,6 +15,7 @@ import { PepAddonLoaderService } from '@pepperi-addons/ngx-remote-loader';
 import { MultiTranslateHttpLoader } from 'ngx-translate-multi-http-loader';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 
+
 export function createTranslateLoader(http: HttpClient, fileService: PepFileService, addonService: PepAddonLoaderService) {
     const translationsPath: string = fileService.getAssetsTranslationsPath();
     const translationsSuffix: string = fileService.getAssetsTranslationsSuffix();
@@ -41,7 +42,8 @@ export function createTranslateLoader(http: HttpClient, fileService: PepFileServ
 
 @NgModule({
     declarations: [
-        AppComponent
+        AppComponent,
+
 
     ],
     imports: [

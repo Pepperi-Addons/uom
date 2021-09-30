@@ -32,10 +32,10 @@ export class AtdConfigComponent implements OnInit {
     configID: string;
     isInstalled: boolean;
     alreadyChecked: boolean;
-    items = [{key : 'uninstall', text: 'text'}];
+    items = [{key : 'uninstall', text: 'uninstall'}];
     @Input() selectedItem: PepMenuItem
     @Input() disabled = false;
-    text = "text";
+    text = "";
     @Output() menuClick: EventEmitter<void> = new EventEmitter<void>();
     @Output()  menuItemClick: EventEmitter<IPepMenuItemClickEvent> = new EventEmitter<IPepMenuItemClickEvent>();
 
@@ -47,13 +47,14 @@ export class AtdConfigComponent implements OnInit {
         private dialogService: PepDialogService
     ) {
         // this.try = 5;
+        //dont forget to switch back
         this.isInstalled = false;
         this.alreadyChecked = false;
 
     }
     onInstallation($event){
         console.log("in atd-config before setting isInstalled, isInstalled = ", this.isInstalled);
-        this.isInstalled = true;
+        // this.isInstalled = true;
         console.log("in atd-config component on install event, isInstalled = ", this.isInstalled);
     }
     onMenuClicked($event){
@@ -84,6 +85,8 @@ export class AtdConfigComponent implements OnInit {
            this.pluginService.isInstalled(this.AtdID).then((installed) => {
                console.log("inside ngOnInit in atd-config TSA already installed ? ", installed);
                this.isInstalled = installed;
+            //for debugging onlu
+            //    this.isInstalled = false;
                this.alreadyChecked = true;
                if(this.isInstalled){
                 this.pluginService.pluginUUID = '1238582e-9b32-4d21-9567-4e17379f41bb';
