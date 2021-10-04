@@ -53,6 +53,7 @@ export class AtdConfigComponent implements OnInit {
 
     }
     onInstallation($event){
+        //a
         // console.log("in atd-config before setting isInstalled, isInstalled = ", this.isInstalled);
         // // this.isInstalled = true;
         // console.log("in atd-config component on install event, isInstalled = ", this.isInstalled);
