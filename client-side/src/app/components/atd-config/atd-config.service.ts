@@ -42,10 +42,10 @@ export class AtdConfigService {
         return await this.papiClient.addons.api.uuid(this.pluginUUID).file('api').func('atdConfiguration').post(undefined, config);
     }
 
-    async createTSAFields(atdID: Number): Promise<Boolean> {
+    async createTSAFields(atdID: Number): Promise<boolean> {
         return await this.papiClient.addons.api.uuid(this.pluginUUID).file('api').func('createTSAFields').post(undefined, {'atdID': atdID});
     }
-    async removeTSAFields(atdID: Number): Promise<void>{
+    async removeTSAFields(atdID: Number): Promise<boolean>{
         return await this.papiClient.addons.api.uuid(this.pluginUUID).file('api').func('removeTSAFields').post(undefined, {'atdID': atdID});
     }
 

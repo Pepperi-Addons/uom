@@ -16,7 +16,7 @@ import {PepAddonLoaderService} from '@pepperi-addons/ngx-remote-loader'
 import { PepDialogModule, PepDialogService } from '@pepperi-addons/ngx-lib/dialog';
 import {InstallationComponent} from './../installation/installation.component'
 
-export function createTranslateLoader(http: HttpClient, fileService: PepFileService, addonService: PepAddonLoaderService) {
+export function createTranslateLoader(http: HttpClient, fileService: PepFileService, addonService: PepAddonService) {
     const translationsPath: string = fileService.getAssetsTranslationsPath();
     const translationsSuffix: string = fileService.getAssetsTranslationsSuffix();
     // const addonurl = fileService.getAssetsPath()
@@ -24,7 +24,8 @@ export function createTranslateLoader(http: HttpClient, fileService: PepFileServ
     // debugger;
     // const addonStaticFolder = addonService.getAddonPath("1238582e-9b32-4d21-9567-4e17379f41bb"); //here is the problem
     //how can i doi that not hard coded?
-    const addonStaticFolder = 'https://cdn.pepperi.com/Addon/Public/1238582e-9b32-4d21-9567-4e17379f41bb/1.2.87/'
+    // const addonStaticFolder = 'https://cdn.pepperi.com/Addon/Public/1238582e-9b32-4d21-9567-4e17379f41bb/1.2.88/'
+    const addonStaticFolder = addonService.getAddonStaticFolder();
 
     return new MultiTranslateHttpLoader(http, [
         {
@@ -63,7 +64,7 @@ export function createTranslateLoader(http: HttpClient, fileService: PepFileServ
             loader: {
                 provide: TranslateLoader,
                 useFactory: createTranslateLoader,
-                deps: [HttpClient, PepFileService, PepAddonLoaderService]
+                deps: [HttpClient, PepFileService, PepAddonService]
             }
         })
     ],

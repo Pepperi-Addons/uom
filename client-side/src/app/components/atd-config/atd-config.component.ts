@@ -53,21 +53,27 @@ export class AtdConfigComponent implements OnInit {
 
     }
     onInstallation($event){
-        console.log("in atd-config before setting isInstalled, isInstalled = ", this.isInstalled);
-        // this.isInstalled = true;
-        console.log("in atd-config component on install event, isInstalled = ", this.isInstalled);
+        // console.log("in atd-config before setting isInstalled, isInstalled = ", this.isInstalled);
+        // // this.isInstalled = true;
+        // console.log("in atd-config component on install event, isInstalled = ", this.isInstalled);
+        console.log("in installation component on installation event");
+        this.isInstalled = true;
+        this.alreadyChecked = true;
+        this.ngOnInit();
     }
     onMenuClicked($event){
         this.menuClick.emit();
     }
     onMenuItemClicked($event: IPepMenuItemClickEvent){
         this.selectedItem = $event.source;
-        console.log("on menuItemClick event!!!!");
+        console.log("on menuItemClick event!!!!")
+        console.log("uninstall here is ATD -> ", this.AtdID);
         this.pluginService.removeTSAFields(this.AtdID).then(() => {
             this.isInstalled = false;
             console.log("after remove TSAFields");
-            this.alreadyChecked = false;
+            this.alreadyChecked = true;
             this.menuItemClick.emit($event);
+            this.ngOnInit();
         })
         
     }
@@ -92,7 +98,8 @@ export class AtdConfigComponent implements OnInit {
             //    this.isInstalled = false;
                this.alreadyChecked = true;
                if(this.isInstalled){
-                this.pluginService.pluginUUID = this.hostObject.options.uuid;
+                // this.pluginService.pluginUUID = this.hostObject.options.uuid;
+                this.pluginService.pluginUUID = '1238582e-9b32-4d21-9567-4e17379f41bb';
                 this.Actions = Object.keys(InventoryActions)?.map(key => {
                     return {
                         key: key,

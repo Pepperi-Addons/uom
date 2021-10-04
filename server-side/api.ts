@@ -6,6 +6,7 @@ import { ApiFieldObject, PapiClient } from '@pepperi-addons/papi-sdk';
 import { ConfigurationService } from './services/configuration.service';
 import { UomTSAFields } from './metadata';
 import { AtdConfiguration } from '../shared/entities';
+import { Fields } from '@pepperi-addons/papi-sdk/dist/endpoints';
 
 
 export async function uoms(client: Client, request: Request) {
@@ -67,8 +68,8 @@ export async function getAtdFields(client: Client, request: Request) {
     items.forEach(item => item['FieldID'] = `Item.${item.FieldID}`);
 
     return [...await service.getAtdFields(atdID), ...items];
-};
-export async function removeTSAFields(client: Client, request: Request) {
+}
+export async function removeTSAFields(client: Client, request: Request): Promise<boolean> {
     const papiClient = new PapiClient({
         baseURL: client.BaseURL,
         token: client.OAuthAccessToken,
@@ -78,15 +79,43 @@ export async function removeTSAFields(client: Client, request: Request) {
 
     });
     const service = new ObjectsService(papiClient)
-    let atdID = -1;
+    let atdID = -3;
     if(request?.query) {
-        atdID = 'atdID' in request.query ? Number(request.query.atdID) : -1;
-    }  
-    return await service.createAtdTransactionLinesFields(atdID, UomTSAFields.map((field: ApiFieldObject) => {
+        atdID = 'atdID' in request.query? Number(request.query.atdID) : -5;
+    }
+    if(request?.body){
+        atdID = 'atdID' in request.body? Number(request.body.atdID): -2;
+    }
+     const result =  await Promise.all(UomTSAFields.map(async (field) => {
+        return await service.getField(atdID, field.FieldID);
+    }))
+    const success = await  Promise.all(result.map((field) => {
+        if(field && field.Hidden !== undefined)
         field.Hidden = true;
-        console.log(" we will remove this field ", field)
         return field;
+    }).map((field) => {
+        return service.createAtdTransactionLinesField(atdID, field);
     }));
+    return success.reduce((prev, curr) => {
+        return prev && curr
+    }, true)
+    
+    //.then(newFields => {
+      //  newFields.map((current) => {
+        //    if(current && current.Hidden)
+          //      current.Hidden = true;
+           // return await service.createAtdTransactionLinesField(atdID,current);
+        //}).reduce((prev , curr) => {
+         //   return prev && curr;
+        //}, true)
+        
+
+    // return await service.createAtdTransactionLinesFields(atdID, UomTSAFields.map((field: ApiFieldObject) => {
+    //     field.Hidden = true;
+    //     console.log(" we will remove this field ", field)
+    //     return field;
+    // }));
+    // return true;
 }
 
 export async function createTSAFields(client: Client, request:Request) {

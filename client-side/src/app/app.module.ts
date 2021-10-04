@@ -16,11 +16,11 @@ import { MultiTranslateHttpLoader } from 'ngx-translate-multi-http-loader';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 
 
-export function createTranslateLoader(http: HttpClient, fileService: PepFileService, addonService: PepAddonLoaderService) {
+export function createTranslateLoader(http: HttpClient, fileService: PepFileService, addonService: PepAddonService) {
     const translationsPath: string = fileService.getAssetsTranslationsPath();
     const translationsSuffix: string = fileService.getAssetsTranslationsSuffix();
-    // const addonStaticFolder = addonService.getAddonStaticFolder();
-    const addonStaticFolder = addonService.getAddonPath("1238582e-9b32-4d21-9567-4e17379f41bb");
+    const addonStaticFolder = addonService.getAddonStaticFolder();
+    // const addonStaticFolder = addonService.getAddonPath("1238582e-9b32-4d21-9567-4e17379f41bb");
 
     return new MultiTranslateHttpLoader(http, [
         {

@@ -35,4 +35,11 @@ export class ObjectsService {
         const createdFields: ApiFieldObject[] = await this.papiClient.post(bulkURL, fields);
         return createdFields.length > 0;
     }
+    async createAtdTransactionLinesField(atdId: number, field: ApiFieldObject | undefined): Promise<boolean>{
+        if(!field)
+            return false;
+        const createdField: ApiFieldObject = await this.papiClient.post(`/meta_data/transaction_lines/types/${atdId}/fields`, field);
+        return createdField != undefined;
+    }
+
 }
