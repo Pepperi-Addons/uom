@@ -119,7 +119,7 @@ export async function removeTSAFields(client: Client, request: Request): Promise
 }
 
 export async function createTSAFields(client: Client, request:Request) {
-    debugger;
+ 
     let created = false;
     const papiClient = new PapiClient({
         baseURL: client.BaseURL,

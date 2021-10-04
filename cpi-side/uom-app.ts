@@ -193,6 +193,7 @@ class UOMManager {
         }
     }
     updateTSAField(uomConfig: UomItemConfiguration, uq1:UIField | undefined){
+        debugger
             if(uomConfig && Number(uomConfig.Decimal) === 0)
             {
                 uq1 != undefined? uq1['customField'].type = 28: uq1 = undefined;
@@ -279,7 +280,7 @@ class UOMManager {
             // uq2 != undefined? uq2['customField'].type = 28: uq2 = undefined;
 
             const optionalValues = arr.map(key => uoms.get(key)).filter(Boolean).map(uom => {
-                debugger;
+                
                 return {
                     Key: uom!.Key,
                     Value: uom!.Title
@@ -392,7 +393,6 @@ class UOMManager {
 }
 export async function load() {
     // get UOM table
-    debugger;
     console.log("Getting the UOM table");
     const list: Uom[] = (await pepperi.api.adal.getList({
         table: 'UOMs List',

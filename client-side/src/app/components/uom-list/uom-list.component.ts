@@ -157,7 +157,7 @@ export class UomListComponent implements OnInit {
     onActionClicked(event) {
         const selectData = this.pepperiListComp.getSelectedItemsData(true);
         if (selectData.rows.length == 1) {
-            debugger;
+            
             const uid = selectData.rows[0];
             const rowData = this.pepperiListComp.getItemDataByID( uid );
             const obj = rowData ? this.list.find(item => item.UUID === rowData.UID) : undefined;

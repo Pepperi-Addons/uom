@@ -91,11 +91,11 @@ export const UomTSAFields: ApiFieldObject[] = [
             IsUserDefinedField: true,
             Hidden: false,
             UIType: {
-                ID: 28,
+                ID: 29,
                 Name: "NumberRealQuantitySelector",
             },
             Type: "Number",
-            Format: "Int64"
+            Format: "Double"
         },
     {
         FieldID: UNIT_QTY_SECOND_TSA,
@@ -104,11 +104,11 @@ export const UomTSAFields: ApiFieldObject[] = [
         IsUserDefinedField: true,
         Hidden: false,
         UIType: {
-            ID: 28,
+            ID: 29,
             Name: "NumberRealQuantitySelector"
         },
         Type: "Number",
-        Format: "Int64",
+        Format: "Double",
     },
 ]
 

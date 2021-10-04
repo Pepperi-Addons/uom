@@ -53,10 +53,6 @@ export class AtdConfigComponent implements OnInit {
 
     }
     onInstallation($event){
-        //a
-        // console.log("in atd-config before setting isInstalled, isInstalled = ", this.isInstalled);
-        // // this.isInstalled = true;
-        // console.log("in atd-config component on install event, isInstalled = ", this.isInstalled);
         console.log("in installation component on installation event");
         this.isInstalled = true;
         this.alreadyChecked = true;
@@ -75,11 +71,8 @@ export class AtdConfigComponent implements OnInit {
             this.alreadyChecked = true;
             this.menuItemClick.emit($event);
             this.ngOnInit();
-        })
-        
+        })     
     }
-
-
     ngOnInit() {
         console.log('Onint of atd-config start...');
         console.log("isInstalled = ", this.isInstalled)
@@ -111,42 +104,11 @@ export class AtdConfigComponent implements OnInit {
                }
            })
         });
-        // const AtdUUID = this.hostObject.objectList[0];
         console.log('host object is:', this.hostObject);
         this.pluginService.pluginUUID = '1238582e-9b32-4d21-9567-4e17379f41bb';
-        // this.pluginService.pluginUUID = this.routeParams.snapshot.params['addon_uuid'];
-        // this.pluginService.pluginUUID = this.hostObject?.UUID;
-        // this.AtdID = this.hostObject?.addonData.atd.InternalID;
-        // action table of key and value (0,'Fix')...
-        // console.log(this.TransactionTypes)
-        // this.Actions = Object.keys(InventoryActions)?.map(key => {
-        //     return {
-        //         key: key,
-        //         value: InventoryActions[key]
-        //     }
-        // })
-        // if(this.isInstalled){
-        //     console.log("going to call load Atd Data !!!!!!!!!!!!!")
-        //     this.loadAtdData();  
-        // }
-        
-        // this.pluginService.getTransactionTypes().then(types => {
-        //     this.TransactionTypes = types;
-        //     console.log('there is the transaction types ', types)
-        // });
-        // this.AtdID = Number(this.TransactionTypes.filter((type) => {
-        //     return type.value === 'UOM'
-        // })[0].value);
-        // this.AtdID = this.TransactionTypes.filter((type) => {
-        //     return type.value === AtdUUID;
-        // })[0].key;
-        // console.log(this.AtdID)
-        // this.loadAtdData();
     }
 
     loadAtdData() {
-
-        // console.log('this is the transaction types: ', this.TransactionTypes)
         console.log('inside load Atd data. AtdID:', this.AtdID);
         this.pluginService.getAtdFields(this.AtdID).then(fields => {
             this.TSAStringfields = fields?.filter(field=> {
@@ -185,33 +147,15 @@ export class AtdConfigComponent implements OnInit {
             }         
         })
     }
-
     ngAfterViewInit(){
-        //this.loadAtdData();
-        // this.isUomFieldValid = true; // ?
-    }
 
+    }
     onValueChanged(element, $event) {
         console.log("in onValueChanged function");
         switch(element) {
-            // case 'AtdId': {
-            //     this.AtdID = $event;
-            //     if (this.AtdID) {
-            //         this.loadAtdData();
-            //         this.isUomFieldValid = true;
-            //     }
-                // else {
-                //     this.Configuration = undefined;
-                //     this.isUomFieldValid = false;
-                // }
-            //     break;
-            // }
             case 'AllowedUoms': {
                 console.log("Case AllowedUoms");
-                // this.loadAtdData();
-                // this.isUomFieldValid = true;
                 this.Configuration.UOMFieldID = $event;
-                // this.isUomFieldValid = $event != ''
                 break;
             }
             case 'Inventory': {
@@ -224,16 +168,6 @@ export class AtdConfigComponent implements OnInit {
                 }
                 break;
             }
-            // case 'Price': {
-            //     console.log("Case Price");
-            //     this.Configuration.PriceField = $event;
-            //     console.log('here is the price field:       ', $event);
-            //     // if($event == '') {
-            //     //     this.Configuration.PriceField = ''
-                   
-            //     // }
-            //     break;
-            // }
             case 'InventoryAction': {
                 console.log("Case Inventory Action");
                 this.Configuration.InventoryType = $event;
@@ -244,8 +178,7 @@ export class AtdConfigComponent implements OnInit {
                 this.Configuration.ItemConfigFieldID = $event;
                 if($event == '') {
                     this.Configuration.CaseQuantityType = 'DoNothing';
-                    this.Configuration.MinQuantityType = 'DoNothing';
-                    
+                    this.Configuration.MinQuantityType = 'DoNothing';   
                 } 
                 break;
             }
@@ -265,7 +198,6 @@ export class AtdConfigComponent implements OnInit {
 
     async SaveConfig() {
         await this.pluginService.updateConfiguration(this.Configuration);
-        // const created = await this.pluginService.createTSAFields(this.AtdID);
         const title = this.translate.instant("Uom_saveConfig_Title");
         const content = this.translate.instant("Uom_saveConfig_Paragraph");
         const data = new PepDialogData({title: title, content: content, actionsType: 'close'});
@@ -286,7 +218,6 @@ export class AtdConfigComponent implements OnInit {
                 Key: this.AtdID.toString(),
                 UOMFieldID: '',
                 InventoryFieldID: 'ItemInStockQuantity',
-                // PriceField: '',
                 InventoryType: 'Color',
                 ItemConfigFieldID: '',
                 CaseQuantityType: "Color",

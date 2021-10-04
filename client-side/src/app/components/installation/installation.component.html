@@ -1,26 +1,23 @@
-
-
 <div  class="addon-page-container">
     <div header-start-content>
         <div class="header-uom">
-        <h3> UOM</h3>
-        <pep-button
-        value = "install"
-        styleType="strong"
-        styleStateType="system"
-        sizeType="lg"
-        classNames=""
-        [disabled]="false"
-        iconPosition="end"
-        [visible]="true"
-        (buttonClick)="onInstall($event)"
+            <h3> UOM</h3>
+            <pep-button
+                value = "install"
+                styleType="strong"
+                styleStateType="system"
+                sizeType="lg"
+                classNames=""
+                [disabled]="false"
+                iconPosition="end"
+                [visible]="true"
+                (buttonClick)="onInstall($event)"
         ></pep-button>
     </div>
-        <hr>
-    </div>
-    
-    <div id="mainContent" class="main-content">
-        <div class="content" style="margin-top: 20px;">
+    <hr>
+</div>    
+<div id="mainContent" class="main-content">
+    <div class="content" style="margin-top: 20px;">
         <p class="body-md">
             This module add support in multiple UOMs per item
             <br>
@@ -43,8 +40,6 @@
             Place these fields in the relevant order center and cart views.
             <br>
             Note: You can use both sets (to allow the user order in two UOMs) or only the first one (to allow the user order in one UOM)."
-        </p>
-            
+        </p>    
     </div>
-
-    </div>
+</div>
