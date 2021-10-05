@@ -1,11 +1,11 @@
-<div class="section-one">
+<div class="container" style="">
 <div  class="addon-page-container">
     <div *ngIf="isInstalled">
         <div header-start-content>
-            <div style="display: inline;">
-                <pep-button style="float: right; display: inline;"   [value]="'Uom_AtdConfig_Save' | translate" [sizeType]="'md'" [styleType]="'strong'"
+            <div>
+                <pep-button style="float: right;"   [value]="'Uom_AtdConfig_Save' | translate" [sizeType]="'md'" [styleType]="'strong'"
                 [classNames]="'pep-spacing-element '"  (click)="SaveConfig()"></pep-button>   
-                <pep-menu style="float: right; display: inline;"
+                <pep-menu style="float: right; "
                     [text]="text"
                     iconName="system_menu"
                     type="action"
@@ -18,19 +18,19 @@
                     (menuItemClick)="onMenuItemClicked($event)"
                     (menuClick)="onMenuClicked($event)"
                 ></pep-menu>
-                <b style="float: left;"><h2 style="display: inline;">UOM</h2></b>
+                <b style="float: left;"><h2 style="">UOM</h2></b>
             </div>
             <br>
             <hr style="display: block;">
         </div>
     </div>
 </div>
-    <div *ngIf="!isInstalled && alreadyChecked;" style="display: inline;">
+    <div *ngIf="!isInstalled && alreadyChecked;" style="">
         <addon-installation [hostObj] = "hostObject" [pluginService] = "pluginService" (installEvent)="onInstallation($event)" [configID] = "this.configID"></addon-installation>
     </div>    
-    <div *ngIf="isInstalled" style="display: inline;">
-        <div id="mainContent" class="main-content" style="display: inline;">
-            <div class="content" style="margin-top: 20px; display: inline;">
+    <div *ngIf="isInstalled" style="">
+        <div id="mainContent" class="main-content" >
+            <div class="content" style="margin-top: 20px; ">
                 <div class="left">
                     <!--Section 1 ----------------------------------------------------------------------------------> 
                     <h4><b>Configuration Fields</b></h4>
@@ -111,4 +111,5 @@
                         </div>
                     </div>
                 </div>
+           
 
