@@ -42,8 +42,11 @@ br{
 // 	line-height:50px;
 // }
 
-.section-one{
-	overflow-y: auto;  
-	width: 100%;
-	height: 75%;
+// .section-one{
+// 	overflow-y: auto;  
+// 	width: 100%;
+// 	height: 75%;
+// }
+.container{
+	max-height: calc(100vh - 230px) !important;	
 }

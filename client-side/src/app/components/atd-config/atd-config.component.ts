@@ -40,15 +40,11 @@ export class AtdConfigComponent implements OnInit {
     constructor(
         public pluginService: AtdConfigService,
         private translate: TranslateService,
-        // public routeParams: ActivatedRoute,
         private cd: ChangeDetectorRef,
         private dialogService: PepDialogService
     ) {
-        // this.try = 5;
-        //dont forget to switch back
         this.isInstalled = false;
         this.alreadyChecked = false;
-
     }
     onInstallation($event){
         console.log("in installation component on installation event");
