@@ -60,6 +60,31 @@ export class AtdConfigComponent implements OnInit {
         this.menuClick.emit();
     }
     onMenuItemClicked($event: IPepMenuItemClickEvent){
+        this.dialogService.openDefaultDialog(new PepDialogData({
+            title: 'Uninstall',
+            actionsType: 'custom',
+            content: 'Are you sure you want to uninstall the UOM fields from this transaction?',
+            actionButtons: [
+                {
+                title: this.translate.instant('cancel'),
+                className: 'regular',
+                callback: () => {
+                    console.log("cancel CALLBACK from uninstall !!!!!!!!!!!!!!!!!!!!!!!")
+                    return;
+                }
+            },
+            {
+                title: this.translate.instant('ok'),
+                className: 'strong',
+                callback: () => {
+                    console.log("ok CALLBACK from uninstall !!!!!!!!!!!!!!!!!!!!!!!")
+                    this.uninstall($event);
+                }
+            }
+            ]
+        }))
+    }
+    uninstall($event){
         this.selectedItem = $event.source;
         console.log("on menuItemClick event!!!!")
         console.log("uninstall here is ATD -> ", this.AtdID);
@@ -203,18 +228,18 @@ export class AtdConfigComponent implements OnInit {
     emitClose() {
         this.hostEvents.emit({action:'close-dialog'});
     }
-    Cancel() {
-        this.pluginService.getConfiguration(this.AtdID).then(config => {
-            this.Configuration = config.length == 1  ? config[0] : {
-                Key: this.AtdID.toString(),
-                UOMFieldID: '',
-                InventoryFieldID: 'ItemInStockQuantity',
-                InventoryType: 'Color',
-                ItemConfigFieldID: '',
-                CaseQuantityType: "Color",
-                MinQuantityType: "Color"
-            }
-        })
-        this.emitClose();
-    }
+    // Cancel() {
+    //     this.pluginService.getConfiguration(this.AtdID).then(config => {
+    //         this.Configuration = config.length == 1  ? config[0] : {
+    //             Key: this.AtdID.toString(),
+    //             UOMFieldID: '',
+    //             InventoryFieldID: 'ItemInStockQuantity',
+    //             InventoryType: 'Color',
+    //             ItemConfigFieldID: '',
+    //             CaseQuantityType: "Color",
+    //             MinQuantityType: "Color"
+    //         }
+    //     })
+    //     this.emitClose();
+    // }
 }

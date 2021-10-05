@@ -4,6 +4,8 @@
     <div *ngIf="isInstalled">
         <div header-start-content>
             <div style="display: inline;">
+                <pep-button style="float: right; display: inline;"   [value]="'Uom_AtdConfig_Save' | translate" [sizeType]="'md'" [styleType]="'strong'"
+                [classNames]="'pep-spacing-element '"  (click)="SaveConfig()"></pep-button>   
                 <pep-menu style="float: right; display: inline;"
                     [text]="text"
                     iconName="system_menu"
@@ -98,10 +100,10 @@
                                     <div class="allscreen"><hr></div>
                                         <div class="wrapper">
                                             <div>
-                                                <pep-button [value]="'Uom_AtdConfig_Save' | translate" [sizeType]="'md'" [styleType]="'strong'"
-                                                    [classNames]="'pep-spacing-element '"  (click)="SaveConfig()"></pep-button>   
-                                                <pep-button [value]="'Uom_AtdConfig_Cancel' | translate" [sizeType]="'md'" [styleType]="'weak'"
-                                                    [classNames]="'pep-spacing-element '"  (click)="Cancel()"></pep-button>                    
+                                                <!-- <pep-button [value]="'Uom_AtdConfig_Save' | translate" [sizeType]="'md'" [styleType]="'strong'"
+                                                    [classNames]="'pep-spacing-element '"  (click)="SaveConfig()"></pep-button>    -->
+                                                <!-- <pep-button [value]="'Uom_AtdConfig_Cancel' | translate" [sizeType]="'md'" [styleType]="'weak'"
+                                                    [classNames]="'pep-spacing-element '"  (click)="Cancel()"></pep-button>                     -->
                                             </div>
                                         </div>
                                     </div>
