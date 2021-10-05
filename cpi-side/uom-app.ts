@@ -10,9 +10,6 @@ import { DataObject, EventData, UIObject, TransactionLines, UIField  } from '@pe
 import config from '../addon.config.json';
 import { QuantityCalculator } from './quantity-calculator';
 import { ItemAction, QuantityResult, UomItemConfiguration } from './../shared/entities';
-
-
-
 /** The Real UQ Field - Holds the quantity in Baseline */
 const UNIT_QUANTITY = 'UnitsQuantity';
 /** A list of Order Center Data Views */ 
@@ -23,7 +20,6 @@ class UOMMap {
     private hashMap: { [key: string]: Uom };
     constructor(uoms: Uom[]) {
         this.hashMap = {};
-        
         for (const uom of uoms) {
             this.hashMap[uom.Key] = uom;
         }
@@ -37,14 +33,12 @@ let uoms: UOMMap;
  * Manage UOM logic within a ATD
  */
 class UOMManager {
-    
     constructor(private config: AtdConfiguration) {
         this.config = config;
     }
     load() {
         this.subscribe()        
     }
-    
     async colorField(dd1: UIField | undefined, dd2: UIField | undefined, uq1: UIField | undefined, uq2: UIField|undefined, uiObject:UIObject){
         const dataObject = uiObject.dataObject!;
         const itemConfig = await this.getItemConfig(dataObject!);
@@ -56,8 +50,7 @@ class UOMManager {
         }
         if(dd2 && uq2){
             this.colorFields(dd2, uq2, uom, itemConfig, inventory, total); 
-        }
-        
+        } 
     }
     colorFields(dd1:UIField,uq1:UIField,uom: Uom|undefined, itemConfig: UomItemConfiguration[], inventory:number,total: number){
                   //get relevant data build calc and check if he needs to color
@@ -68,7 +61,6 @@ class UOMManager {
                           uq1 ? uq1.textColor = "#FF0000" : null;  
                       }
     }
-
     subscribe() {
         // subscribe to Order center & cart data views
         for (const dataView of [...OC_DATA_VIEWS, ...CART_DATA_VIEWS]) {
@@ -91,7 +83,6 @@ class UOMManager {
             })        
             for (const uqField of [UNIT_QTY_FIRST_TSA, UNIT_QTY_SECOND_TSA]) {
                 pepperi.events.intercept('IncrementFieldValue', { FieldID: uqField, ...filter }, async (data, next, main) => {
-                    
                     await next(async () => {
                         if(data && data.UIObject && data.UIObject.dataObject && data.FieldID) {
                             let oldValue = await data.UIObject.dataObject.getFieldValue(uqField) || 0;
@@ -110,7 +101,6 @@ class UOMManager {
                 })
                 // Set UNIT_QTY_TSA   
                 pepperi.events.intercept('SetFieldValue', { FieldID: uqField, ...filter }, async (data, next, main) => {
-                  
                     await next(async () => {
                         if(data && data.UIObject && data.UIObject && data.FieldID) {
                             await this.setUQField(data.UIObject, data.FieldID, parseFloat(data.Value),ItemAction.Set);
@@ -134,7 +124,6 @@ class UOMManager {
         try { 
             const dataObject = uiObject.dataObject;
             let doNothing:boolean = false;
-            
             // set the fieldIDs
             const uqField = fieldId;
             const otherUQField = uqField === UNIT_QTY_FIRST_TSA ? UNIT_QTY_SECOND_TSA : UNIT_QTY_FIRST_TSA;
@@ -181,8 +170,6 @@ class UOMManager {
                 resultValue = quantityResult.curr.toFixed(quantityCalc.getDecimal());
 
             }
-
-
             await dataObject?.setFieldValue(UNIT_QUANTITY, total.toString(), true);
             await uiObject.setFieldValue(uqField, resultValue, true);
             // console.log(await dataObject?.getFieldValue(uqField))
@@ -216,16 +203,12 @@ class UOMManager {
             customField['formattedValue'] = val - Math.floor(val) === 0? val | 0: val.toString();
         }
     }
-
-
     async recalculateOrderCenterItem(data: EventData) {
         try {
             const uiObject = data.UIObject!;
             const dataObject = data.DataObject! as TransactionLines;
-
             // Get the keys of the UOM from integration
             let arr: string[] = await this.getItemUOMs(dataObject);
-
             // get the UIFields
             const dd1 = await uiObject.getUIField(UOM_KEY_FIRST_TSA);
             const dd2 = await uiObject.getUIField(UOM_KEY_SECOND_TSA);
@@ -250,37 +233,7 @@ class UOMManager {
             //update the TSA Field 
             this.updateTSAField(uomConfig,uq1);
             this.updateTSAField(otherUomConfig,uq2);
-
-            // if(uomConfig && !uomConfig.Decimal)
-            // {
-            //     uq1 != undefined? uq1['customField'].type = 28: uq1 = undefined;
-            //     uq1 != undefined? uq1['customField'].decimalDigits = 0: uq1 = undefined;
-            
-            //     if(uq1)
-            //         console.log("There is the customField obj" + uq1['customField'])
-            // }
-            // else if(uomConfig)
-            // {
-            //     uq1 != undefined? uq1['customField'].decimalDigits = uomConfig.Decimal: uq1 = undefined;
-            //     uq1 != undefined? uq1['customField'].type = 29: uq1 = undefined;
-            // }
-            // if(otherUomConfig && !otherUomConfig.Decimal)
-            // {
-            //     uq2 != undefined? uq2['customField'].type = 28: uq2 = undefined;
-            // }
-            // else if(uomConfig)
-            // {
-            //     uq2 != undefined? uq2['customField'].decimalDigits = 0: uq2 = undefined;
-            //     uq2 != undefined? uq2['customField'].decimalDigits = uomConfig.Decimal: uq2 = undefined;
-            // }
-            // console.log(uiObject);
-            // console.log(dataObject);
-            // console.log(data);
-            // uq1 != undefined? uq1['customField'].type = 28: uq1 = undefined;
-            // uq2 != undefined? uq2['customField'].type = 28: uq2 = undefined;
-
-            const optionalValues = arr.map(key => uoms.get(key)).filter(Boolean).map(uom => {
-                
+            const optionalValues = arr.map(key => uoms.get(key)).filter(Boolean).map(uom => { 
                 return {
                     Key: uom!.Key,
                     Value: uom!.Title
@@ -288,7 +241,6 @@ class UOMManager {
             });
             // run uom logic only when current item has available uoms. otherwise, hide uom fields and continue with regular UQ logic
             if(optionalValues.length > 0 && dataObject.children.length == 0) {
-
                 if (dd1 && uq1) {
                     dd1.readonly = false;
                     dd1.visible = true;
@@ -296,7 +248,6 @@ class UOMManager {
                     if (dd1.value === '') {
                         await uiObject.setFieldValue(UOM_KEY_FIRST_TSA, optionalValues[0].Key, true);
                     }
-
                     // readonly if there is only one, or if there are 2 and this isn't the only configured
                     if (optionalValues.length === 1 || (optionalValues.length === 2 && dd2)) {
                         dd1.readonly = true;
@@ -379,7 +330,6 @@ class UOMManager {
             const config = itemConfig.find(item => item.UOMKey === uom.Key);
             minQuantity = config ? Number(config.Min) : 0;
         }
-    
         return minQuantity;
     }  
     getUomCaseQuantity(uom: Uom | undefined, itemConfig: UomItemConfiguration[]) : number{

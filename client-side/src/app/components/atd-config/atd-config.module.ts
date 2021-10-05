@@ -26,7 +26,6 @@ export function createTranslateLoader(http: HttpClient, fileService: PepFileServ
     //how can i doi that not hard coded?
     // const addonStaticFolder = 'https://cdn.pepperi.com/Addon/Public/1238582e-9b32-4d21-9567-4e17379f41bb/1.2.88/'
     const addonStaticFolder = addonService.getAddonStaticFolder();
-
     return new MultiTranslateHttpLoader(http, [
         {
             prefix:
@@ -48,7 +47,6 @@ export function createTranslateLoader(http: HttpClient, fileService: PepFileServ
     declarations: [
         AtdConfigComponent,
         InstallationComponent
-
     ],
     imports: [
         CommonModule,
@@ -59,7 +57,6 @@ export function createTranslateLoader(http: HttpClient, fileService: PepFileServ
         // PepTopBarModule,
         // PepDialogModule,
         PepUIModule,
-
         TranslateModule.forRoot({
             loader: {
                 provide: TranslateLoader,
@@ -77,8 +74,6 @@ export function createTranslateLoader(http: HttpClient, fileService: PepFileServ
         PepDialogService
     ]
 })
-
-
 export class AtdConfigModule {
     constructor(
           translate: TranslateService

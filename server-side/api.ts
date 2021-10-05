@@ -99,27 +99,8 @@ export async function removeTSAFields(client: Client, request: Request): Promise
     return success.reduce((prev, curr) => {
         return prev && curr
     }, true)
-    
-    //.then(newFields => {
-      //  newFields.map((current) => {
-        //    if(current && current.Hidden)
-          //      current.Hidden = true;
-           // return await service.createAtdTransactionLinesField(atdID,current);
-        //}).reduce((prev , curr) => {
-         //   return prev && curr;
-        //}, true)
-        
-
-    // return await service.createAtdTransactionLinesFields(atdID, UomTSAFields.map((field: ApiFieldObject) => {
-    //     field.Hidden = true;
-    //     console.log(" we will remove this field ", field)
-    //     return field;
-    // }));
-    // return true;
 }
-
 export async function createTSAFields(client: Client, request:Request) {
- 
     let created = false;
     const papiClient = new PapiClient({
         baseURL: client.BaseURL,
@@ -151,7 +132,6 @@ export async function createTSAFields(client: Client, request:Request) {
 
     return created;
 }
-
 export async function isInstalled(client:Client, request:Request):Promise<boolean>{
     const papiClient = new PapiClient({
         baseURL: client.BaseURL,
@@ -166,9 +146,7 @@ export async function isInstalled(client:Client, request:Request):Promise<boolea
     return  await service.getField(atdID, 'TSAAOQMQuantity1').then((field: ApiFieldObject | undefined) => {
         return field === undefined? false: !field.Hidden;
     });
-
 }
-
 export async function importUom(client: Client, request:Request) {
     const papiClient = new PapiClient({
         baseURL: client.BaseURL,
@@ -177,10 +155,8 @@ export async function importUom(client: Client, request:Request) {
         addonUUID: client.AddonUUID, 
         addonSecretKey: client.AddonSecretKey
     });
-
     const service = new ConfigurationService(client);
     const objService = new ObjectsService(papiClient);
-
     try {
         console.log('importUOM is called, data got from call:', request.body);
         if (request.body && request.body.Resource == 'transactions') {
@@ -203,10 +179,8 @@ export async function importUom(client: Client, request:Request) {
         }
     }
 }
-
 export async function exportUom(client: Client, request:Request) {
     const service = new ConfigurationService(client);
-
     try {
         let config;
         console.log('exportUOM is called, data got from call:', request.query);
@@ -246,8 +220,6 @@ export async function exportUom(client: Client, request:Request) {
         }
     }
 }
-
-// add functions here
 // this function will run on the 'api/foo' endpoint
 // the real function is runnning on another typescript file
 export async function foo(client: Client, request: Request) {
@@ -255,4 +227,3 @@ export async function foo(client: Client, request: Request) {
     const res = await service.getAddons()
     return res
 };
-

@@ -9,7 +9,6 @@ export interface relation {
     Type: "AddonAPI" | "NgComponent" | "Navigation";
     [key:string]:string;
 }
-
 export const relations: relation[] = [
     {
         RelationName: "ATDImport",
@@ -38,19 +37,7 @@ export const relations: relation[] = [
         Type:"NgComponent",
         AddonRelativeURL:"atd_config"
     },
-    // {
-    //     RelationName: "TransactionTypeListMenu",
-    //     AddonUUID: "1238582e-9b32-4d21-9567-4e17379f41bb",
-    //     Name:"UomRelations",
-    //     Description:"Configure UOM",
-    //     Type:"NgComponent",
-    //     AddonRelativeURL:"atd_config",
-    //     SubType: "NG11",
-    //     ModuleName: 'AtdConfigModule',
-    //     ComponentName: 'AtdConfigComponent'
-    // },
 ]
-
 export const UomTSAFields: ApiFieldObject[] = [
     {
         FieldID: UOM_KEY_FIRST_TSA,
@@ -111,12 +98,10 @@ export const UomTSAFields: ApiFieldObject[] = [
         Format: "Double",
     },
 ]
-
 export const atdConfigScheme: AddonDataScheme = {
     Name: "AtdConfig",
     Type: "cpi_meta_data",
 }
-
 export const uomsScheme: AddonDataScheme = {
     Name: "UOMs List",
     Type: "cpi_meta_data",

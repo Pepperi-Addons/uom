@@ -5,17 +5,17 @@ import 'mocha'
 import { expect } from 'chai'
 
 describe('Quantity Calculator', () => {
-    let inc = (result: number, calc: QuantityCalculator,value: number) => {
+    const inc = (result: number, calc: QuantityCalculator,value: number) => {
         return () => {
             expect(calc.getIncrementValue(value)).that.is.eql({'curr': result, 'total' : result*calc.getFactor()});
         }
     }
-    let dec = (result: number, calc: QuantityCalculator, value: number) => {
+    const dec = (result: number, calc: QuantityCalculator, value: number) => {
         return () => {
             expect(calc.getDecrementValue(value)).is.eql({'curr': result, 'total' : result*calc.getFactor()});
         }
     }
-    let set = (result: number, calc: QuantityCalculator, input:number) => {
+    const set = (result: number, calc: QuantityCalculator, input:number) => {
         return () => {
             expect(calc.setValue(input)).that.is.eql({'curr': result, 'total' : result*calc.getFactor()});
         }

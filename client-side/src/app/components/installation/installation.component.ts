@@ -18,12 +18,10 @@ export class InstallationComponent implements OnInit {
   @Input() configID: string;
   @Output() installEvent = new EventEmitter<string>();
 
-
   constructor(
     private translate: TranslateService,
     private dialogService: PepDialogService
   ) { }
-
   ngOnInit(): void {
     console.log("inside installation component here is the hostObject -> " ,this.hostObj);
     console.log("Inside installation component, here is AtdConfigService - > ", this.pluginService);
@@ -41,7 +39,6 @@ export class InstallationComponent implements OnInit {
         this.installEvent.emit('true');
     });
     console.log("installed work !!")
-
   }
    onInstall($event){
     this.dialogService.openDefaultDialog(new PepDialogData({
@@ -65,16 +62,7 @@ export class InstallationComponent implements OnInit {
             this.install();
           }
         }
-
-
       ]
     }))
-    //here i need to create the TSA's 
-    //   await this.atdID;
-    //   this.pluginService.createTSAFields(this.atdID).then((sucsses) => {
-    //     this.installEvent.emit('true');
-    // });
-    // console.log("installed work !!")
   }
-
 }

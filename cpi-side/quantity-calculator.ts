@@ -22,12 +22,9 @@ export class QuantityCalculator {
             getSetMin():number{
                 return this.caseBehavior != 'Fix'? this.originalMin: this.getRealMin();
             }
-
             getSetMax():number{
                 return this.caseBehavior != 'Fix'? this.normalizedInv: this.getRealMax();
             }
-
-
             //determince if field needs to be colored
             toColor(num:number, total:number, inventory:number ):boolean{
                 return  (this.caseBehavior === 'Color' && num%this.cq != 0) || (this.minBehavior === 'Color' && num < this.getRealMin() && num > 0) || (this.invBehavior === 'Color' && total > inventory); 
@@ -53,8 +50,6 @@ export class QuantityCalculator {
                     return this.caseBehavior === 'Fix'? Math.ceil(value/this.cq)*this.cq: value;
                 }
             }
-            
-
             //fix the number by min, if number bellow min:
             //if add its up to min  
             //if dec its down to 0
@@ -87,7 +82,6 @@ export class QuantityCalculator {
                         }
                         //the usual set case, if the inv fix so the max is setMax, otherwise if value > setMax and inv != fix so the value is the current max.
                         return (this.invBehavior === 'Fix' && value > this.getSetMax())? this.getSetMax(): value;
-
                     default:
                         //when we dont have an interval in increment, the max is zero.
                         if(this.getRealMax() < this.getRealMin() && action === ItemAction.Increment && this.invBehavior === 'Fix')
@@ -102,7 +96,6 @@ export class QuantityCalculator {
             resultBuilder(value:number){
                 return {'curr': value, 'total': value*this.factor};
             }
-
             //value is non negative integer
             //always fix in case and min
             //if after the increment by case he is less than real minimum than he should be mean;
@@ -134,11 +127,9 @@ export class QuantityCalculator {
                 res = this.convertToDec(res);
                 return this.resultBuilder(res)
             }
-
             getDecimal(){
                 return this.decimal;
             }
-        
             // in order to support frac we just sfhit left $decimal digits, and then work on integers
             convertToInteger(num:number):number{
                 let shifter = Math.pow(10,this.decimal);

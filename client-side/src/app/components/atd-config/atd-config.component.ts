@@ -12,13 +12,11 @@ import { PepDialogData, PepDialogService } from '@pepperi-addons/ngx-lib/dialog'
 import { ContentObserver } from '@angular/cdk/observers';
 import { IPepMenuItemClickEvent, PepMenuItem } from '@pepperi-addons/ngx-lib/menu';
 
-
 @Component({
     selector: 'atd-config-addon',
     templateUrl: './atd-config.component.html',
     styleUrls: ['./atd-config.component.scss']
 })
-
 export class AtdConfigComponent implements OnInit {
     TSAStringfields: {key:string, value:string}[] = [];
     TSANumberfields: {key:string, value:string}[] = [];
@@ -107,7 +105,6 @@ export class AtdConfigComponent implements OnInit {
         console.log('host object is:', this.hostObject);
         this.pluginService.pluginUUID = '1238582e-9b32-4d21-9567-4e17379f41bb';
     }
-
     loadAtdData() {
         console.log('inside load Atd data. AtdID:', this.AtdID);
         this.pluginService.getAtdFields(this.AtdID).then(fields => {
@@ -148,7 +145,6 @@ export class AtdConfigComponent implements OnInit {
         })
     }
     ngAfterViewInit(){
-
     }
     onValueChanged(element, $event) {
         console.log("in onValueChanged function");
@@ -163,8 +159,7 @@ export class AtdConfigComponent implements OnInit {
                 this.Configuration.InventoryFieldID = $event;
                 console.log('here is the inv id:       ', $event);
                 if($event == '') {
-                    this.Configuration.InventoryType = 'DoNothing'
-                   
+                    this.Configuration.InventoryType = 'DoNothing' 
                 }
                 break;
             }
@@ -193,9 +188,7 @@ export class AtdConfigComponent implements OnInit {
                 break;
             }
         }
-
     }
-
     async SaveConfig() {
         await this.pluginService.updateConfiguration(this.Configuration);
         const title = this.translate.instant("Uom_saveConfig_Title");
@@ -207,11 +200,9 @@ export class AtdConfigComponent implements OnInit {
         });
         this.AtdID = this.Configuration = undefined
     }
-
     emitClose() {
         this.hostEvents.emit({action:'close-dialog'});
     }
-
     Cancel() {
         this.pluginService.getConfiguration(this.AtdID).then(config => {
             this.Configuration = config.length == 1  ? config[0] : {
