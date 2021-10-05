@@ -97,6 +97,8 @@ export class AtdConfigComponent implements OnInit {
         })     
     }
     ngOnInit() {
+        this.pluginService.pluginUUID = this.hostObject.options.uuid;
+        console.log('here is uuid from hotsObj options', this.pluginService.pluginUUID)
         console.log('Onint of atd-config start...');
         console.log("isInstalled = ", this.isInstalled)
         this.configID = this.hostObject.objectList[0];
@@ -111,12 +113,9 @@ export class AtdConfigComponent implements OnInit {
            this.pluginService.isInstalled(this.AtdID).then((installed) => {
                console.log("inside ngOnInit in atd-config TSA already installed ? ", installed);
                this.isInstalled = installed;
-            //for debugging onlu
-            //    this.isInstalled = false;
                this.alreadyChecked = true;
                if(this.isInstalled){
-                // this.pluginService.pluginUUID = this.hostObject.options.uuid;
-                this.pluginService.pluginUUID = '1238582e-9b32-4d21-9567-4e17379f41bb';
+                // this.pluginService.pluginUUID = this.hostObject.options.uuid; //work just local
                 this.Actions = Object.keys(InventoryActions)?.map(key => {
                     return {
                         key: key,
@@ -128,7 +127,6 @@ export class AtdConfigComponent implements OnInit {
            })
         });
         console.log('host object is:', this.hostObject);
-        this.pluginService.pluginUUID = '1238582e-9b32-4d21-9567-4e17379f41bb';
     }
     loadAtdData() {
         console.log('inside load Atd data. AtdID:', this.AtdID);
@@ -168,8 +166,6 @@ export class AtdConfigComponent implements OnInit {
                 MinQuantityType: "Color"
             }         
         })
-    }
-    ngAfterViewInit(){
     }
     onValueChanged(element, $event) {
         console.log("in onValueChanged function");
