@@ -135,7 +135,7 @@ export class QuantityCalculator {
                 let new_val = this.convertToInteger(num);
                 //here you need to format that to number.x where x.length == decimal
                 new_val = this.negative ? new_val : Math.max(new_val,0);
-                return this.fix(num,ItemAction.Set);
+                return this.fix(new_val,ItemAction.Set);
             }
             fix(num: number, action: ItemAction){
                 
