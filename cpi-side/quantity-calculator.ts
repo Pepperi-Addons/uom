@@ -27,7 +27,13 @@ export class QuantityCalculator {
             }
             //determince if field needs to be colored
             toColor(num:number, total:number, inventory:number ):boolean{
-                return  (this.caseBehavior === 'Color' && num%this.cq != 0) || (this.minBehavior === 'Color' && num < this.getRealMin() && num > 0) || (this.invBehavior === 'Color' && total > inventory); 
+                let new_num = num;
+                if(this.decimal)
+                {
+                    new_num = this.convertToInteger(num);
+                }
+                debugger;
+                return  (this.caseBehavior === 'Color' && new_num%this.cq != 0) || (this.minBehavior === 'Color' && num < this.getRealMin() && num > 0) || (this.invBehavior === 'Color' && total > inventory); 
             }
             //return the min assume min = fix and case = fix;
             getRealMin():number {
@@ -117,7 +123,7 @@ export class QuantityCalculator {
                 return this.fix(num,ItemAction.Set);
             }
             fix(num: number, action: ItemAction){
-                debugger;
+                
                 //first shift left everything by decimal
                 num = this.convertToInteger(num);
                 let res = this.fixByCase(num,action);

@@ -180,7 +180,6 @@ class UOMManager {
         }
     }
     updateTSAField(uomConfig: UomItemConfiguration, uq1:UIField | undefined){
-        debugger
             if(uomConfig && Number(uomConfig.Decimal) === 0)
             {
                 uq1 != undefined? uq1['customField'].type = 28: uq1 = undefined;

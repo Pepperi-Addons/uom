@@ -93,7 +93,7 @@ export class AtdConfigComponent implements OnInit {
         })     
     }
     ngOnInit() {
-        this.pluginService.pluginUUID = this.hostObject.options.uuid;
+        this.pluginService.pluginUUID = "1238582e-9b32-4d21-9567-4e17379f41bb";
         console.log('here is uuid from hotsObj options', this.pluginService.pluginUUID)
         console.log('Onint of atd-config start...');
         console.log("isInstalled = ", this.isInstalled)
