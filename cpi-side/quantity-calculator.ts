@@ -6,6 +6,7 @@ export class QuantityCalculator {
             private originalMin:number;
             private negative: boolean
             private decimal: number
+            private converted_to_integer;
     
             constructor(itemConfig: UomItemConfiguration, private inventory: number, private caseBehavior: InventoryAction ,private minBehavior: InventoryAction,private invBehavior: InventoryAction){  
                 this.decimal = itemConfig.Decimal? itemConfig.Decimal : 0;
@@ -14,6 +15,16 @@ export class QuantityCalculator {
                 this.factor = itemConfig.Factor > 0 ? Number(itemConfig.Factor.toFixed(this.decimal)): 1;
                 this.cq = itemConfig.Case > 0 ? Number(itemConfig.Case.toFixed(this.decimal)): 1;
                 this.normalizedInv =  Number(Math.floor(this.inventory/this.factor));
+                this.converted_to_integer = false;
+                this.convertFieldsToInteger();
+            }
+
+            convertFieldsToInteger()
+            {  
+                this.cq = this.convertToInteger(this.cq);
+                this.originalMin = this.convertToInteger(this.originalMin);
+                this.normalizedInv = this.convertToInteger(this.normalizedInv)
+                this.converted_to_integer = true;
             }
             //function for tests
             getFactor():number {
@@ -107,25 +118,29 @@ export class QuantityCalculator {
             //if after the increment by case he is less than real minimum than he should be mean;
             //if after increment by case he is not divided by case, he should be the next non negative number that divided by case(unless he is bigger than max and inv = fix)
             getIncrementValue(value: number):QuantityResult {
-                const nextLegalValue = this.fixByCase(value,ItemAction.Decrement) + this.cq;
+                debugger;
+                const new_val = this.convertToInteger(value)
+                const nextLegalValue = this.fixByCase(new_val,ItemAction.Decrement) + this.cq;
                 //should return an integer that is no less than value
                 //otherwise we need to fix result
                 let result = this.fix(nextLegalValue,ItemAction.Increment);
                 return result.curr < value ? this.resultBuilder(value): result;
             }
             getDecrementValue(value: number):QuantityResult{
-                const prevLegalValue = this.fixByCase(value, ItemAction.Increment) - this.cq;
+                const new_val = this.convertToInteger(value);
+                const prevLegalValue = this.fixByCase(new_val, ItemAction.Increment) - this.cq;
                 return this.fix(prevLegalValue,ItemAction.Decrement);
             }
             setValue(num: number):QuantityResult{
+                let new_val = this.convertToInteger(num);
                 //here you need to format that to number.x where x.length == decimal
-                num = this.negative ? num : Math.max(num,0);
+                new_val = this.negative ? new_val : Math.max(new_val,0);
                 return this.fix(num,ItemAction.Set);
             }
             fix(num: number, action: ItemAction){
                 
                 //first shift left everything by decimal
-                num = this.convertToInteger(num);
+                // num = this.convertToInteger(num);
                 let res = this.fixByCase(num,action);
                 res = this.fixByMin(res,action);
                 res = this.fixByMax(res, action);
@@ -138,10 +153,11 @@ export class QuantityCalculator {
             }
             // in order to support frac we just sfhit left $decimal digits, and then work on integers
             convertToInteger(num:number):number{
+                debugger
                 let shifter = Math.pow(10,this.decimal);
-                this.originalMin = this.originalMin * shifter;
-                this.cq = this.cq * shifter;
-                this.normalizedInv = this.normalizedInv * shifter;
+                // this.originalMin = this.originalMin * shifter;
+                // this.cq = this.cq * shifter;
+                // this.normalizedInv = this.normalizedInv * shifter;
                 return num * shifter;
             }
             // here we shift right to go back to the original base of the number.
