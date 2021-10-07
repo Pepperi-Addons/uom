@@ -6,7 +6,8 @@ export class QuantityCalculator {
             private originalMin:number;
             private negative: boolean
             private decimal: number
-            private converted_to_integer;
+            private alreadyConverted = false;
+
     
             constructor(itemConfig: UomItemConfiguration, private inventory: number, private caseBehavior: InventoryAction ,private minBehavior: InventoryAction,private invBehavior: InventoryAction){  
                 this.decimal = itemConfig.Decimal? itemConfig.Decimal : 0;
@@ -15,7 +16,6 @@ export class QuantityCalculator {
                 this.factor = itemConfig.Factor > 0 ? Number(itemConfig.Factor.toFixed(this.decimal)): 1;
                 this.cq = itemConfig.Case > 0 ? Number(itemConfig.Case.toFixed(this.decimal)): 1;
                 this.normalizedInv =  Number(Math.floor(this.inventory/this.factor));
-                this.converted_to_integer = false;
                 this.convertFieldsToInteger();
             }
 
@@ -24,7 +24,8 @@ export class QuantityCalculator {
                 this.cq = this.convertToInteger(this.cq);
                 this.originalMin = this.convertToInteger(this.originalMin);
                 this.normalizedInv = this.convertToInteger(this.normalizedInv)
-                this.converted_to_integer = true;
+                this.alreadyConverted = true;
+                
             }
             //function for tests
             getFactor():number {
@@ -40,7 +41,7 @@ export class QuantityCalculator {
             toColor(num:number, total:number, inventory:number ):boolean{
                 debugger;
                 const new_num = this.convertToInteger(num);
-                return  (this.caseBehavior === 'Color' && new_num%this.cq != 0) || (this.minBehavior === 'Color' && num < this.getRealMin() && num > 0) || (this.invBehavior === 'Color' && total > inventory); 
+                return  (this.caseBehavior === 'Color' && new_num%this.cq != 0) || (this.minBehavior === 'Color' && new_num < this.getRealMin() && new_num > 0) || (this.invBehavior === 'Color' && total > inventory); 
             }
             //return the min assume min = fix and case = fix;
             getRealMin():number {
@@ -115,23 +116,35 @@ export class QuantityCalculator {
             //if after increment by case he is not divided by case, he should be the next non negative number that divided by case(unless he is bigger than max and inv = fix)
             getIncrementValue(value: number):QuantityResult {
                 debugger;
-                const new_val = this.convertToInteger(value)
-                const nextLegalValue = this.fixByCase(new_val,ItemAction.Decrement) + this.cq;
+                if(!this.alreadyConverted)
+                {
+                    this.convertFieldsToInteger();
+                }
+                const newVal = this.convertToInteger(value)
+                const nextLegalValue = this.fixByCase(newVal,ItemAction.Decrement) + this.cq;
                 //should return an integer that is no less than value
                 //otherwise we need to fix result
                 let result = this.fix(nextLegalValue,ItemAction.Increment);
                 return result.curr < value ? this.resultBuilder(value): result;
             }
             getDecrementValue(value: number):QuantityResult{
-                const new_val = this.convertToInteger(value);
-                const prevLegalValue = this.fixByCase(new_val, ItemAction.Increment) - this.cq;
+                if(!this.alreadyConverted)
+                {
+                    this.convertFieldsToInteger();
+                }
+                const newVal = this.convertToInteger(value);
+                const prevLegalValue = this.fixByCase(newVal, ItemAction.Increment) - this.cq;
                 return this.fix(prevLegalValue,ItemAction.Decrement);
             }
             setValue(num: number):QuantityResult{
-                let new_val = this.convertToInteger(num);
+                if(!this.alreadyConverted)
+                {
+                    this.convertFieldsToInteger();
+                }
+                let newVal = this.convertToInteger(num);
                 //here you need to format that to number.x where x.length == decimal
-                new_val = this.negative ? new_val : Math.max(new_val,0);
-                return this.fix(new_val,ItemAction.Set);
+                newVal = this.negative ? newVal : Math.max(newVal,0);
+                return this.fix(newVal,ItemAction.Set);
             }
             fix(num: number, action: ItemAction){
                 
@@ -163,6 +176,7 @@ export class QuantityCalculator {
                 this.originalMin = Number((this.originalMin / shifter).toFixed(this.decimal));
                 this.cq = Number((this.cq / shifter).toFixed(this.decimal));
                 this.normalizedInv = Number((this.normalizedInv / shifter).toFixed(this.decimal));
+                this.alreadyConverted = false;
                 return Number((res/shifter).toFixed(this.decimal));
             }
 }
