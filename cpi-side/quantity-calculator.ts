@@ -38,12 +38,8 @@ export class QuantityCalculator {
             }
             //determince if field needs to be colored
             toColor(num:number, total:number, inventory:number ):boolean{
-                let new_num = num;
-                if(this.decimal)
-                {
-                    new_num = this.convertToInteger(num);
-                }
                 debugger;
+                const new_num = this.convertToInteger(num);
                 return  (this.caseBehavior === 'Color' && new_num%this.cq != 0) || (this.minBehavior === 'Color' && num < this.getRealMin() && num > 0) || (this.invBehavior === 'Color' && total > inventory); 
             }
             //return the min assume min = fix and case = fix;
@@ -152,13 +148,14 @@ export class QuantityCalculator {
                 return this.decimal;
             }
             // in order to support frac we just sfhit left $decimal digits, and then work on integers
+            //always return an integer !
             convertToInteger(num:number):number{
-                debugger
+               
                 let shifter = Math.pow(10,this.decimal);
                 // this.originalMin = this.originalMin * shifter;
                 // this.cq = this.cq * shifter;
                 // this.normalizedInv = this.normalizedInv * shifter;
-                return num * shifter;
+                return Math.round(num * shifter);
             }
             // here we shift right to go back to the original base of the number.
             convertToDec(res: number):number{
