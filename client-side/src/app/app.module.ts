@@ -20,7 +20,6 @@ export function createTranslateLoader(http: HttpClient, fileService: PepFileServ
     const translationsPath: string = fileService.getAssetsTranslationsPath();
     const translationsSuffix: string = fileService.getAssetsTranslationsSuffix();
     const addonStaticFolder = addonService.getAddonStaticFolder();
-    // const addonStaticFolder = addonService.getAddonPath("1238582e-9b32-4d21-9567-4e17379f41bb");
 
     return new MultiTranslateHttpLoader(http, [
         {

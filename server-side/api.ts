@@ -7,6 +7,7 @@ import { ConfigurationService } from './services/configuration.service';
 import { UomTSAFields } from './metadata';
 import { AtdConfiguration } from '../shared/entities';
 import { Fields } from '@pepperi-addons/papi-sdk/dist/endpoints';
+import { request } from 'http';
 
 
 export async function uoms(client: Client, request: Request) {
@@ -19,6 +20,15 @@ export async function uoms(client: Client, request: Request) {
         return await service.find(request.query);
     }
 };
+
+export async function removeAtdConfigurations(client: Client, request: Request){
+    if(request.method !=  'POST')
+        throw new console.error("expected to recive POST method but instead recived " + request.method );
+        
+   const service = new ConfigurationService(client);
+   return await service.uninstall();
+
+}
 
 export async function getUomByKey(client: Client, request: Request) {
     const service = new UomsService(client);
@@ -70,6 +80,10 @@ export async function getAtdFields(client: Client, request: Request) {
     return [...await service.getAtdFields(atdID), ...items];
 }
 export async function removeTSAFields(client: Client, request: Request): Promise<boolean> {
+    if(request.method !=  'POST')
+    {
+        throw new console.error("expected to recive POST method but instead recived " + request.method );
+    }
     const papiClient = new PapiClient({
         baseURL: client.BaseURL,
         token: client.OAuthAccessToken,
@@ -78,27 +92,28 @@ export async function removeTSAFields(client: Client, request: Request): Promise
         actionUUID: client.ActionUUID
 
     });
-    const service = new ObjectsService(papiClient)
-    let atdID = -3;
+    const service = new ObjectsService(papiClient);
+    let atdID = -1;
     if(request?.query) {
-        atdID = 'atdID' in request.query? Number(request.query.atdID) : -5;
+        atdID = 'atdID' in request.query? Number(request.query.atdID) : -1;
     }
     if(request?.body){
-        atdID = 'atdID' in request.body? Number(request.body.atdID): -2;
+        atdID = 'atdID' in request.body? Number(request.body.atdID): -1;
     }
-     const result =  await Promise.all(UomTSAFields.map(async (field) => {
+     const tsaFields =  await Promise.all(UomTSAFields.map(async (field) => {
         return await service.getField(atdID, field.FieldID);
     }))
-    const success = await  Promise.all(result.map((field) => {
+    const isFieldsRemoved: boolean[] = await  Promise.all(tsaFields.map((field) => {
         if(field && field.Hidden !== undefined)
         field.Hidden = true;
         return field;
     }).map((field) => {
         return service.createAtdTransactionLinesField(atdID, field);
     }));
-    return success.reduce((prev, curr) => {
+    //return true if all fields removed successfully    
+    return isFieldsRemoved.reduce((prev, curr) => {
         return prev && curr
-    }, true)
+    }, true);
 }
 export async function createTSAFields(client: Client, request:Request) {
     let created = false;

@@ -27,6 +27,15 @@ export class ConfigurationService {
         // })
     }
 
+    async uninstall(): Promise<any>{
+        const atdConfigs = await this.find();
+        return await Promise.all(atdConfigs.map((atdConfig: AtdConfiguration) => {
+            atdConfig.Hidden = true;
+            return this.upsert(atdConfig);
+        }))
+        
+    }
+
     async upsert(obj: AtdConfiguration): Promise<any> {
         return await this.papiClient.addons.data.uuid(config.AddonUUID).table(atdConfigScheme.Name).upsert(obj);
 

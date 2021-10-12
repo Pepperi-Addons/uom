@@ -62,18 +62,16 @@ export class AtdConfigComponent implements OnInit {
             content: 'Are you sure you want to uninstall the UOM fields from this transaction?',
             actionButtons: [
                 {
-                title: this.translate.instant('cancel'),
+                title: this.translate.instant('Cancel'),
                 className: 'regular',
                 callback: () => {
-                    console.log("cancel CALLBACK from uninstall !!!!!!!!!!!!!!!!!!!!!!!")
                     return;
                 }
             },
             {
-                title: this.translate.instant('ok'),
+                title: this.translate.instant('OK'),
                 className: 'strong',
                 callback: () => {
-                    console.log("ok CALLBACK from uninstall !!!!!!!!!!!!!!!!!!!!!!!")
                     this.uninstall($event);
                 }
             }

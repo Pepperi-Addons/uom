@@ -1,13 +1,18 @@
-// .wrapper {
-//     text-align: center;
-// }
-
-// .button {
-//     display: block;
-//     position: absolute;
-//     top: 50%;
-// }
-
+.wrapper {
+    position: relative; 
+	width: 150%;
+}
+h1{
+	float: left;
+}
+.pep-button{
+	float: right;
+	 padding-top: 1.3em;
+}
+.pep-menu{
+	float: right;
+	padding-top: 1.3em;
+}
 .centerize{
 	width:80%;
 	margin-left:auto;
@@ -16,7 +21,6 @@
 .halfscreen{
 	width: 50%;
 }
-
 .left
 {
 	float:left;
@@ -32,23 +36,6 @@ li{
 br{
 	padding: 5%;
 }
-
-// li {
-//     list-style: none;
-//     font-size: 17px;
-// }
-// li:before {
-// 	content:"·";
-// 	font-size:70px;
-// 	vertical-align: middle;
-// 	line-height:50px;
-// }
-
-// .section-one{
-// 	overflow-y: auto;  
-// 	width: 100%;
-// 	height: 75%;
-// }
 .container{
 	max-height: calc(100vh - 230px) !important;
 	float: left;

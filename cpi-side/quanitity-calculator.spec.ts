@@ -1136,6 +1136,24 @@ describe('Quantity Calculator', () => {
             })
         });
     });
+
+    describe('Test 15: Inv= DoNothing, Case = DoNothing, Min = DoNothing', ()=>{
+        let invBehavior:InventoryAction = 'DoNothing';
+        let caseBehavior: InventoryAction = 'DoNothing';
+        let minBehavior: InventoryAction = 'DoNothing';
+  
+        describe ('CASE 1:inv = 70, min = 0.333, case = 0.111, factor = 1.5, Decimal = 3', () => {
+            let  config: UomItemConfiguration = {'UOMKey': "", 'Case':0.111, 'Min': 0.333, 'Factor':1.5, 'Decimal':3};
+            let inventory: number = 70;
+            let calc = new QuantityCalculator(config,inventory,caseBehavior,minBehavior,invBehavior);
+            describe ('1: combine tests:', () => {
+                it('1: set to 5 should set to 5', set(5,calc,5));
+                it('2: inc should go to 5.106', inc(5.106,calc,5));
+                it('3: inc should go to 5.217', inc(5.217,calc,5.106));
+                it('4: inc should go to 5.328', inc(5.328,calc,5.217));
+            });
+        });
+    });
 });
 
 

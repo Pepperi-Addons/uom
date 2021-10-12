@@ -1,4 +1,4 @@
-
+<div class="addon-page-container">
 <!-- if TUOM is not install on this transaction he will move to the installation component -->
 <div *ngIf="!isInstalled && alreadyChecked;">
     <addon-installation [hostObj] = "hostObject" [pluginService] = "pluginService" (installEvent)="onInstallation($event)" [configID] = "this.configID"></addon-installation>
@@ -7,16 +7,15 @@
 
 
 <div class="container"> 
-    <div class="addon-page-container">
         <div *ngIf="isInstalled">
-            <div class="wrap" style="position: relative; width: 150%;"> 
+            <div class="wrap"> 
                 <div class="header">
-                    <h1 style="float: left;">UOM</h1>
+                    <h1>UOM</h1>
                     <!-- save buttom -->
-                    <pep-button style="float: right; padding-top: 1.3em;"   [value]="'Uom_AtdConfig_Save' | translate" [sizeType]="'md'" [styleType]="'strong'"
+                    <pep-button class="pep-button"  [value]="'Uom_AtdConfig_Save' | translate" [sizeType]="'md'" [styleType]="'strong'"
                     [classNames]="'pep-spacing-element '"  (click)="SaveConfig()"></pep-button>   
                     <!-- menu of uninstall -->
-                    <pep-menu style="float: right; padding-top: 1.3em;"
+                    <pep-menu class = "pep-menu"
                     [text]="text"
                     iconName="system_menu"
                     type="action"
@@ -99,124 +98,3 @@
         </div>
     </div>
 </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!-- <div class="container">
-<div  class="addon-page-container">
-    <div *ngIf="isInstalled">
-        <div header-start-content>
-            <div style="display: inline;">
-                <pep-button style="float: right; display: inline;"   [value]="'Uom_AtdConfig_Save' | translate" [sizeType]="'md'" [styleType]="'strong'"
-                [classNames]="'pep-spacing-element '"  (click)="SaveConfig()"></pep-button>   
-                <pep-menu style="float: right; display: inline;"
-                    [text]="text"
-                    iconName="system_menu"
-                    type="action"
-                    styleType="weak"
-                    sizeType="md"
-                    classNames=""
-                    [items]="items"
-                    [selectedItem]="selectedItem"
-                    [disabled]="false"
-                    (menuItemClick)="onMenuItemClicked($event)"
-                    (menuClick)="onMenuClicked($event)"
-                ></pep-menu>
-                <b style="float: left;"><h2 style="display: inline;">UOM</h2></b>
-            </div>
-            <br>
-            <hr style="display: block;">
-        </div>
-    </div>
-</div>
-    <div *ngIf="!isInstalled && alreadyChecked;" style="display: inline;">
-        <addon-installation [hostObj] = "hostObject" [pluginService] = "pluginService" (installEvent)="onInstallation($event)" [configID] = "this.configID"></addon-installation>
-    </div>    
-    <div *ngIf="isInstalled" style="display: inline;">
-        <div id="mainContent" class="main-content" style="display: inline;">
-            <div class="content" style="margin-top: 20px; display: inline;">
-                <div class="left">
-     
-                    <h4><b>Configuration Fields</b></h4>
-                    <div class= "allscreen"><hr></div>
-                        <p class = "allscreen"> Select the fields wich contains the item's UOM information. The fields can be an item level fields or a UDT/Calculated transaction line fields, with the folowing content for exmaple:</p>
-                        <ul class="allscreen">
-                            <li>
-                                Allowed UOMs field = "["EA","CS","BO"]"
-                            </li>
-                            <li>
-                                UOM Configuration field = "[&#123;"UOMkey": "CS", "Factor": 6, "Min": 4, "Case": 1, "Decimal": 2, "Negative": false&#125;, &#123;"UOMKey": "EA", "Case": 6]"
-                            </li>
-                        </ul>
-                        <br>
-                            
-                            
-                        <div>
-                            <pep-select #pepSelect [value]="Configuration?.UOMFieldID"
-                                [options]="TSAStringfields" [label]="'Uom_AtdConfig_AllowedUomsTitle' | translate"
-                                (valueChange)="onValueChanged('AllowedUoms', $event)" [mandatory]='true'></pep-select>
-                        </div>
-                        <div>
-                            <pep-select #pepSelect [value]="Configuration?.ItemConfigFieldID"
-                                [options]="TSAStringfields" [label]="'Uom_AtdConfig_ItemConfigTitle' | translate"
-                                (valueChange)="onValueChanged('ItemConfig', $event)"></pep-select>
-                        </div>
-                        <br>
-             
-                        <h4><b>Data Fields</b></h4>
-                        <div class= "allscreen"> <hr></div>
-                            <p class="allscreen">Select the fields which contain the item's data </p>
-                            <br>
-
-                            <div>
-                                <pep-select #pepSelect [value]="Configuration?.InventoryFieldID"
-                                    [options]="TSANumberfields" [label]="'Uom_AtdConfig_InventoryTitle' | translate"
-                                    (valueChange)="onValueChanged('Inventory', $event)"></pep-select>
-                            </div>
-                            <br>
-   
-                            <h4><b>Units Quantity Fields</b></h4> 
-                            <div class= "allscreen"> <hr></div>
-                                <p class="allscreen">Define the behavior of the Units Quantity Field when it is set with an out of bounds value</p>
-                                <br>
-                                <div>
-                                    <pep-select #pepSelect [value]="Configuration?.InventoryType"
-                                        [options]="Actions" [disabled]="Configuration?.InventoryFieldID == ''" [emptyOption]='false' [label]="'Uom_AtdConfig_InventoryActionTitle' | translate" 
-                                        (valueChange)="onValueChanged('InventoryAction', $event)"></pep-select>
-                                </div>
-                                <div>
-                                    <pep-select #pepSelect [value]="Configuration?.CaseQuantityType"
-                                    [options]="Actions" [disabled]="Configuration?.ItemConfigFieldID == ''" [emptyOption]='false' [label]="'Uom_AtdConfig_CaseActionTitle' | translate" 
-                                    (valueChange)="onValueChanged('CaseAction', $event)"></pep-select>
-                                </div>
-                                <div>
-                                    <pep-select #pepSelect [value]="Configuration?.MinQuantityType"
-                                        [options]="Actions" [disabled]="Configuration?.ItemConfigFieldID == ''" [emptyOption]='false' [label]="'Uom_AtdConfig_MinActionTitle' | translate" 
-                                        (valueChange)="onValueChanged('MinAction', $event)"></pep-select>
-                                </div>
-                  
-                                <div>
-                                    <div class="allscreen"><hr></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    -->
-                
-
