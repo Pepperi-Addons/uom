@@ -166,16 +166,8 @@ class UOMManager {
             // add quantity to total
             total += quantityResult.total;
             let resultValue = quantityResult.curr.toString();
-            
-            
-            // format the value
-            // if (quantityCalc.getDecimal() && (quantityResult.curr - Math.floor(quantityResult.curr)) != 0) {
-            //     resultValue = quantityResult.curr.toFixed(quantityCalc.getDecimal());
-
-            // }
             await dataObject?.setFieldValue(UNIT_QUANTITY, total.toString(), true);
             await uiObject.setFieldValue(uqField, resultValue, true);
-            // console.log(await dataObject?.getFieldValue(uqField))
         }
         catch (err) {
             console.log('Error setting UQ field');
