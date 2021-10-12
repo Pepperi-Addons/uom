@@ -12,6 +12,7 @@ export interface AtdConfiguration {
     InventoryFieldID: string,
     // PriceField: string, 
     InventoryType: InventoryAction,
+    Hidden?, 
     ItemConfigFieldID: string,
     CaseQuantityType: InventoryAction
     MinQuantityType: InventoryAction

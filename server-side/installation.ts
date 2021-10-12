@@ -30,6 +30,7 @@ export async function install(client: Client, request: Request): Promise<any> {
 
 export async function uninstall(client: Client, request: Request): Promise<any> {
     
+    
     return {success:true,resultObject:{}}
 }
 

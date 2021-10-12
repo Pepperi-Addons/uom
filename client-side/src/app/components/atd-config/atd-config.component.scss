@@ -41,8 +41,9 @@ br{
 	float: left;
 }
 .header{
-		position: absolute;
-		border-bottom:solid 1px #000;
+		position: relative;
+		// border-bottom:solid 1px #000;
 		padding:3px;
-		width: 75%
+		// vertical-align: text-bottom #000;
+		width: 150%
 }
