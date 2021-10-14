@@ -187,6 +187,8 @@ class UOMManager {
             uq['customField'].type = 29;
         }
     }
+    //if the number is an integer, we dont want to show the zero's that come after the dot
+    // e.g 2.00 => 2
     fixFormattedValue(uq1: UIField | undefined) {
         if (uq1) {
             let customField = uq1['customField'];
