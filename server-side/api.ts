@@ -26,7 +26,7 @@ export async function removeAtdConfigurations(client: Client, request: Request){
         throw new console.error("expected to recive POST method but instead recived " + request.method );
         
    const service = new ConfigurationService(client);
-   return await service.uninstall();
+   return await service.uninstall(request.body);
 
 }
 

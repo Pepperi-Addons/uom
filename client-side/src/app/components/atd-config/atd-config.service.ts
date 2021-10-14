@@ -41,16 +41,17 @@ export class AtdConfigService {
     async updateConfiguration(config: AtdConfiguration) {
         return await this.papiClient.addons.api.uuid(this.pluginUUID).file('api').func('atdConfiguration').post(undefined, config);
     }
-
     async createTSAFields(atdID: Number): Promise<boolean> {
         return await this.papiClient.addons.api.uuid(this.pluginUUID).file('api').func('createTSAFields').post(undefined, {'atdID': atdID});
     }
     async removeTSAFields(atdID: Number): Promise<boolean>{
         return await this.papiClient.addons.api.uuid(this.pluginUUID).file('api').func('removeTSAFields').post(undefined, {'atdID': atdID});
     }
-
     async getAtdFields(atdID: Number): Promise<ApiFieldObject[]> {
         return await this.papiClient.addons.api.uuid(this.pluginUUID).file('api').func('getAtdFields').get({'atdID': atdID});
+    }
+    async removeAtdConfigurations(atdID: number) {
+        return await this.papiClient.addons.api.uuid(this.pluginUUID).file('api').func('removeAtdConfigurations').post(undefined,{'key' : atdID});
     }
 
     async getTransactionTypes(): Promise<{key:number, value:string}[]> {

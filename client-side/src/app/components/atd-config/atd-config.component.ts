@@ -78,10 +78,11 @@ export class AtdConfigComponent implements OnInit {
             ]
         }))
     }
-    uninstall($event){
+    async uninstall($event){
         this.selectedItem = $event.source;
         console.log("on menuItemClick event!!!!")
         console.log("uninstall here is ATD -> ", this.AtdID);
+        this.pluginService.removeAtdConfigurations(this.AtdID);
         this.pluginService.removeTSAFields(this.AtdID).then(() => {
             this.isInstalled = false;
             console.log("after remove TSAFields");
@@ -213,23 +214,9 @@ export class AtdConfigComponent implements OnInit {
         this.dialogService.openDefaultDialog(data, config).afterClosed().subscribe(() => {
             this.emitClose();
         });
-        this.AtdID = this.Configuration = undefined
+        this.Configuration = undefined
     }
     emitClose() {
         this.hostEvents.emit({action:'close-dialog'});
     }
-    // Cancel() {
-    //     this.pluginService.getConfiguration(this.AtdID).then(config => {
-    //         this.Configuration = config.length == 1  ? config[0] : {
-    //             Key: this.AtdID.toString(),
-    //             UOMFieldID: '',
-    //             InventoryFieldID: 'ItemInStockQuantity',
-    //             InventoryType: 'Color',
-    //             ItemConfigFieldID: '',
-    //             CaseQuantityType: "Color",
-    //             MinQuantityType: "Color"
-    //         }
-    //     })
-    //     this.emitClose();
-    // }
 }
