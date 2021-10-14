@@ -168,23 +168,23 @@ class UOMManager {
             let resultValue = quantityResult.curr.toString();
             await dataObject?.setFieldValue(UNIT_QUANTITY, total.toString(), true);
             await uiObject.setFieldValue(uqField, resultValue, true);
+
         }
         catch (err) {
             console.log('Error setting UQ field');
             console.error(err);
         }
     }
-    updateTSAField(uomConfig: UomItemConfiguration, uq1: UIField | undefined) {
+    updateTSAField(uomConfig: UomItemConfiguration, uq: UIField | undefined) {
+        if(!uq)
+            return;
         if (uomConfig && Number(uomConfig.Decimal) === 0) {
-            uq1 != undefined ? uq1['customField'].type = 28 : uq1 = undefined;
-            uq1 != undefined ? uq1['customField'].decimalDigits = 0 : uq1 = undefined;
-
-            if (uq1)
-                console.log("There is the customField obj" + uq1['customField'])
+            uq['customField'].type = 28;
+            uq['customField'].decimalDigits = 0;
         }
         else if (uomConfig) {
-            uq1 != undefined ? uq1['customField'].decimalDigits = uomConfig.Decimal : uq1 = undefined;
-            uq1 != undefined ? uq1['customField'].type = 29 : uq1 = undefined;
+            uq['customField'].decimalDigits = uomConfig.Decimal;
+            uq['customField'].type = 29;
         }
     }
     fixFormattedValue(uq1: UIField | undefined) {
