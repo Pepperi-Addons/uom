@@ -1,4 +1,5 @@
-<div>
+
+<div style="height:100%">
     <div class="rowBody">
         <div class="genericCont">
             <pep-top-bar [title]="'Uom_Table_Title' | translate" >
@@ -23,6 +24,7 @@
                         [supportResizing]="false"
                         [selectionTypeForActions]="'single'"
                         [noDataFoundMsg]="'Uom_Table_NoItems' | translate "
+                        [viewType] = "'table'"
                         [parentScroll]="pepperiListCont"
                         (selectedItemsChange)="selectedRowsChanged($event)">
                     </pep-list>

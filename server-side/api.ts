@@ -20,7 +20,6 @@ export async function uoms(client: Client, request: Request) {
         return await service.find(request.query);
     }
 };
-
 export async function removeAtdConfigurations(client: Client, request: Request){
     if(request.method !=  'POST')
         throw new console.error("expected to recive POST method but instead recived " + request.method );
@@ -29,7 +28,6 @@ export async function removeAtdConfigurations(client: Client, request: Request){
    return await service.uninstall(request.body);
 
 }
-
 export async function getUomByKey(client: Client, request: Request) {
     const service = new UomsService(client);
     let uomKey = ''
@@ -72,6 +70,10 @@ export async function getAtdFields(client: Client, request: Request) {
         if(request?.query) {
             atdID = 'atdID' in request.query ? Number(request.query.atdID) : -1;
         }        
+    }
+    if(atdID === -1)
+    {
+        return [{}];
     }
 
     const items = await service.getItemsFields();

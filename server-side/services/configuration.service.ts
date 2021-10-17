@@ -28,18 +28,24 @@ export class ConfigurationService {
     }
 
     async uninstall(options): Promise<any>{
-        const atdConfigs = await this.find();
-        const atdConfig = atdConfigs.find((atdConfig) => {
-            options.key === atdConfig.key
-        })
-        if(!atdConfig)
-        {
-            return;
+        try{
+            const atdConfig = await this.find(options);
+            atdConfig.Hidden = true;
+            return this.upsert(atdConfig)
+        }catch(exception){
+            return {};
         }
-        atdConfig.Hidden = true;
-        return this.upsert(atdConfig);
         
-        
+        // const atdConfigs = await this.find();
+        // const atdConfig = atdConfigs.find((atdConfig) => {
+        //     options.key === atdConfig.key
+        // })
+        // if(!atdConfig)
+        // {
+        //     return;
+        // }
+        // atdConfig.Hidden = true;
+        // return this.upsert(atdConfig);   
     }
 
     async upsert(obj: AtdConfiguration): Promise<any> {

@@ -10,6 +10,8 @@ import {
 } from './../shared/entities';
 import { DataObject, EventData, UIObject, TransactionLines, UIField } from '@pepperi-addons/cpi-node';
 import config from '../addon.config.json';
+// import * as config from '../addon.config.json'
+
 import { QuantityCalculator } from './quantity-calculator';
 import { ItemAction, QuantityResult, UomItemConfiguration } from './../shared/entities';
 import {uomsScheme} from '../server-side/metadata'
@@ -19,6 +21,8 @@ const UNIT_QUANTITY = 'UnitsQuantity';
 const OC_DATA_VIEWS = ['OrderCenterGrid', 'OrderCenterView1', 'OrderCenterView2', 'OrderCenterView3', 'OrderCenterItemFullPage', 'OrderCenterVariant', 'OrderCenterBarcodeGridline', 'OrderCenterBarcodeLinesView', 'OrderCenterItemDetails', 'OrderCenterMatrix', 'OrderCenterFlatMatrixGrid', 'OrderCenterFlatMatrixLine'];
 /** A list of Cart Data Views */
 const CART_DATA_VIEWS = ['OrderCartGrid', 'OrderCartView1'];
+// const fs = require('fs')
+// const { config } = JSON.parse(fs.readFileSync('../addon.config.'));
 class UOMMap {
     private hashMap: { [key: string]: Uom };
     constructor(uoms: Uom[]) {

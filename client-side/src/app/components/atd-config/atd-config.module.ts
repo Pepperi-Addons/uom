@@ -15,38 +15,40 @@ import { AtdConfigComponent } from './index';
 import {PepAddonLoaderService} from '@pepperi-addons/ngx-remote-loader'
 import { PepDialogModule, PepDialogService } from '@pepperi-addons/ngx-lib/dialog';
 import {InstallationComponent} from './../installation/installation.component'
+import { AtdConfigService } from './atd-config.service';
 
-export function createTranslateLoader(http: HttpClient, fileService: PepFileService, addonService: PepAddonService) {
-    const translationsPath: string = fileService.getAssetsTranslationsPath();
-    const translationsSuffix: string = fileService.getAssetsTranslationsSuffix();
-    // const addonurl = fileService.getAssetsPath()
-    // const addonStaticFolder = addonService.getAddonPath("1238582e-9b32-4d21-9567-4e17379f41bb");// .getAddonStaticFolder();
-    // debugger;
-    // const addonStaticFolder = addonService.getAddonPath("1238582e-9b32-4d21-9567-4e17379f41bb"); //here is the problem
-    //how can i doi that not hard coded?
-    // const addonStaticFolder = 'https://cdn.pepperi.com/Addon/Public/1238582e-9b32-4d21-9567-4e17379f41bb/1.2.88/'
-    const addonStaticFolder = addonService.getAddonStaticFolder();
-    return new MultiTranslateHttpLoader(http, [
-        {
-            prefix:
-                addonStaticFolder.length > 0
-                    ? addonStaticFolder + translationsPath
-                    : translationsPath,
-            suffix: translationsSuffix,
-        },
-        {
-            prefix:
-                addonStaticFolder.length > 0
-                    ? addonStaticFolder + "assets/i18n/"
-                    : "/assets/i18n/",
-            suffix: ".json",
-        },
-    ]);
-}
+// export function createTranslateLoader(http: HttpClient, fileService: PepFileService, addonService: PepAddonService) {
+//     const translationsPath: string = fileService.getAssetsTranslationsPath();
+//     const translationsSuffix: string = fileService.getAssetsTranslationsSuffix();
+//     // const addonurl = fileService.getAssetsPath()
+//     // const addonStaticFolder = addonService.getAddonPath("1238582e-9b32-4d21-9567-4e17379f41bb");// .getAddonStaticFolder();
+//     // debugger;
+//     // const addonStaticFolder = addonService.getAddonPath("1238582e-9b32-4d21-9567-4e17379f41bb"); //here is the problem
+//     //how can i doi that not hard coded?
+//     // const addonStaticFolder = 'https://cdn.pepperi.com/Addon/Public/1238582e-9b32-4d21-9567-4e17379f41bb/1.2.88/'
+//     const addonStaticFolder = addonService.getAddonStaticFolder();
+//     return new MultiTranslateHttpLoader(http, [
+//         {
+//             prefix:
+//                 addonStaticFolder.length > 0
+//                     ? addonStaticFolder + translationsPath
+//                     : translationsPath,
+//             suffix: translationsSuffix,
+//         },
+//         {
+//             prefix:
+//                 addonStaticFolder.length > 0
+//                     ? addonStaticFolder + "assets/i18n/"
+//                     : "/assets/i18n/",
+//             suffix: ".json",
+//         },
+//     ]);
+// }
 @NgModule({
     declarations: [
         AtdConfigComponent,
-        InstallationComponent
+        InstallationComponent,
+        
     ],
     imports: [
         CommonModule,
@@ -57,13 +59,21 @@ export function createTranslateLoader(http: HttpClient, fileService: PepFileServ
         // PepTopBarModule,
         // PepDialogModule,
         PepUIModule,
-        TranslateModule.forRoot({
+        // TranslateModule.forRoot({
+        //     loader: {
+        //         provide: TranslateLoader,
+        //         useFactory: createTranslateLoader,
+        //         deps: [HttpClient, PepFileService, PepAddonService]
+        //     }
+        // })
+        TranslateModule.forChild({
             loader: {
                 provide: TranslateLoader,
-                useFactory: createTranslateLoader,
-                deps: [HttpClient, PepFileService, PepAddonService]
-            }
-        })
+                useFactory: (http: HttpClient, fileService: PepFileService, addonService: PepAddonService) => 
+                    PepAddonService.createDefaultMultiTranslateLoader(http, fileService, addonService, "1238582e-9b32-4d21-9567-4e17379f41bb"),
+                deps: [HttpClient, PepFileService, PepAddonService],
+            }, isolate: false
+        }),
     ],
     exports:[AtdConfigComponent],
     providers: [
@@ -71,24 +81,37 @@ export function createTranslateLoader(http: HttpClient, fileService: PepFileServ
         PepHttpService,
         PepAddonService,
         PepCustomizationService,
-        PepDialogService
+        PepDialogService,
+        AtdConfigService
     ]
 })
 export class AtdConfigModule {
+    // constructor(
+    //       translate: TranslateService
+    //   ) {
+
+    //     let userLang = 'en';
+    //     translate.setDefaultLang(userLang);
+    //     userLang = translate.getBrowserLang().split('-')[0]; // use navigator lang if available
+
+    //     if (location.href.indexOf('userLang=en') > -1) {
+    //         userLang = 'en';
+    //     }
+    //     // the lang to use, if the lang isn't available, it will use the current loader to get them
+    //     translate.use(userLang).subscribe((res: any) => {
+    //         // In here you can put the code you want. At this point the lang will be loaded
+    //     });
+    // }
+
     constructor(
-          translate: TranslateService
-      ) {
 
-        let userLang = 'en';
-        translate.setDefaultLang(userLang);
-        userLang = translate.getBrowserLang().split('-')[0]; // use navigator lang if available
+        translate: TranslateService,
 
-        if (location.href.indexOf('userLang=en') > -1) {
-            userLang = 'en';
-        }
-        // the lang to use, if the lang isn't available, it will use the current loader to get them
-        translate.use(userLang).subscribe((res: any) => {
-            // In here you can put the code you want. At this point the lang will be loaded
-        });
+        private addonService: PepAddonService,
+
+    ) {
+
+        this.addonService.setDefaultTranslateLang(translate);
+
     }
 }
