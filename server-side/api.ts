@@ -20,7 +20,7 @@ export async function uoms(client: Client, request: Request) {
         return await service.find(request.query);
     }
 };
-export async function removeAtdConfigurations(client: Client, request: Request){
+export async function remove_atd_configurations(client: Client, request: Request){
     if(request.method !=  'POST')
         throw new console.error("expected to recive POST method but instead recived " + request.method );
         
@@ -28,7 +28,7 @@ export async function removeAtdConfigurations(client: Client, request: Request){
    return await service.uninstall(request.body);
 
 }
-export async function getUomByKey(client: Client, request: Request) {
+export async function get_uom_by_key(client: Client, request: Request) {
     const service = new UomsService(client);
     let uomKey = ''
 
@@ -39,7 +39,7 @@ export async function getUomByKey(client: Client, request: Request) {
     return await service.getByKey(uomKey);
 }
 
-export async function atdConfiguration(client: Client, request: Request) {
+export async function atd_configuration(client: Client, request: Request) {
     const service = new ConfigurationService(client)
 
     if (request.method == 'POST') {
@@ -50,7 +50,7 @@ export async function atdConfiguration(client: Client, request: Request) {
     }
 };
 
-export async function getAtdFields(client: Client, request: Request) {
+export async function get_atd_fields(client: Client, request: Request) {
     const papiClient = new PapiClient({
         baseURL: client.BaseURL,
         token: client.OAuthAccessToken,
@@ -81,7 +81,7 @@ export async function getAtdFields(client: Client, request: Request) {
 
     return [...await service.getAtdFields(atdID), ...items];
 }
-export async function removeTSAFields(client: Client, request: Request): Promise<boolean> {
+export async function remove_TSA_fields(client: Client, request: Request): Promise<boolean> {
     if(request.method !=  'POST')
     {
         throw new console.error("expected to recive POST method but instead recived " + request.method );
@@ -117,7 +117,7 @@ export async function removeTSAFields(client: Client, request: Request): Promise
         return prev && curr
     }, true);
 }
-export async function createTSAFields(client: Client, request:Request) {
+export async function create_TSA_fields(client: Client, request:Request) {
     let created = false;
     const papiClient = new PapiClient({
         baseURL: client.BaseURL,
@@ -149,7 +149,7 @@ export async function createTSAFields(client: Client, request:Request) {
 
     return created;
 }
-export async function isInstalled(client:Client, request:Request):Promise<boolean>{
+export async function is_installed(client:Client, request:Request):Promise<boolean>{
     const papiClient = new PapiClient({
         baseURL: client.BaseURL,
         token: client.OAuthAccessToken,
@@ -164,7 +164,7 @@ export async function isInstalled(client:Client, request:Request):Promise<boolea
         return field === undefined? false: !field.Hidden;
     });
 }
-export async function importUom(client: Client, request:Request) {
+export async function import_uom(client: Client, request:Request) {
     const papiClient = new PapiClient({
         baseURL: client.BaseURL,
         token: client.OAuthAccessToken,
@@ -196,7 +196,7 @@ export async function importUom(client: Client, request:Request) {
         }
     }
 }
-export async function exportUom(client: Client, request:Request) {
+export async function export_uom(client: Client, request:Request) {
     const service = new ConfigurationService(client);
     try {
         let config;

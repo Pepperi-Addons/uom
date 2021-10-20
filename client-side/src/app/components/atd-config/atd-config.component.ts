@@ -1,15 +1,9 @@
-import { AddonService } from './../addon/addon.service';
-import { atdConfigScheme } from './../../../../../server-side/metadata';
-import { AtdConfiguration, InventoryActions, InventoryAction } from './../../../../../shared/entities';
-import { KeyValuePair, PepGuid } from '@pepperi-addons/ngx-lib';
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild, ViewChildren } from "@angular/core";
-import { ActivatedRoute } from "@angular/router";
+import { AtdConfiguration, InventoryActions} from './../../../../../shared/entities';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
 import { AtdConfigService } from "./atd-config.service";
 import { TranslateService } from "@ngx-translate/core";
-import { PepSelectComponent } from '@pepperi-addons/ngx-lib/select';
 import { Observable } from 'rxjs';
 import { PepDialogData, PepDialogService } from '@pepperi-addons/ngx-lib/dialog';
-import { ContentObserver } from '@angular/cdk/observers';
 import { IPepMenuItemClickEvent, PepMenuItem } from '@pepperi-addons/ngx-lib/menu';
 
 @Component({
@@ -47,7 +41,6 @@ export class AtdConfigComponent implements OnInit {
         this.alreadyChecked = false;
     }
     onInstallation($event){
-        console.log("in installation component on installation event");
         this.isInstalled = true;
         this.alreadyChecked = true;
         this.ngOnInit();
@@ -57,9 +50,9 @@ export class AtdConfigComponent implements OnInit {
     }
     onMenuItemClicked($event: IPepMenuItemClickEvent){
         this.dialogService.openDefaultDialog(new PepDialogData({
-            title: 'Uninstall',
+            title: this.translate.instant('Uninstall') ,
             actionsType: 'custom',
-            content: 'Are you sure you want to uninstall the UOM fields from this transaction?',
+            content: this.translate.instant('Are you sure you want to uninstall the UOM fields from this transaction?'),
             actionButtons: [
                 {
                 title: this.translate.instant('Cancel'),
@@ -80,12 +73,9 @@ export class AtdConfigComponent implements OnInit {
     }
     async uninstall($event){
         this.selectedItem = $event.source;
-        console.log("on menuItemClick event!!!!")
-        console.log("uninstall here is ATD -> ", this.AtdID);
         this.pluginService.removeAtdConfigurations(this.AtdID);
         this.pluginService.removeTSAFields(this.AtdID).then(() => {
             this.isInstalled = false;
-            console.log("after remove TSAFields");
             this.alreadyChecked = true;
             this.menuItemClick.emit($event);
             this.ngOnInit();
@@ -93,24 +83,15 @@ export class AtdConfigComponent implements OnInit {
     }
     ngOnInit() {
         this.pluginService.pluginUUID = "1238582e-9b32-4d21-9567-4e17379f41bb";
-        console.log('here is uuid from hotsObj options', this.pluginService.pluginUUID)
-        console.log('Onint of atd-config start...');
-        console.log("isInstalled = ", this.isInstalled)
         this.configID = this.hostObject.objectList[0];
-        console.log("there is host obj ->>>>>>>>>>>>>", this.hostObject);
-        console.log("here is options ->>>>>>>", this.hostObject.options);
-        console.log("here is uuid", this.hostObject.options.uuid)
-        console.log('config id :               ', this.configID);
         this.pluginService.getTypeInternalID(this.configID).then((atdId) => {
             this.AtdID = atdId;
-            console.log('here is atdId', this.AtdID)
+            //check if the UOM already installed, if so he will show the configuration page
         }).then(() => {
            this.pluginService.isInstalled(this.AtdID).then((installed) => {
-               console.log("inside ngOnInit in atd-config TSA already installed ? ", installed);
                this.isInstalled = installed;
                this.alreadyChecked = true;
                if(this.isInstalled){
-                // this.pluginService.pluginUUID = this.hostObject.options.uuid; //work just local
                 this.Actions = Object.keys(InventoryActions)?.map(key => {
                     return {
                         key: key,
@@ -121,10 +102,8 @@ export class AtdConfigComponent implements OnInit {
                }
            })
         });
-        console.log('host object is:', this.hostObject);
     }
     loadAtdData() {
-        console.log('inside load Atd data. AtdID:', this.AtdID);
         this.pluginService.getAtdFields(this.AtdID).then(fields => {
             this.TSAStringfields = fields?.filter(field=> {
                 //return string fileds that are not 5:Date, 6:DateAndTime, 19:LimitedDate, 20:Image, 24:Attachment, 48:GuidReferenceType
@@ -154,7 +133,6 @@ export class AtdConfigComponent implements OnInit {
                 Key: this.AtdID.toString(),
                 UOMFieldID: '',
                 InventoryFieldID: 'ItemInStockQuantity',
-                // PriceField: '',
                 InventoryType: "Color",
                 ItemConfigFieldID: '',
                 CaseQuantityType: "Color",
@@ -163,29 +141,23 @@ export class AtdConfigComponent implements OnInit {
         })
     }
     onValueChanged(element, $event) {
-        console.log("in onValueChanged function");
         switch(element) {
             case 'AllowedUoms': {
-                console.log("Case AllowedUoms");
                 this.Configuration.UOMFieldID = $event;
                 break;
             }
             case 'Inventory': {
-                console.log("Case Inventory");
                 this.Configuration.InventoryFieldID = $event;
-                console.log('here is the inv id:       ', $event);
                 if($event == '') {
                     this.Configuration.InventoryType = 'DoNothing' 
                 }
                 break;
             }
             case 'InventoryAction': {
-                console.log("Case Inventory Action");
                 this.Configuration.InventoryType = $event;
                 break;
             }
             case 'ItemConfig': {
-                console.log("Case ItemConfig");
                 this.Configuration.ItemConfigFieldID = $event;
                 if($event == '') {
                     this.Configuration.CaseQuantityType = 'DoNothing';
@@ -194,12 +166,10 @@ export class AtdConfigComponent implements OnInit {
                 break;
             }
             case 'CaseAction': {
-                console.log("Case Case Action");
                 this.Configuration.CaseQuantityType = $event;
                 break;
             }
             case 'MinAction': {
-                console.log("Case Min Action");
                 this.Configuration.MinQuantityType = $event;
                 break;
             }
