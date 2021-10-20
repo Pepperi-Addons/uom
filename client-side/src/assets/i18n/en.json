@@ -45,6 +45,6 @@
     "Uom_AtdConfig_MinActionTitle": "Min Quantity Action",
     "Uom_installation_first_p": "This module add support in multiple UOMs per item.\n As part of the installation, the following will take place:",
     "Uom_installtion_ul_first":"The Units Quantity field will be read only and will contain the total in singles.",
-    "Uom_installation_ul_second": "Two new drop down fields and two new Units Quantity fields (with the AQQM prefix) will be added to the transaction to allow the user select the required UOM and define the quantity.",
+    "Uom_installation_ul_second": "Two new drop down fields and two new Units Quantity fields (with the AOQM prefix) will be added to the transaction to allow the user select the required UOM and define the quantity.",
     "Uom_installation_last_p": "Place these fields in the relevant order center and cart views. \n Note: You can use both sets (to allow the user order in two UOMs) or only the first one (to allow the user order in one UOM)."
 }

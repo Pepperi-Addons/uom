@@ -8,7 +8,7 @@ import {
     UOM_KEY_FIRST_TSA,
     UOM_KEY_SECOND_TSA
 } from './../shared/entities';
-import { DataObject, EventData, UIObject, TransactionLines, UIField } from '@pepperi-addons/cpi-node';
+import { DataObject, EventData, UIObject, TransactionLine, UIField } from '@pepperi-addons/cpi-node';
 import config from '../addon.config.json';
 import { QuantityCalculator } from './quantity-calculator';
 import { ItemAction, QuantityResult, UomItemConfiguration } from './../shared/entities';
@@ -190,24 +190,24 @@ class UOMManager {
     }
     //if the number is an integer, we dont want to show the zero's that come after the dot
     // e.g 2.00 => 2
-    fixFormattedValue(uq1: UIField | undefined) {
-        if (uq1) {
-            let customField = uq1['customField'];
-            let val = Number(customField['formattedValue']);
-            customField['formattedValue'] = val - Math.floor(val) === 0 ? val | 0 : val.toString();
-        }
-    }
+    // fixFormattedValue(uq1: UIField | undefined) {
+    //     if (uq1) {
+    //         let customField = uq1['customField'];
+    //         let val = Number(customField['formattedValue']);
+    //         customField['formattedValue'] = val - Math.floor(val) === 0 ? val | 0 : val.toString();
+    //     }
+    // }
     async recalculateOrderCenterItem(data: EventData) {
         try {
             const uiObject = data.UIObject!;
-            const dataObject = data.DataObject! as TransactionLines;
+            const dataObject = data.DataObject! as TransactionLine;
             // Get the keys of the UOM from integration
             let arr: string[] = await this.getItemUOMs(dataObject);
             // get the UIFields
-            const dd1 = await uiObject.getUIField(UOM_KEY_FIRST_TSA);
-            const dd2 = await uiObject.getUIField(UOM_KEY_SECOND_TSA);
-            let uq1 = await uiObject.getUIField(UNIT_QTY_FIRST_TSA);
-            let uq2 = await uiObject.getUIField(UNIT_QTY_SECOND_TSA);
+            const dd1 = await uiObject.getField(UOM_KEY_FIRST_TSA);
+            const dd2 = await uiObject.getField(UOM_KEY_SECOND_TSA);
+            let uq1 = await uiObject.getField(UNIT_QTY_FIRST_TSA);
+            let uq2 = await uiObject.getField(UNIT_QTY_SECOND_TSA);
             const uomValue = await dataObject?.getFieldValue(UOM_KEY_FIRST_TSA);
             const otherUomValue = await dataObject?.getFieldValue(UOM_KEY_SECOND_TSA);
             const uom = uomValue ? uoms.get(uomValue) : undefined;
@@ -274,7 +274,7 @@ class UOMManager {
                 uq1 && uq2 ? uq2.visible = false : null;
 
             }
-            const realUQ = await uiObject.getUIField(UNIT_QUANTITY);
+            const realUQ = await uiObject.getField(UNIT_QUANTITY);
             if (realUQ && (uq1 || uq2)) {
                 realUQ.readonly = true;
             }
