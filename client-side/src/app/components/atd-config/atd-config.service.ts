@@ -6,13 +6,11 @@ import { AtdConfiguration } from "../../../../../shared/entities";
 
 @Injectable({ providedIn: 'root' })
 export class AtdConfigService {
-
     accessToken = '';
     parsedToken: any
     papiBaseURL = 'https://staging.pepperi.com'
     pluginUUID;
     dialogRef;
-
     get papiClient(): PapiClient {
         return new PapiClient({
             baseURL: this.papiBaseURL,
@@ -21,17 +19,15 @@ export class AtdConfigService {
             suppressLogging:true
         })
     }
-
     constructor(
-        public session:  PepSessionService
-        ,public jwtService: PepJwtHelperService
+        public session:  PepSessionService,
+        public jwtService: PepJwtHelperService
     ) {
         const accessToken = this.session.getIdpToken();
         this.parsedToken = jwtService.decodeToken(accessToken);
         //this.parsedToken = jwt(accessToken);
         this.papiBaseURL = this.parsedToken["pepperi.baseurl"]
     }
-
     async getConfiguration(atdID: Number): Promise<AtdConfiguration[]> {
         return await this.papiClient.addons.api.uuid(this.pluginUUID).file('api').func('atd_configuration').get({where:'Key=' + atdID});
     }
@@ -53,18 +49,15 @@ export class AtdConfigService {
     async removeAtdConfigurations(atdID: number) {
         return await this.papiClient.addons.api.uuid(this.pluginUUID).file('api').func('remove_atd_configurations').post(undefined,{'key' : atdID});
     }
-
     async getTransactionTypes(): Promise<{key:number, value:string}[]> {
         const types = await this.papiClient.metaData.type('transactions').types.get();
         return types.map(item => {
             return {
                 key: item.TypeID,
                 value: item.ExternalID
-                // uuid: item.UUID
             }
         })
     }
-
     async getTypeInternalID(uuid: string) {
         return  await this.papiClient.types.find({
             where: `UUID='${uuid}'`

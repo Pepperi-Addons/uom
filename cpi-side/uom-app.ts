@@ -10,19 +10,17 @@ import {
 } from './../shared/entities';
 import { DataObject, EventData, UIObject, TransactionLines, UIField } from '@pepperi-addons/cpi-node';
 import config from '../addon.config.json';
-// import * as config from '../addon.config.json'
-
 import { QuantityCalculator } from './quantity-calculator';
 import { ItemAction, QuantityResult, UomItemConfiguration } from './../shared/entities';
 import {uomsScheme} from '../server-side/metadata'
+
 /** The Real UQ Field - Holds the quantity in Baseline */
 const UNIT_QUANTITY = 'UnitsQuantity';
 /** A list of Order Center Data Views */
 const OC_DATA_VIEWS = ['OrderCenterGrid', 'OrderCenterView1', 'OrderCenterView2', 'OrderCenterView3', 'OrderCenterItemFullPage', 'OrderCenterVariant', 'OrderCenterBarcodeGridline', 'OrderCenterBarcodeLinesView', 'OrderCenterItemDetails', 'OrderCenterMatrix', 'OrderCenterFlatMatrixGrid', 'OrderCenterFlatMatrixLine'];
 /** A list of Cart Data Views */
 const CART_DATA_VIEWS = ['OrderCartGrid', 'OrderCartView1'];
-// const fs = require('fs')
-// const { config } = JSON.parse(fs.readFileSync('../addon.config.'));
+
 class UOMMap {
     private hashMap: { [key: string]: Uom };
     constructor(uoms: Uom[]) {
@@ -172,7 +170,6 @@ class UOMManager {
             let resultValue = quantityResult.curr.toString();
             await dataObject?.setFieldValue(UNIT_QUANTITY, total.toString(), true);
             await uiObject.setFieldValue(uqField, resultValue, true);
-
         }
         catch (err) {
             console.log('Error setting UQ field');

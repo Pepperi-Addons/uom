@@ -9,6 +9,7 @@ export interface relation {
     Type: "AddonAPI" | "NgComponent" | "Navigation";
     [key:string]:string;
 }
+//relation array that needed for uom
 export const relations: relation[] = [
     {
         RelationName: "ATDImport",
@@ -38,6 +39,7 @@ export const relations: relation[] = [
         AddonRelativeURL:"atd_config"
     },
 ]
+//the TSAs that should be created for the uom
 export const UomTSAFields: ApiFieldObject[] = [
     {
         FieldID: UOM_KEY_FIRST_TSA,

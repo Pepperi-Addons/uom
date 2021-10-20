@@ -6,9 +6,6 @@ import { ApiFieldObject, PapiClient } from '@pepperi-addons/papi-sdk';
 import { ConfigurationService } from './services/configuration.service';
 import { UomTSAFields } from './metadata';
 import { AtdConfiguration } from '../shared/entities';
-import { Fields } from '@pepperi-addons/papi-sdk/dist/endpoints';
-import { request } from 'http';
-
 
 export async function uoms(client: Client, request: Request) {
     const service = new UomsService(client);
@@ -175,7 +172,6 @@ export async function import_uom(client: Client, request:Request) {
     const service = new ConfigurationService(client);
     const objService = new ObjectsService(papiClient);
     try {
-        console.log('importUOM is called, data got from call:', request.body);
         if (request.body && request.body.Resource == 'transactions') {
             const config:AtdConfiguration = {
                 Key:request.body.InternalID,
@@ -200,7 +196,6 @@ export async function export_uom(client: Client, request:Request) {
     const service = new ConfigurationService(client);
     try {
         let config;
-        console.log('exportUOM is called, data got from call:', request.query);
         if (request.query && request.query.resource  == 'transactions') {
             config = await service.find({
                 where: `Key= ${request.query.internal_id}`,

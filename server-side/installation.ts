@@ -27,14 +27,12 @@ export async function install(client: Client, request: Request): Promise<any> {
     
     return retVal;
 }
-
 export async function uninstall(client: Client, request: Request): Promise<any> {
     
     
     
     return {success:true,resultObject:{}}
 }
-
 export async function upgrade(client: Client, request: Request): Promise<any> {
     const papiClient = new PapiClient({
         baseURL: client.BaseURL,
@@ -50,11 +48,9 @@ export async function upgrade(client: Client, request: Request): Promise<any> {
     
     return retVal;
 }
-
 export async function downgrade(client: Client, request: Request): Promise<any> {
     return {success:true,resultObject:{}}
 }
-
 async function createRelations(papiClient: PapiClient, relations) {
     try {
         relations.forEach(async (singleRelation) => {
@@ -72,7 +68,6 @@ async function createRelations(papiClient: PapiClient, relations) {
         }
     }
 }
-
 async function createADALSchemes(papiClient: PapiClient) {
     try {
         await papiClient.addons.data.schemes.post(atdConfigScheme);
