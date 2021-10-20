@@ -14,7 +14,6 @@ import { AtdConfigService } from './atd-config.service';
     declarations: [
         AtdConfigComponent,
         InstallationComponent,
-        
     ],
     imports: [
         CommonModule,

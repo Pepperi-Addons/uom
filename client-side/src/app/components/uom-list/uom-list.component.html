@@ -17,6 +17,7 @@
         <div id="mainContent" class="main-content">
             <div class="content">
                 <div #pepperiListCont class="list-wrapper" id="listContainer">
+                    <div #try style="height: 800px">
                     <pep-list
                         [firstFieldAsLink]="false"
                         [isReport]="true"
@@ -29,6 +30,7 @@
                         (selectedItemsChange)="selectedRowsChanged($event)">
                     </pep-list>
                 </div>
+            </div>
             </div>
         </div>
     </div>
