@@ -1,3 +1,4 @@
+import { UOM_KEY_FIRST_TSA } from './../shared/entities';
 import MyService from './my.service'
 import { Client, Request } from '@pepperi-addons/debug-server'
 import { UomsService } from './services/uom.service'
@@ -138,7 +139,7 @@ export async function create_TSA_fields(client: Client, request:Request) {
         }        
     }
 
-    const field = await service.getField(atdID, 'TSAAOQM_UOM1');
+    const field = await service.getField(atdID, UOM_KEY_FIRST_TSA);
 
     if(field == undefined) {
         created = await service.createAtdTransactionLinesFields(atdID, UomTSAFields);

@@ -1065,18 +1065,18 @@ describe('Quantity Calculator', () => {
                 });
             });
         });
-        describe('Test 14: Inv= fix, Case = fix, Min = Fix', ()=>{
-            let invBehavior:InventoryAction = 'Fix';
+        describe('Test 14: Inv= DoNothing, Case = fix, Min = Fix', ()=>{
+            let invBehavior:InventoryAction = 'DoNothing';
             let caseBehavior: InventoryAction = 'Fix';
             let minBehavior: InventoryAction = 'Fix';
       
             describe ('CASE 1:inv = 36, min = 36, case = 13, factor = 1', () => {
-                let  config: UomItemConfiguration = {'UOMKey': "", 'Case':13, 'Min': 36, 'Factor':1};
-                let inventory: number = 36;
+                let  config: UomItemConfiguration = {'UOMKey': "", 'Case':12, 'Min': 0, 'Factor':120};
+                let inventory: number = 10;
                 let calc = new QuantityCalculator(config,inventory,caseBehavior,minBehavior,invBehavior);
                 describe ('1: combine tests:', () => {
-                    it('1: increment should stay on 0 ', inc(0,calc,0));
-                    it('1: set to 27 should set to 0', set(0,calc,27));
+                    it('1: increment should stay on 0 ', inc(12,calc,0));
+                    it('1: set to 27 should set to 0', inc(24,calc,12));
                 });
             });
             describe ('CASE 2:inv = 9, min = 1.5, case = 0.5, factor = 1', () => {
