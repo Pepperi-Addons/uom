@@ -58,18 +58,7 @@ export class AtdConfigService {
             }
         })
     }
-
     async getAtdID(uuid: string): Promise<any>{
         return await this.papiClient.addons.api.uuid(this.pluginUUID).file('api').func('get_atd_id').get({'uuid': uuid});
-
     }
-
-    // async getTypeInternalID(uuid: string) {
-    //     return  await this.papiClient.types.find({
-    //         where: `UUID='${uuid}'`
-    //     }).then((types) => {
-    //         console.log('uuid is' + uuid + 'types is', types);
-    //         return types[0].InternalID
-    //     });
-    // }
 }

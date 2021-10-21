@@ -188,15 +188,6 @@ class UOMManager {
             uq['customField'].type = 29;
         }
     }
-    //if the number is an integer, we dont want to show the zero's that come after the dot
-    // e.g 2.00 => 2
-    // fixFormattedValue(uq1: UIField | undefined) {
-    //     if (uq1) {
-    //         let customField = uq1['customField'];
-    //         let val = Number(customField['formattedValue']);
-    //         customField['formattedValue'] = val - Math.floor(val) === 0 ? val | 0 : val.toString();
-    //     }
-    // }
     async recalculateOrderCenterItem(data: EventData) {
         try {
             const uiObject = data.UIObject!;
