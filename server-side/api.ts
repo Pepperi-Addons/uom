@@ -11,11 +11,17 @@ import { AtdConfiguration } from '../shared/entities';
 export async function uoms(client: Client, request: Request) {
     const service = new UomsService(client);
 
-    if (request.method == 'POST') {
+    if (request.method == 'POST') 
+    {
         return service.upsert(request.body);
     }
-    else if (request.method == 'GET') {
+    else if (request.method == 'GET')
+    {
         return await service.find(request.query);
+    }
+    else
+    {
+        throw new Error('expected to recive GET/POST method, but instead recived ' + request.method);
     }
 };
 export async function  get_atd_id(client: Client, request: Request) {
@@ -40,31 +46,40 @@ export async function  get_atd_id(client: Client, request: Request) {
 };
 export async function remove_atd_configurations(client: Client, request: Request){
     if(request.method !=  'POST')
-        throw new console.error("expected to recive POST method but instead recived " + request.method );
-        
+    {
+        throw new Error('expected to recive POST method, but instead recived ' + request.method);
+    }    
    const service = new ConfigurationService(client);
    return await service.uninstall(request.body);
 
 }
 export async function get_uom_by_key(client: Client, request: Request) {
+    if(request.method != 'GET')
+    {
+        throw new Error('expected to recive GET method, but instead recived ' + request.method);
+    }
     const service = new UomsService(client);
     let uomKey = ''
-
-    if (request.method == 'GET' && request?.query) {
+    if (request?.query)
+    {
         uomKey = 'uomKey' in request.query ? request.query.uomKey : '';
     }        
-
     return await service.getByKey(uomKey);
 }
 
 export async function atd_configuration(client: Client, request: Request) {
     const service = new ConfigurationService(client)
-
-    if (request.method == 'POST') {
+    if (request.method == 'POST')
+    {
         return service.upsert(request.body);
     }
-    else if (request.method == 'GET') {
+    else if (request.method == 'GET')
+    {
         return await service.find(request.query);
+    }
+    else
+    {
+        throw new Error('expected to recive GET/POST method, but instead recived ' + request.method);
     }
 };
 
@@ -79,24 +94,30 @@ export async function get_atd_fields(client: Client, request: Request) {
     const service = new ObjectsService(papiClient)
     let atdID = -1;
 
-    if (request.method == 'POST') {
-        if(request?.body) {
+    if (request.method == 'POST')
+    {
+        if(request?.body)
+        {
             atdID = 'atdID' in request.body ? Number(request.body.atdID) : -1;
         }
     }
-    else if (request.method == 'GET') {
-        if(request?.query) {
+    else if (request.method == 'GET')
+    {
+        if(request?.query)
+        {
             atdID = 'atdID' in request.query ? Number(request.query.atdID) : -1;
         }        
+    }
+    else
+    {
+        throw new Error('expected to recive GET/POST method, but instead recived ' + request.method);
     }
     if(atdID === -1)
     {
         return [{}];
     }
-
     const items = await service.getItemsFields();
     items.forEach(item => item['FieldID'] = `Item.${item.FieldID}`);
-
     return [...await service.getAtdFields(atdID), ...items];
 }
 export async function remove_TSA_fields(client: Client, request: Request): Promise<boolean> {
@@ -114,10 +135,12 @@ export async function remove_TSA_fields(client: Client, request: Request): Promi
     });
     const service = new ObjectsService(papiClient);
     let atdID = -1;
-    if(request?.query) {
+    if(request?.query)
+    {
         atdID = 'atdID' in request.query? Number(request.query.atdID) : -1;
     }
-    if(request?.body){
+    if(request?.body)
+    {
         atdID = 'atdID' in request.body? Number(request.body.atdID): -1;
     }
      const tsaFields =  await Promise.all(UomTSAFields.map(async (field) => {
@@ -148,23 +171,29 @@ export async function create_TSA_fields(client: Client, request:Request) {
     const service = new ObjectsService(papiClient)
     let atdID = -1;
 
-    if (request.method == 'POST') {
-        if(request?.body) {
+    if (request.method == 'POST')
+    {
+        if(request?.body)
+        {
             atdID = 'atdID' in request.body ? Number(request.body.atdID) : -1;
         }
     }
-    else if (request.method == 'GET') {
-        if(request?.query) {
+    else if (request.method == 'GET')
+    {
+        if(request?.query)
+        {
             atdID = 'atdID' in request.query ? Number(request.query.atdID) : -1;
         }        
     }
-
+    else
+    {
+        throw new Error('expected to recive GET/POST method, but instead recived ' + request.method);
+    }
     const field = await service.getField(atdID, UOM_KEY_FIRST_TSA);
-
-    if(field == undefined) {
+    if(field == undefined)
+    {
         created = await service.createAtdTransactionLinesFields(atdID, UomTSAFields);
     }
-
     return created;
 }
 export async function is_installed(client:Client, request:Request):Promise<boolean>{
@@ -176,6 +205,10 @@ export async function is_installed(client:Client, request:Request):Promise<boole
         actionUUID: client.ActionUUID
 
     });
+    if(request.method != 'GET')
+    {
+        throw new Error('expected to recive GET method, but instead recived ' + request.method);
+    }
     const service = new ObjectsService(papiClient);
     let atdID = 'atdID' in request.query ? Number(request.query.atdID): -1;
     return  await service.getField(atdID, 'TSAAOQMQuantity1').then((field: ApiFieldObject | undefined) => {
@@ -193,7 +226,8 @@ export async function import_uom(client: Client, request:Request) {
     const service = new ConfigurationService(client);
     const objService = new ObjectsService(papiClient);
     try {
-        if (request.body && request.body.Resource == 'transactions') {
+        if (request.body && request.body.Resource == 'transactions')
+        {
             const config:AtdConfiguration = {
                 Key:request.body.InternalID,
                 ...request.body.DataFromExport 
@@ -217,11 +251,13 @@ export async function export_uom(client: Client, request:Request) {
     const service = new ConfigurationService(client);
     try {
         let config;
-        if (request.query && request.query.resource  == 'transactions') {
+        if (request.query && request.query.resource  == 'transactions')
+        {
             config = await service.find({
                 where: `Key= ${request.query.internal_id}`,
             });
-            if(config && config.length > 0) {
+            if(config && config.length > 0)
+            {
                 return {
                     success:true,
                     DataForImport: {
@@ -231,7 +267,8 @@ export async function export_uom(client: Client, request:Request) {
                     },
                 }
             }
-            else {
+            else
+            {
                 return {
                     success:true,
                     DataForImport: {
