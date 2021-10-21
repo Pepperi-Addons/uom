@@ -66,7 +66,6 @@ export async function get_uom_by_key(client: Client, request: Request) {
     }        
     return await service.getByKey(uomKey);
 }
-
 export async function atd_configuration(client: Client, request: Request) {
     const service = new ConfigurationService(client)
     if (request.method == 'POST')
@@ -82,7 +81,6 @@ export async function atd_configuration(client: Client, request: Request) {
         throw new Error('expected to recive GET/POST method, but instead recived ' + request.method);
     }
 };
-
 export async function get_atd_fields(client: Client, request: Request) {
     const papiClient = new PapiClient({
         baseURL: client.BaseURL,
