@@ -22,8 +22,7 @@ export class QuantityCalculator {
                 this.cq = this.convertToInteger(this.cq);
                 this.originalMin = this.convertToInteger(this.originalMin);
                 this.normalizedInv = this.convertToInteger(this.normalizedInv)
-                this.alreadyConverted = true;
-                
+                this.alreadyConverted = true;     
             }
             //function for tests
             getFactor():number {

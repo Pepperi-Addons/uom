@@ -18,6 +18,26 @@ export async function uoms(client: Client, request: Request) {
         return await service.find(request.query);
     }
 };
+export async function  get_atd_id(client: Client, request: Request) {
+    if(request.method != 'GET')
+    {
+        throw new Error('expected to recive GET method, but instead recived ' + request.method);
+    }
+    const papiClient = new PapiClient({
+        baseURL: client.BaseURL,
+        token: client.OAuthAccessToken,
+        addonUUID: client.AddonUUID,
+        addonSecretKey: client.AddonSecretKey,
+        actionUUID: client.ActionUUID
+    });
+    const service = new ObjectsService(papiClient);
+    let uuid = '';
+    if('uuid' in request?.query)
+    {
+        uuid = request.query.uuid
+    }
+    return await service.getAtdId(uuid)
+};
 export async function remove_atd_configurations(client: Client, request: Request){
     if(request.method !=  'POST')
         throw new console.error("expected to recive POST method but instead recived " + request.method );

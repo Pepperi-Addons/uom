@@ -24,7 +24,7 @@ export class InstallationComponent implements OnInit {
   ngOnInit(): void {
     console.log("inside installation component here is the hostObject -> " ,this.hostObj);
     console.log("Inside installation component, here is AtdConfigService - > ", this.pluginService);
-    this.pluginService.getTypeInternalID(this.configID).then((atdID) => {
+    this.pluginService.getAtdID(this.configID).then((atdID) => {
       this.atdID = atdID;
     });
   }

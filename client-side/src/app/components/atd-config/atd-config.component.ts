@@ -84,7 +84,8 @@ export class AtdConfigComponent implements OnInit {
     ngOnInit() {
         this.pluginService.pluginUUID = "1238582e-9b32-4d21-9567-4e17379f41bb";
         this.configID = this.hostObject.objectList[0];
-        this.pluginService.getTypeInternalID(this.configID).then((atdId) => {
+        console.log('host obj   ', this.hostObject);
+        this.pluginService.getAtdID(this.configID).then((atdId) => {
             this.AtdID = atdId;
             //check if the UOM already installed, if so he will show the configuration page
         }).then(() => {
