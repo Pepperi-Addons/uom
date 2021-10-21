@@ -81,12 +81,13 @@ export class AtdConfigComponent implements OnInit {
             this.ngOnInit();
         })     
     }
-    ngOnInit() {
+    async ngOnInit() {
         this.pluginService.pluginUUID = "1238582e-9b32-4d21-9567-4e17379f41bb";
         this.configID = this.hostObject.objectList[0];
         console.log('host obj   ', this.hostObject);
         this.pluginService.getAtdID(this.configID).then((atdId) => {
             this.AtdID = atdId;
+            console.log("AtdID on ngOnInit " , this.AtdID);
             //check if the UOM already installed, if so he will show the configuration page
         }).then(() => {
            this.pluginService.isInstalled(this.AtdID).then((installed) => {
@@ -177,6 +178,7 @@ export class AtdConfigComponent implements OnInit {
         }
     }
     async SaveConfig() {
+        console.log("configuration  on SaveConfig " , this.Configuration)
         await this.pluginService.updateConfiguration(this.Configuration);
         const title = this.translate.instant("Uom_saveConfig_Title");
         const content = this.translate.instant("Uom_saveConfig_Paragraph");
@@ -185,7 +187,6 @@ export class AtdConfigComponent implements OnInit {
         this.dialogService.openDefaultDialog(data, config).afterClosed().subscribe(() => {
             this.emitClose();
         });
-        this.Configuration = undefined
     }
     emitClose() {
         this.hostEvents.emit({action:'close-dialog'});
