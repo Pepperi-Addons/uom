@@ -52,12 +52,11 @@ export async function uninstall(client: Client, request: Request): Promise<any> 
             });
         })//delete the TSA's that uom created from those transaction.
         .map((transaction) => {
-            
-
+            service.removeTSAFields(transaction.InternalID)
         })
         
     } catch (error) {
-        
+        return {success:true,resultObject:{}} 
     }
 
 
