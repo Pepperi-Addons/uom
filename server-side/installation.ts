@@ -10,6 +10,7 @@ The error Message is importent! it will be written in the audit log and help the
 
 import { Client, Request } from '@pepperi-addons/debug-server'
 import { ApiFieldObject, PapiClient } from '@pepperi-addons/papi-sdk'
+import { Fields } from '@pepperi-addons/papi-sdk/dist/endpoints';
 import { atdConfigScheme, uomsScheme, relations } from './metadata';
 import { ObjectsService } from './services/objects.service';
 
@@ -46,18 +47,28 @@ export async function uninstall(client: Client, request: Request): Promise<any> 
         //get all transactions
         const transactions = await papiClient.get('/types');
         //remove all transactions that uom is not installed on them.
-        transactions.filter(async (transaction) => {
-            return await service.getField(transaction.InternalID, 'TSAAOQMQuantity1').then((field: ApiFieldObject | undefined) => {
-                return field === undefined? false: !field.Hidden;
-            });
-        })//delete the TSA's that uom created from those transaction.
-        .map((transaction) => {
-            service.removeTSAFields(transaction.InternalID)
+        const transactionLines: any[] =  transactions.filter((transaction) => {
+            if(transaction.Type === 2)
+            {
+                return true;
+            }
+            return false;
+            // return await transaction.Type === 2 &&  await service.getField(transaction.InternalID, 'TSAAOQMQuantity1').then((field: ApiFieldObject | undefined) => {
+            //     return field === undefined? false: !field.Hidden;
+            }).map((transaction) => {
+                service.getField(transaction.InternalID, 'TSAAOQMQuantity1').then((field: ApiFieldObject | undefined) => {
+                         if(field != undefined  && !field.Hidden)
+                         {
+                            service.removeTSAFields(transaction.InternalID)
+                         }
+            })
+            //delete the TSA's that uom created from those transaction.
         })
         
     } catch (error) {
-        return {success:true,resultObject:{}} 
+        throw new error('error in uninstall addonn ' + error )
     }
+    return {success:true,resultObject:{}} 
 
 
     //remove_TSA_fields

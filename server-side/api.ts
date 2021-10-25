@@ -7,6 +7,7 @@ import { ApiFieldObject, PapiClient } from '@pepperi-addons/papi-sdk';
 import { ConfigurationService } from './services/configuration.service';
 import { UomTSAFields } from './metadata';
 import { AtdConfiguration } from '../shared/entities';
+import { uninstall }  from './installation';
 
 export async function uoms(client: Client, request: Request) {
     const service = new UomsService(client);
@@ -142,7 +143,7 @@ export async function remove_TSA_fields(client: Client, request: Request): Promi
         atdID = 'atdID' in request.body? Number(request.body.atdID): -1;
     }
     return await service.removeTSAFields(atdID);
-    
+
     // const tsaFields =  await Promise.all(UomTSAFields.map(async (field) => {
     //     return await service.getField(atdID, field.FieldID);
     // }))
@@ -297,3 +298,8 @@ export async function foo(client: Client, request: Request) {
     const res = await service.getAddons()
     return res
 };
+
+export async function unInstall(client:Client, request:Request) {
+    return uninstall(client, request);
+    
+}
