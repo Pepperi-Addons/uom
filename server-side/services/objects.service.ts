@@ -1,4 +1,5 @@
 import { PepperiObject, ApiFieldObject, PapiClient } from "@pepperi-addons/papi-sdk";
+import { UomTSAFields } from "../metadata";
 
 export class ObjectsService {
     private pepperiObjects: PepperiObject[] = []
@@ -41,6 +42,23 @@ export class ObjectsService {
             return false;
         const createdField: ApiFieldObject = await this.papiClient.post(`/meta_data/transaction_lines/types/${atdId}/fields`, field);
         return createdField != undefined;
+    }
+
+    async removeTSAFields(atdID: number){
+        const tsaFields =  await Promise.all(UomTSAFields.map(async (field) => {
+            return await this.getField(atdID, field.FieldID);
+        }))
+        const isFieldsRemoved: boolean[] = await  Promise.all(tsaFields.map((field) => {
+            if(field && field.Hidden !== undefined)
+                field.Hidden = true;
+            return field;
+        }).map((field) => {
+            return this.createAtdTransactionLinesField(atdID, field);
+        }));
+        //return true if all fields removed successfully    
+        return isFieldsRemoved.reduce((prev, curr) => {
+            return prev && curr
+        }, true);
     }
 
 }

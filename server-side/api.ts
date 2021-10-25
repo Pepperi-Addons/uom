@@ -141,20 +141,22 @@ export async function remove_TSA_fields(client: Client, request: Request): Promi
     {
         atdID = 'atdID' in request.body? Number(request.body.atdID): -1;
     }
-     const tsaFields =  await Promise.all(UomTSAFields.map(async (field) => {
-        return await service.getField(atdID, field.FieldID);
-    }))
-    const isFieldsRemoved: boolean[] = await  Promise.all(tsaFields.map((field) => {
-        if(field && field.Hidden !== undefined)
-        field.Hidden = true;
-        return field;
-    }).map((field) => {
-        return service.createAtdTransactionLinesField(atdID, field);
-    }));
-    //return true if all fields removed successfully    
-    return isFieldsRemoved.reduce((prev, curr) => {
-        return prev && curr
-    }, true);
+    return await service.removeTSAFields(atdID);
+    
+    // const tsaFields =  await Promise.all(UomTSAFields.map(async (field) => {
+    //     return await service.getField(atdID, field.FieldID);
+    // }))
+    // const isFieldsRemoved: boolean[] = await  Promise.all(tsaFields.map((field) => {
+    //     if(field && field.Hidden !== undefined)
+    //     field.Hidden = true;
+    //     return field;
+    // }).map((field) => {
+    //     return service.createAtdTransactionLinesField(atdID, field);
+    // }));
+    // //return true if all fields removed successfully    
+    // return isFieldsRemoved.reduce((prev, curr) => {
+    //     return prev && curr
+    // }, true);
 }
 export async function create_TSA_fields(client: Client, request:Request) {
     let created = false;

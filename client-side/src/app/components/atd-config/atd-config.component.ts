@@ -73,7 +73,7 @@ export class AtdConfigComponent implements OnInit {
     }
     async uninstall($event){
         this.selectedItem = $event.source;
-        this.pluginService.removeAtdConfigurations(this.AtdID);
+        await this.pluginService.removeAtdConfigurations(this.AtdID);
         this.pluginService.removeTSAFields(this.AtdID).then(() => {
             this.isInstalled = false;
             this.alreadyChecked = true;
