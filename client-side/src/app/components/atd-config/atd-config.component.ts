@@ -84,9 +84,7 @@ export class AtdConfigComponent implements OnInit {
     async ngOnInit() {
         this.pluginService.pluginUUID = "1238582e-9b32-4d21-9567-4e17379f41bb";
         this.configID = this.hostObject.objectList[0];
-        console.log('host obj   ', this.hostObject);
         const atdIdAndIsInstalled = await this.pluginService.getAtdID(this.configID);
-        console.log('atdIdAndIsInstalled: ' ,atdIdAndIsInstalled)
         this.AtdID = atdIdAndIsInstalled.atdID;
         this.isInstalled = atdIdAndIsInstalled.isInstalled;
         this.alreadyChecked = true;
@@ -100,25 +98,6 @@ export class AtdConfigComponent implements OnInit {
             })
             this.loadAtdData();
         }
-        // this.pluginService.getAtdID(this.configID).then((atdId) => {
-        //     this.AtdID = atdId;
-        //     console.log("AtdID on ngOnInit " , this.AtdID);
-        //     //check if the UOM already installed, if so he will show the configuration page
-        // }).then(() => {
-        //    this.pluginService.isInstalled(this.AtdID).then((installed) => {
-        //        this.isInstalled = installed;
-        //        this.alreadyChecked = true;
-        //        if(this.isInstalled){
-        //         this.Actions = Object.keys(InventoryActions)?.map(key => {
-        //             return {
-        //                 key: key,
-        //                 value: InventoryActions[key]
-        //             }
-        //         })
-        //         this.loadAtdData();
-        //        }
-        //    })
-        // });
     }
     loadAtdData() {
         this.pluginService.getAtdFields(this.AtdID).then(fields => {
