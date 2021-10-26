@@ -44,7 +44,7 @@ export class AddonService {
     }
 
     async doesUomExist(uomKey: string): Promise<boolean> {
-        const obj = await this.papiClient.addons.api.uuid(this.pluginUUID).file('api').func('getUomByKey').get({
+        const obj = await this.papiClient.addons.api.uuid(this.pluginUUID).file('api').func('get_uom_by_key').get({
             uomKey: uomKey
         });
 
