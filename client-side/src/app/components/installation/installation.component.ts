@@ -42,7 +42,7 @@ export class InstallationComponent implements OnInit {
     this.dialogService.openDefaultDialog(new PepDialogData({
       title: 'Install',
       actionsType: 'custom',
-      content: 'Are you sure you want to apply the module on the transaction?',
+      content: this.translate.instant('install_confirmation'),
       actionButtons: [
         {
           title: this.translate.instant('cancel'),
