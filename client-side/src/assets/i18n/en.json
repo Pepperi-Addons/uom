@@ -47,5 +47,6 @@
     "Uom_installtion_ul_first":"The Units Quantity field will be read only and will contain the total in singles.",
     "Uom_installation_ul_second": "Two new drop down fields and two new Units Quantity fields (with the AOQM prefix) will be added to the transaction to allow the user select the required UOM and define the quantity.",
     "Uom_installation_last_p": "Place these fields in the relevant order center and cart views. \n Note: You can use both sets (to allow the user order in two UOMs) or only the first one (to allow the user order in one UOM).",
-    "confirmation_message": "Are you sure you want to uninstall the UOM fields from this transaction?"
+    "confirmation_message": "Are you sure you want to uninstall the UOM fields from this transaction?",
+    "install_confirmation": "Are you sure you want to apply the module on the transaction?"
 }

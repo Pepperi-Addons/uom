@@ -204,7 +204,6 @@ class UOMManager {
             const uom = uomValue ? uoms.get(uomValue) : undefined;
             const otherUom = otherUomValue ? uoms.get(otherUomValue) : undefined;
             const itemConfig = await this.getItemConfig(dataObject!);
-            console.log(itemConfig);
             const uomConfig = this.getUomConfig(uom, itemConfig);
             const otherUomConfig = this.getUomConfig(otherUom, itemConfig);
             //update the TSA Field 
@@ -320,12 +319,10 @@ class UOMManager {
 }
 export async function load() {
     // get UOM table
-    console.log("Getting the UOM table");
     const list: Uom[] = (await pepperi.api.adal.getList({
         table: `${uomsScheme.Name}`,
         addon: config.AddonUUID
     })).objects as Uom[];
-    console.log("Retrieved ", list.length, " uoms");
     uoms = new UOMMap(list);
     // get config table
     const configs = (await pepperi.api.adal.getList({
@@ -334,7 +331,6 @@ export async function load() {
     })).objects as AtdConfiguration[];
     // create manager for each config
     for (const config of configs) {
-        console.log('Config object:', JSON.stringify(config));
         const manager = new UOMManager(config);
         // load the manager
         manager.load();

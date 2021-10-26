@@ -11,29 +11,22 @@ import { TranslateService } from '@ngx-translate/core';
   styleUrls: ['./installation.component.scss']
 })
 export class InstallationComponent implements OnInit {
-  atdID: number;
   @Input() hostObj: any;
   @Input() pluginService: AtdConfigService;
   @Input() configID: string;
   @Output() installEvent = new EventEmitter<string>();
+  @Input() atdID: number;
 
   constructor(
     private translate: TranslateService,
     private dialogService: PepDialogService
   ) { }
   ngOnInit(): void {
-    console.log("inside installation component here is the hostObject -> " ,this.hostObj);
-    console.log("Inside installation component, here is AtdConfigService - > ", this.pluginService);
-    this.pluginService.getAtdID(this.configID).then((atdIdAndIsInstalled) => {
-      this.atdID = atdIdAndIsInstalled.atdID;
-    });
   }
   goBack(){
     return;
   }
   async install(){
-      await this.atdID;
-      console.log('atd id in installation page: ', this.atdID)
       this.pluginService.createTSAFields(this.atdID).then((sucsses) => {
         this.installEvent.emit('true');
     });

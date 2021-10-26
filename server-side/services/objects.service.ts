@@ -15,7 +15,6 @@ export class ObjectsService {
         return  await this.papiClient.types.find({
             where: `UUID='${uuid}'`
         }).then((types) => {
-            // console.log('uuid is' + uuid + 'types is', types);
             return types[0].InternalID
         });
     }

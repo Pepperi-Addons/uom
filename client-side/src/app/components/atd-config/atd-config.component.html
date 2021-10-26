@@ -1,7 +1,7 @@
 <div class="addon-page-container">
 <!-- if TUOM is not install on this transaction he will move to the installation component -->
 <div *ngIf="!isInstalled && alreadyChecked;">
-    <addon-installation [hostObj] = "hostObject" [pluginService] = "pluginService" (installEvent)="onInstallation($event)" [configID] = "this.configID"></addon-installation>
+    <addon-installation [hostObj] = "hostObject" [pluginService] = "pluginService" (installEvent)="onInstallation($event)" [configID] = "this.configID" [atdID]="this.atdID"></addon-installation>
 </div>
 
 

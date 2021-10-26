@@ -14,7 +14,7 @@ export class AtdConfigComponent implements OnInit {
     TSAStringfields: {key:string, value:string}[] = [];
     TSANumberfields: {key:string, value:string}[] = [];
     Actions: {key:string, value:string}[] = [];
-    AtdID: number;
+    atdID: number;
     Configuration: AtdConfiguration;
     obs$: Observable<any>;
     @Input() hostObject: any;
@@ -71,7 +71,7 @@ export class AtdConfigComponent implements OnInit {
     }
     async uninstall($event){
         this.selectedItem = $event.source;
-        await this.pluginService.removeATDAndTSA(this.AtdID);
+        await this.pluginService.removeATDAndTSA(this.atdID);
         this.isInstalled = false;
         this.alreadyChecked = true;
         this.menuItemClick.emit($event);
@@ -82,7 +82,7 @@ export class AtdConfigComponent implements OnInit {
         this.pluginService.pluginUUID = "1238582e-9b32-4d21-9567-4e17379f41bb";
         this.configID = this.hostObject.objectList[0];
         const atdIdAndIsInstalled = await this.pluginService.getAtdID(this.configID);
-        this.AtdID = atdIdAndIsInstalled.atdID;
+        this.atdID = atdIdAndIsInstalled.atdID;
         this.isInstalled = atdIdAndIsInstalled.isInstalled;
         this.alreadyChecked = true;
         if(this.isInstalled)
@@ -97,7 +97,7 @@ export class AtdConfigComponent implements OnInit {
         }
     }
     loadAtdData() {
-        this.pluginService.getAtdFields(this.AtdID).then(fields => {
+        this.pluginService.getAtdFields(this.atdID).then(fields => {
             this.TSAStringfields = fields?.filter(field=> {
                 //return string fileds that are not 5:Date, 6:DateAndTime, 19:LimitedDate, 20:Image, 24:Attachment, 48:GuidReferenceType
                 return field.Type === "String" && [5,6,19,20,24,48].indexOf(field.UIType.ID) == -1
@@ -121,9 +121,9 @@ export class AtdConfigComponent implements OnInit {
                 value: 'ItemInStockQuantity'
             });
         });
-        this.pluginService.getConfiguration(this.AtdID).then(config => {
+        this.pluginService.getConfiguration(this.atdID).then(config => {
             this.Configuration = config.length == 1  ? config[0] : {
-                Key: this.AtdID.toString(),
+                Key: this.atdID.toString(),
                 UOMFieldID: '',
                 InventoryFieldID: 'ItemInStockQuantity',
                 InventoryType: "Color",
@@ -169,7 +169,6 @@ export class AtdConfigComponent implements OnInit {
         }
     }
     async SaveConfig() {
-        console.log("configuration  on SaveConfig " , this.Configuration)
         await this.pluginService.updateConfiguration(this.Configuration);
         const title = this.translate.instant("Uom_saveConfig_Title");
         const content = this.translate.instant("Uom_saveConfig_Paragraph");
