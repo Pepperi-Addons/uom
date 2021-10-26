@@ -24,8 +24,8 @@ export class InstallationComponent implements OnInit {
   ngOnInit(): void {
     console.log("inside installation component here is the hostObject -> " ,this.hostObj);
     console.log("Inside installation component, here is AtdConfigService - > ", this.pluginService);
-    this.pluginService.getAtdID(this.configID).then((atdID) => {
-      this.atdID = atdID;
+    this.pluginService.getAtdID(this.configID).then((atdIdAndIsInstalled) => {
+      this.atdID = atdIdAndIsInstalled.atdID;
     });
   }
   goBack(){
@@ -33,6 +33,7 @@ export class InstallationComponent implements OnInit {
   }
   async install(){
       await this.atdID;
+      console.log('atd id in installation page: ', this.atdID)
       this.pluginService.createTSAFields(this.atdID).then((sucsses) => {
         this.installEvent.emit('true');
     });

@@ -43,7 +43,12 @@ export async function  get_atd_id(client: Client, request: Request) {
     {
         uuid = request.query.uuid
     }
-    return await service.getAtdId(uuid)
+    const atdID = await service.getAtdId(uuid);
+    const isInstalled = await service.getField(atdID, 'TSAAOQMQuantity1').then((field: ApiFieldObject | undefined) => {
+        return field === undefined? false: !field.Hidden;
+    });
+    return {'atdID': atdID, 'isInstalled': isInstalled};
+    // return await service.getAtdId(uuid)
 };
 export async function remove_atd_configurations(client: Client, request: Request){
     if(request.method !=  'POST')
@@ -298,8 +303,3 @@ export async function foo(client: Client, request: Request) {
     const res = await service.getAddons()
     return res
 };
-
-export async function unInstall(client:Client, request:Request) {
-    return uninstall(client, request);
-    
-}

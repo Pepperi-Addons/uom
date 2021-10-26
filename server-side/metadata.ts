@@ -17,7 +17,7 @@ export const relations: relation[] = [
         Name:"UomRelations",
         Description:"Relation from Uom addon to ATD Import addon",
         Type:"AddonAPI",
-        AddonRelativeURL:"/api/importUom"
+        AddonRelativeURL:"/api/import_uom"
     },
     {
         RelationName: "ATDExport",
@@ -25,7 +25,7 @@ export const relations: relation[] = [
         Name:"UomRelations",
         Description:"Relation from Uom addon to ATD Export addon",
         Type:"AddonAPI",
-        AddonRelativeURL:"/api/exportUom"
+        AddonRelativeURL:"/api/export_uom"
     },
     {   //meta data for realtion of type NgComponent
         RelationName: "TransactionTypeListTabs",
