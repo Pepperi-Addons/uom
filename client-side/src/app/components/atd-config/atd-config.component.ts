@@ -5,7 +5,6 @@ import { TranslateService } from "@ngx-translate/core";
 import { Observable } from 'rxjs';
 import { PepDialogData, PepDialogService } from '@pepperi-addons/ngx-lib/dialog';
 import { IPepMenuItemClickEvent, PepMenuItem } from '@pepperi-addons/ngx-lib/menu';
-
 @Component({
     selector: 'atd-config-addon',
     templateUrl: './atd-config.component.html',
@@ -14,7 +13,6 @@ import { IPepMenuItemClickEvent, PepMenuItem } from '@pepperi-addons/ngx-lib/men
 export class AtdConfigComponent implements OnInit {
     TSAStringfields: {key:string, value:string}[] = [];
     TSANumberfields: {key:string, value:string}[] = [];
-    // TransactionTypes: {key:number, value:string}[] = [];
     Actions: {key:string, value:string}[] = [];
     AtdID: number;
     Configuration: AtdConfiguration;
@@ -52,7 +50,7 @@ export class AtdConfigComponent implements OnInit {
         this.dialogService.openDefaultDialog(new PepDialogData({
             title: this.translate.instant('Uninstall') ,
             actionsType: 'custom',
-            content: this.translate.instant('Are you sure you want to uninstall the UOM fields from this transaction?'),
+            content: this.translate.instant("confirmation_message"),
             actionButtons: [
                 {
                 title: this.translate.instant('Cancel'),
@@ -73,13 +71,12 @@ export class AtdConfigComponent implements OnInit {
     }
     async uninstall($event){
         this.selectedItem = $event.source;
-        await this.pluginService.removeAtdConfigurations(this.AtdID);
-        this.pluginService.removeTSAFields(this.AtdID).then(() => {
-            this.isInstalled = false;
-            this.alreadyChecked = true;
-            this.menuItemClick.emit($event);
-            this.ngOnInit();
-        })     
+        await this.pluginService.removeATDAndTSA(this.AtdID);
+        this.isInstalled = false;
+        this.alreadyChecked = true;
+        this.menuItemClick.emit($event);
+        this.ngOnInit();
+             
     }
     async ngOnInit() {
         this.pluginService.pluginUUID = "1238582e-9b32-4d21-9567-4e17379f41bb";

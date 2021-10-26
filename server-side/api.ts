@@ -8,6 +8,7 @@ import { ConfigurationService } from './services/configuration.service';
 import { UomTSAFields } from './metadata';
 import { AtdConfiguration } from '../shared/entities';
 import { uninstall }  from './installation';
+import { request } from 'http';
 
 export async function uoms(client: Client, request: Request) {
     const service = new UomsService(client);
@@ -54,7 +55,8 @@ export async function remove_atd_configurations(client: Client, request: Request
     if(request.method !=  'POST')
     {
         throw new Error('expected to recive POST method, but instead recived ' + request.method);
-    }    
+    }
+        
    const service = new ConfigurationService(client);
    return await service.uninstall(request.body);
 
@@ -124,7 +126,7 @@ export async function get_atd_fields(client: Client, request: Request) {
     items.forEach(item => item['FieldID'] = `Item.${item.FieldID}`);
     return [...await service.getAtdFields(atdID), ...items];
 }
-export async function remove_TSA_fields(client: Client, request: Request): Promise<boolean> {
+export async function remove_tsa_fields(client: Client, request: Request): Promise<boolean> {
     if(request.method !=  'POST')
     {
         throw new console.error("expected to recive POST method but instead recived " + request.method );
@@ -164,7 +166,7 @@ export async function remove_TSA_fields(client: Client, request: Request): Promi
     //     return prev && curr
     // }, true);
 }
-export async function create_TSA_fields(client: Client, request:Request) {
+export async function create_tsa_fields(client: Client, request:Request) {
     let created = false;
     const papiClient = new PapiClient({
         baseURL: client.BaseURL,
@@ -295,6 +297,22 @@ export async function export_uom(client: Client, request:Request) {
             errorMessage: 'message' in err ? err.message : 'unknown error occured'
         }
     }
+}
+
+export async function remove_tsa_and_atd(client: Client, request:Request)
+{
+    if(request.method != 'POST')
+    {
+        throw new Error('expected to recive POST method, but instead recived ' + request.method);   
+    }
+    if(!('key' in request.body))
+    {
+        throw new Error('remove_tsa_and_atd: must include key inside request.body');
+    }
+    await remove_atd_configurations(client,request);
+    request.body.atdID = request.body.key;
+    await remove_tsa_fields(client,request);
+    return;
 }
 // this function will run on the 'api/foo' endpoint
 // the real function is runnning on another typescript file

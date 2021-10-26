@@ -38,10 +38,10 @@ export class AtdConfigService {
         return await this.papiClient.addons.api.uuid(this.pluginUUID).file('api').func('atd_configuration').post(undefined, config);
     }
     async createTSAFields(atdID: Number): Promise<boolean> {
-        return await this.papiClient.addons.api.uuid(this.pluginUUID).file('api').func('create_TSA_fields').post(undefined, {'atdID': atdID});
+        return await this.papiClient.addons.api.uuid(this.pluginUUID).file('api').func('create_tsa_fields').post(undefined, {'atdID': atdID});
     }
     async removeTSAFields(atdID: Number): Promise<boolean>{
-        return await this.papiClient.addons.api.uuid(this.pluginUUID).file('api').func('remove_TSA_fields').post(undefined, {'atdID': atdID});
+        return await this.papiClient.addons.api.uuid(this.pluginUUID).file('api').func('remove_tsa_fields').post(undefined, {'atdID': atdID});
     }
     async getAtdFields(atdID: Number): Promise<ApiFieldObject[]> {
         return await this.papiClient.addons.api.uuid(this.pluginUUID).file('api').func('get_atd_fields').get({'atdID': atdID});
@@ -60,5 +60,8 @@ export class AtdConfigService {
     }
     async getAtdID(uuid: string): Promise<any>{
         return await this.papiClient.addons.api.uuid(this.pluginUUID).file('api').func('get_atd_id').get({'uuid': uuid});
+    }
+    async removeATDAndTSA(atdID: number): Promise<any>{
+        return await this.papiClient.addons.api.uuid(this.pluginUUID).file('api').func('remove_tsa_and_atd').post(undefined,{'key': atdID});
     }
 }
