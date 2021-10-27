@@ -162,7 +162,7 @@ class UOMManager {
                     break;
                 case ItemAction.Set:
                     quantityResult = quantityCalc.setValue(value)
-                    break;
+                    break; 
             };
             // add quantity to total
             total += quantityResult.total;
@@ -178,11 +178,11 @@ class UOMManager {
     updateTSAField(uomConfig: UomItemConfiguration, uq: UIField | undefined) {
         if(!uq)
             return;
-        if (uomConfig && Number(uomConfig.Decimal) === 0) {
+        if (uomConfig && Number(uomConfig.Decimal) === 0 && uq['customField'].type === 29) {
             uq['customField'].type = 28;
             uq['customField'].decimalDigits = 0;
         }
-        else if (uomConfig) {
+        else if (uomConfig && uq['customField'].type === 28 ) {
             uq['customField'].decimalDigits = uomConfig.Decimal;
             uq['customField'].type = 29;
         }
@@ -222,6 +222,10 @@ class UOMManager {
                     dd1.optionalValues = optionalValues;
                     if (dd1.value === '') {
                         await uiObject.setFieldValue(UOM_KEY_FIRST_TSA, optionalValues[0].Key, true);
+                        if(optionalValues[0].Key)
+                        {
+                            this.recalculateOrderCenterItem(data);
+                        }
                     }
                     // readonly if there is only one, or if there are 2 and this isn't the only configured
                     if (optionalValues.length === 1 || (optionalValues.length === 2 && dd2)) {
@@ -295,7 +299,7 @@ class UOMManager {
             Factor: Number(config?.Factor || uom?.Multiplier || 1),
             Min: Number(config?.Min || 0),
             Case: Number(config?.Case || 1),
-            Decimal: Number(config?.Decimal || 0),
+            Decimal: Number(config?.Decimal || 0) < 4? Number(config?.Decimal || 0): 4,
             Negative: Boolean(!!config?.Negative)
         };
     }

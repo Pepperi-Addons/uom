@@ -48,7 +48,7 @@
                     </li>
                 </ul>
                 <br>
-                <pep-select class="halfscreen" #pepSelect [value]="Configuration?.UOMFieldID"
+                <pep-select class="halfscreen" #pepSelect [value]="Configuration?.UOMFieldID" 
                     [options]="TSAStringfields" [label]="'Uom_AtdConfig_AllowedUomsTitle' | translate"
                     (valueChange)="onValueChanged('AllowedUoms', $event)" [mandatory]='true'>
                 </pep-select>
