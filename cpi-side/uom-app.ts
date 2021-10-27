@@ -299,6 +299,7 @@ class UOMManager {
             Factor: Number(config?.Factor || uom?.Multiplier || 1),
             Min: Number(config?.Min || 0),
             Case: Number(config?.Case || 1),
+            //we limit decimal to be at most 4 because UIObject.getValue support only numbers with 4 digits after the dot.
             Decimal: Number(config?.Decimal || 0) < 4? Number(config?.Decimal || 0): 4,
             Negative: Boolean(!!config?.Negative)
         };
