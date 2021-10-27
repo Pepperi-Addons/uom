@@ -7,8 +7,6 @@ import { ApiFieldObject, PapiClient } from '@pepperi-addons/papi-sdk';
 import { ConfigurationService } from './services/configuration.service';
 import { UomTSAFields } from './metadata';
 import { AtdConfiguration } from '../shared/entities';
-import { uninstall }  from './installation';
-import { request } from 'http';
 
 export async function uoms(client: Client, request: Request) {
     const service = new UomsService(client);

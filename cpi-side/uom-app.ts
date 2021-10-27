@@ -13,7 +13,6 @@ import config from '../addon.config.json';
 import { QuantityCalculator } from './quantity-calculator';
 import { ItemAction, QuantityResult, UomItemConfiguration } from './../shared/entities';
 import {uomsScheme} from '../server-side/metadata'
-
 /** The Real UQ Field - Holds the quantity in Baseline */
 const UNIT_QUANTITY = 'UnitsQuantity';
 /** A list of Order Center Data Views */
@@ -72,7 +71,7 @@ class UOMManager {
                 UIObject: {
                     context: {
                         Name: dataView
-                    }
+                    }  
                 },
                 DataObject: {
                     typeDefinition: {
