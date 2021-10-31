@@ -36,6 +36,10 @@ export class QuantityCalculator {
             }
             //determince if field needs to be colored
             toColor(num:number, total:number, inventory:number ):boolean{
+                if(num <= 0 && this.negative)
+                {
+                    return false;
+                }
                 const newNum = this.convertToInteger(num);
                 return  (this.caseBehavior === 'Color' && newNum%this.cq != 0) ||
                         (this.minBehavior === 'Color' && newNum < this.getRealMin() && newNum > 0) ||
@@ -114,6 +118,10 @@ export class QuantityCalculator {
             //if after the increment by case he is less than real minimum than he should be mean;
             //if after increment by case he is not divided by case, he should be the next non negative number that divided by case(unless he is bigger than max and inv = fix)
             getIncrementValue(value: number):QuantityResult {
+                if(value <= 0 && this.negative)
+                {
+                    return value <= -1? this.resultBuilder(value + 1):  this.resultBuilder(0);
+                }
                 if(!this.alreadyConverted)
                 {
                     this.convertFieldsToInteger();
@@ -126,6 +134,10 @@ export class QuantityCalculator {
                 return result.curr < value ? this.resultBuilder(value): result;
             }
             getDecrementValue(value: number):QuantityResult{
+                if(value <= 0 && this.negative)
+                {
+                    return this.resultBuilder(value - 1);
+                }
                 if(!this.alreadyConverted)
                 {
                     this.convertFieldsToInteger();
@@ -135,6 +147,10 @@ export class QuantityCalculator {
                 return this.fix(prevLegalValue,ItemAction.Decrement);
             }
             setValue(num: number):QuantityResult{
+                if(num <= 0 && this.negative)
+                {
+                    return this.resultBuilder(num);
+                }
                 if(!this.alreadyConverted)
                 {
                     this.convertFieldsToInteger();
