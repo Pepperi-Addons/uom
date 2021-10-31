@@ -46,16 +46,15 @@ export async function uninstall(client: Client, request: Request): Promise<any> 
         const service = new ObjectsService(papiClient)
         //get all transactions
         const transactions = await papiClient.get('/types');
-        //remove all transactions that uom is not installed on them.
-        const transactionLines: any[] =  transactions.filter((transaction) => {
+        //remove all transactions that are not transaction lines
+        transactions.filter((transaction) => {
             if(transaction.Type === 2)
             {
                 return true;
             }
             return false;
-            // return await transaction.Type === 2 &&  await service.getField(transaction.InternalID, 'TSAAOQMQuantity1').then((field: ApiFieldObject | undefined) => {
-            //     return field === undefined? false: !field.Hidden;
             }).map((transaction) => {
+                //if uom is installed on that transaction then remove the relavant TSA fields
                 service.getField(transaction.InternalID, 'TSAAOQMQuantity1').then((field: ApiFieldObject | undefined) => {
                          if(field != undefined  && !field.Hidden)
                          {
