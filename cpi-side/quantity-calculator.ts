@@ -118,7 +118,7 @@ export class QuantityCalculator {
             //if after the increment by case he is less than real minimum than he should be mean;
             //if after increment by case he is not divided by case, he should be the next non negative number that divided by case(unless he is bigger than max and inv = fix)
             getIncrementValue(value: number):QuantityResult {
-                if(value <= 0 && this.negative)
+                if(value < 0 && this.negative)
                 {
                     return value <= -1? this.resultBuilder(value + 1):  this.resultBuilder(0);
                 }
