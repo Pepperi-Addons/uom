@@ -2,9 +2,11 @@ import { AtdConfiguration, InventoryActions} from './../../../../../shared/entit
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
 import { AtdConfigService } from "./atd-config.service";
 import { TranslateService } from "@ngx-translate/core";
-import { Observable } from 'rxjs';
+import { config, Observable } from 'rxjs';
 import { PepDialogData, PepDialogService } from '@pepperi-addons/ngx-lib/dialog';
 import { IPepMenuItemClickEvent, PepMenuItem } from '@pepperi-addons/ngx-lib/menu';
+
+
 @Component({
     selector: 'atd-config-addon',
     templateUrl: './atd-config.component.html',

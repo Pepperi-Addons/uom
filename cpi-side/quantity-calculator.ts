@@ -118,15 +118,18 @@ export class QuantityCalculator {
             //if after the increment by case he is less than real minimum than he should be mean;
             //if after increment by case he is not divided by case, he should be the next non negative number that divided by case(unless he is bigger than max and inv = fix)
             getIncrementValue(value: number):QuantityResult {
-                if(value < 0 && this.negative)
-                {
-                    return value <= -1? this.resultBuilder(value + 1):  this.resultBuilder(0);
-                }
                 if(!this.alreadyConverted)
                 {
                     this.convertFieldsToInteger();
                 }
                 const newVal = this.convertToInteger(value)
+                if(newVal < 0 && this.negative)
+                {
+                    const shiftedOne = this.convertToInteger(1);
+                    const shiftedMinusOne = this.convertToInteger(-1);
+                    const resultOfNegativeBehavior = newVal + shiftedOne;
+                    return newVal <= shiftedMinusOne? this.resultBuilder(this.convertToDec(resultOfNegativeBehavior)):  this.resultBuilder(0);
+                }
                 const nextLegalValue = this.fixByCase(newVal,ItemAction.Decrement) + this.cq;
                 //should return an integer that is no less than value
                 //otherwise we need to fix result
@@ -134,15 +137,21 @@ export class QuantityCalculator {
                 return result.curr < value ? this.resultBuilder(value): result;
             }
             getDecrementValue(value: number):QuantityResult{
-                if(value <= 0 && this.negative)
-                {
-                    return this.resultBuilder(value - 1);
-                }
+                // if(value <= 0 && this.negative)
+                // {
+                //     return this.resultBuilder(value - 1);
+                // }
                 if(!this.alreadyConverted)
                 {
                     this.convertFieldsToInteger();
                 }
                 const newVal = this.convertToInteger(value);
+                if(newVal <=0 && this.negative)
+                {
+                    const shiftedOne = this.convertToInteger(1);
+                    const resultOfNegativeBehavior = newVal - shiftedOne;
+                    return this.resultBuilder(this.convertToDec(resultOfNegativeBehavior));
+                }
                 const prevLegalValue = this.fixByCase(newVal, ItemAction.Increment) - this.cq;
                 return this.fix(prevLegalValue,ItemAction.Decrement);
             }

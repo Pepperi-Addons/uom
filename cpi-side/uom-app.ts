@@ -13,6 +13,10 @@ import config from '../addon.config.json';
 import { QuantityCalculator } from './quantity-calculator';
 import { ItemAction, QuantityResult, UomItemConfiguration } from './../shared/entities';
 import {uomsScheme} from '../server-side/metadata'
+
+// const { JSDOM } = require("jsdom");
+// const { window } = new JSDOM();
+
 /** The Real UQ Field - Holds the quantity in Baseline */
 const UNIT_QUANTITY = 'UnitsQuantity';
 /** A list of Order Center Data Views */
@@ -81,6 +85,7 @@ class UOMManager {
             }
             // recalc event
             pepperi.events.intercept('RecalculateUIObject', filter, async (data, next, main) => {
+                const view = dataView;
                 await this.recalculateOrderCenterItem(data);
                 await next(main);
             })
@@ -205,6 +210,25 @@ class UOMManager {
             const itemConfig = await this.getItemConfig(dataObject!);
             const uomConfig = this.getUomConfig(uom, itemConfig);
             const otherUomConfig = this.getUomConfig(otherUom, itemConfig);
+            const unitsQuantity = await dataObject?.getFieldValue(UNIT_QUANTITY);
+            // if some changes in the amount happen in the cart we want to update that
+            const firstUomTsaValue = Number(uq1?.value) * uomConfig.Factor;
+            const otherUomTsaValue = Number(uq2?.value) * otherUomConfig.Factor;
+            const suomOfUoms = firstUomTsaValue + otherUomTsaValue 
+            const suomOfUomsMinusUnitQuantity = suomOfUoms - unitsQuantity;
+            //if suomOfUomsMinusUnitQuantity so there might be change in cart.(delete or inc/dec the amount)
+            if(suomOfUomsMinusUnitQuantity != 0 && (uq1 || uq2) )
+            {
+                //there was a delete operation, we need to update uom TSA to be 0.
+                if(unitsQuantity == 0)
+                {
+                    await uiObject.setFieldValue(UNIT_QTY_FIRST_TSA, "0", true);
+                    await uiObject.setFieldValue(UNIT_QTY_SECOND_TSA, "0", true);
+                }
+                else{
+                    await dataObject?.setFieldValue(UNIT_QUANTITY,suomOfUoms.toString(),true);
+                }
+            }
             //update the TSA Field 
             this.updateTSAField(uomConfig, uq1);
             this.updateTSAField(otherUomConfig, uq2);
@@ -318,7 +342,9 @@ class UOMManager {
     }
 }
 export async function load() {
+    // const start = window.performance.now();
     // get UOM table
+    const start = new Date().getTime();
     const list: Uom[] = (await pepperi.api.adal.getList({
         table: `${uomsScheme.Name}`,
         addon: config.AddonUUID
@@ -335,4 +361,7 @@ export async function load() {
         // load the manager
         manager.load();
     }
+    const end = new Date().getTime();
+    // const end = window.performance.now();
+    console.log(`loading time is ${end - start}ms`);
 }
