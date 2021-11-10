@@ -281,6 +281,30 @@ class UOMManager {
         });
     }
 
+
+    async getUomConfigByKey(dataObject: DataObject, uomKey: string, itemConfig: UomItemConfiguration[])
+    {
+        const uomValue = await dataObject?.getFieldValue(UOM_KEY_FIRST_TSA);
+        const uom = uomValue ? uoms.get(uomValue) : undefined;
+        return this.getUomConfig(uom, itemConfig);
+
+    }
+
+    fixUomValueAndTsas(uomConfigAraay:UomItemConfiguration[], dataObject:TransactionLine, uiObject: UIObject, uq1, uq2)
+    {
+        this.fixUOMValue(uq1,uq2,dataObject,uomConfigAraay[0],uomConfigAraay[1],uiObject);
+        //update the TSA Field 
+        this.updateTSAField(uomConfigAraay[0], uq1);
+        this.updateTSAField(uomConfigAraay[1], uq2);
+    }
+    async setUnitQuantityReadOnlyIfHasUom(uiObject: UIObject, uq1,uq2)
+    {
+        const realUQ = await uiObject.getField(UNIT_QUANTITY);
+        if (realUQ && (uq1 || uq2)) {
+            realUQ.readonly = true;
+        }
+    }
+
     async recalculateOrderCenterItem(data: EventData) {
         try {
             const start = performance.now();
@@ -301,21 +325,11 @@ class UOMManager {
                 await this.updateUOMDropDowns(arr,dataObject,dd1,uq1,uiObject,dd2,uq2)
                 const itemConfig = await this.getItemConfig(dataObject!);
                 
-                const uomValue = await dataObject?.getFieldValue(UOM_KEY_FIRST_TSA);
-                const uom = uomValue ? uoms.get(uomValue) : undefined;
-                const uomConfig = this.getUomConfig(uom, itemConfig);
-                const otherUomValue = await dataObject?.getFieldValue(UOM_KEY_SECOND_TSA);
-                const otherUom = otherUomValue ? uoms.get(otherUomValue) : undefined;
-                const otherUomConfig = this.getUomConfig(otherUom, itemConfig);
+                const uomConfig = this.getUomConfigByKey(dataObject, UOM_KEY_FIRST_TSA, itemConfig);
+                const otherUomConfig = this.getUomConfigByKey(dataObject, UOM_KEY_SECOND_TSA, itemConfig);
 
-                this.fixUOMValue(uq1,uq2,dataObject,uomConfig,otherUomConfig,uiObject);
-                //update the TSA Field 
-                this.updateTSAField(uomConfig, uq1);
-                this.updateTSAField(otherUomConfig, uq2);
-                const realUQ = await uiObject.getField(UNIT_QUANTITY);
-                if (realUQ && (uq1 || uq2)) {
-                    realUQ.readonly = true;
-                }
+                await Promise.all([uomConfig,otherUomConfig]).then((uomConfigArry) => this.fixUomValueAndTsas(uomConfigArry, dataObject, uiObject, uq1, uq2));
+                await this.setUnitQuantityReadOnlyIfHasUom(uiObject, uq1,uq2)
             })       
             const end = performance.now();
             console.log(`recalculateOrderCenterItem itertaion number ${iter} took ${end - start} ms`)
