@@ -218,7 +218,7 @@ class UOMManager {
         }
     }
 
-    async updateUOMTSAs(arr:string[],dataObject: TransactionLine, dd1: UIField | undefined, uq1: UIField | undefined, uiObject: UIObject, dd2: UIField | undefined, uq2: UIField | undefined )
+    async updateUOMDropDowns(arr:string[],dataObject: TransactionLine, dd1: UIField | undefined, uq1: UIField | undefined, uiObject: UIObject, dd2: UIField | undefined, uq2: UIField | undefined )
     {
         const optionalValues = this.getOptionalValues(arr);
         if (optionalValues.length > 0 && dataObject.children.length == 0) {
@@ -283,41 +283,42 @@ class UOMManager {
 
     async recalculateOrderCenterItem(data: EventData) {
         try {
-            let before = 0;
             const start = performance.now();
             const uiObject = data.UIObject!;
             const dataObject = data.DataObject! as TransactionLine;
             // Get the keys of the UOM from integration
-            before = performance.now();
-            let arr: string[] = await this.getItemUOMs(dataObject);
-            const dd1 = await uiObject.getField(UOM_KEY_FIRST_TSA);
-            const dd2 = await uiObject.getField(UOM_KEY_SECOND_TSA);
-            let uq1 = await uiObject.getField(UNIT_QTY_FIRST_TSA);
-            let uq2 = await uiObject.getField(UNIT_QTY_SECOND_TSA);
-            const getFields = performance.now() - before;
-            before = performance.now();
-            this.updateUOMTSAs(arr,dataObject,dd1,uq1,uiObject,dd2,uq2);
-            const updateUomTime = performance.now() - before;
-            const uomValue = await dataObject?.getFieldValue(UOM_KEY_FIRST_TSA);
-            const otherUomValue = await dataObject?.getFieldValue(UOM_KEY_SECOND_TSA);
-            const uom = uomValue ? uoms.get(uomValue) : undefined;
-            const otherUom = otherUomValue ? uoms.get(otherUomValue) : undefined;
-            const itemConfig = await this.getItemConfig(dataObject!);
-            const uomConfig = this.getUomConfig(uom, itemConfig);
-            const otherUomConfig = this.getUomConfig(otherUom, itemConfig);
-            before = performance.now();
-            this.fixUOMValue(uq1,uq2,dataObject,uomConfig,otherUomConfig,uiObject);
-            const fixUomValTime = performance.now() - before;
-            const realUQ = await uiObject.getField(UNIT_QUANTITY);
-            if (realUQ && (uq1 || uq2)) {
-                realUQ.readonly = true;
-            }
-            //update the TSA Field 
-            this.updateTSAField(uomConfig, uq1);
-            this.updateTSAField(otherUomConfig, uq2);
+            let arr =  this.getItemUOMs(dataObject);
+            const dd1 =  uiObject.getField(UOM_KEY_FIRST_TSA);
+            const dd2 =  uiObject.getField(UOM_KEY_SECOND_TSA);
+            let uq1 =  uiObject.getField(UNIT_QTY_FIRST_TSA);
+            let uq2 =  uiObject.getField(UNIT_QTY_SECOND_TSA);
+            await Promise.all([arr,dd1,dd2,uq1,uq2]).then(async (uomsTsaFields) => {
+                const arr = uomsTsaFields[0];
+                const dd1 = uomsTsaFields[1];
+                const dd2 = uomsTsaFields[2];
+                let uq1 = uomsTsaFields[3];
+                let uq2 = uomsTsaFields[4];
+                await this.updateUOMDropDowns(arr,dataObject,dd1,uq1,uiObject,dd2,uq2)
+                const itemConfig = await this.getItemConfig(dataObject!);
+                
+                const uomValue = await dataObject?.getFieldValue(UOM_KEY_FIRST_TSA);
+                const uom = uomValue ? uoms.get(uomValue) : undefined;
+                const uomConfig = this.getUomConfig(uom, itemConfig);
+                const otherUomValue = await dataObject?.getFieldValue(UOM_KEY_SECOND_TSA);
+                const otherUom = otherUomValue ? uoms.get(otherUomValue) : undefined;
+                const otherUomConfig = this.getUomConfig(otherUom, itemConfig);
+
+                this.fixUOMValue(uq1,uq2,dataObject,uomConfig,otherUomConfig,uiObject);
+                //update the TSA Field 
+                this.updateTSAField(uomConfig, uq1);
+                this.updateTSAField(otherUomConfig, uq2);
+                const realUQ = await uiObject.getField(UNIT_QUANTITY);
+                if (realUQ && (uq1 || uq2)) {
+                    realUQ.readonly = true;
+                }
+            })       
             const end = performance.now();
-            console.log(`recalculateOrderCenterItem itertaion number ${iter} took ${end - start} ms , get dd and uq took: ${getFields} ms, update uom tsa's took ${updateUomTime} ms
-            , fix uom value took ${fixUomValTime} ms `)
+            console.log(`recalculateOrderCenterItem itertaion number ${iter} took ${end - start} ms`)
 
             iter++;
         }     
