@@ -12,7 +12,7 @@ import { DataObject, EventData, UIObject, TransactionLine, UIField } from '@pepp
 import config from '../addon.config.json';
 import { QuantityCalculator } from './quantity-calculator';
 import { ItemAction, QuantityResult, UomItemConfiguration } from './../shared/entities';
-import {uomsScheme} from '../server-side/metadata'
+import {uomsScheme, UomTSAFields} from '../server-side/metadata'
 
 // const { JSDOM } = require("jsdom");
 // const { window } = new JSDOM();
@@ -195,7 +195,6 @@ class UOMManager {
             uq['customField'].type = 29;
         }
     }
-
     async fixUOMValue(uq1: UIField | undefined, uq2: UIField | undefined, dataObject: TransactionLine, uomConfig, otherUomConfig, uiObject: UIObject)
     {
         const unitsQuantity = await dataObject?.getFieldValue(UNIT_QUANTITY);
@@ -217,15 +216,18 @@ class UOMManager {
             }
         }
     }
-
+    makeEditableAndVisibleWithMenu(dd: UIField, optionalValues)
+    {
+        dd.readonly = false;
+        dd.visible = true;
+        dd.optionalValues = optionalValues;
+    }
     async updateUOMDropDowns(arr:string[],dataObject: TransactionLine, dd1: UIField | undefined, uq1: UIField | undefined, uiObject: UIObject, dd2: UIField | undefined, uq2: UIField | undefined )
     {
         const optionalValues = this.getOptionalValues(arr);
         if (optionalValues.length > 0 && dataObject.children.length == 0) {
             if (dd1 && uq1) {
-                dd1.readonly = false;
-                dd1.visible = true;
-                dd1.optionalValues = optionalValues;
+                this.makeEditableAndVisibleWithMenu(dd1,optionalValues);
                 if (dd1.value === '') {
                     await uiObject.setFieldValue(UOM_KEY_FIRST_TSA, optionalValues[0].Key, true);
                 }
@@ -235,9 +237,7 @@ class UOMManager {
                 }
             }
             if (dd2 && uq2) {
-                dd2.readonly = false;
-                dd2.visible = true;
-                dd2.optionalValues = optionalValues;
+                this.makeEditableAndVisibleWithMenu(dd2,optionalValues);
                 if (dd2.value === '') {
                     if (dd1 && optionalValues.length > 1) {
                         await uiObject.setFieldValue(UOM_KEY_SECOND_TSA, optionalValues[1].Key, true);
@@ -270,7 +270,6 @@ class UOMManager {
 
         }
     }
-
     getOptionalValues(arr:string[])
     {
         return arr.map(key => uoms.get(key)).filter(Boolean).map(uom => {
@@ -280,16 +279,13 @@ class UOMManager {
             }
         });
     }
-
-
     async getUomConfigByKey(dataObject: DataObject, uomKey: string, itemConfig: UomItemConfiguration[])
     {
-        const uomValue = await dataObject?.getFieldValue(UOM_KEY_FIRST_TSA);
+        const uomValue = await dataObject?.getFieldValue(uomKey);
         const uom = uomValue ? uoms.get(uomValue) : undefined;
         return this.getUomConfig(uom, itemConfig);
 
     }
-
     fixUomValueAndTsas(uomConfigAraay:UomItemConfiguration[], dataObject:TransactionLine, uiObject: UIObject, uq1, uq2)
     {
         this.fixUOMValue(uq1,uq2,dataObject,uomConfigAraay[0],uomConfigAraay[1],uiObject);
@@ -305,36 +301,40 @@ class UOMManager {
         }
     }
 
+    getUomFields(uomKey: string, unitQuantityKey:string, uiObject)
+    {
+        return [uiObject.getField(uomKey),uiObject.getField(unitQuantityKey)]
+    }
+    buildFieldsObjectFromArray(uomTSAFields)
+    {
+        return {'arr': uomTSAFields[0],
+                'dd1': uomTSAFields[1],
+                'uq1': uomTSAFields[2],
+                'dd2': uomTSAFields[3],
+                'uq2': uomTSAFields[4]
+               };
+    }
+
     async recalculateOrderCenterItem(data: EventData) {
         try {
-            const start = performance.now();
             const uiObject = data.UIObject!;
             const dataObject = data.DataObject! as TransactionLine;
             // Get the keys of the UOM from integration
             let arr =  this.getItemUOMs(dataObject);
-            const dd1 =  uiObject.getField(UOM_KEY_FIRST_TSA);
-            const dd2 =  uiObject.getField(UOM_KEY_SECOND_TSA);
-            let uq1 =  uiObject.getField(UNIT_QTY_FIRST_TSA);
-            let uq2 =  uiObject.getField(UNIT_QTY_SECOND_TSA);
-            await Promise.all([arr,dd1,dd2,uq1,uq2]).then(async (uomsTsaFields) => {
-                const arr = uomsTsaFields[0];
-                const dd1 = uomsTsaFields[1];
-                const dd2 = uomsTsaFields[2];
-                let uq1 = uomsTsaFields[3];
-                let uq2 = uomsTsaFields[4];
-                await this.updateUOMDropDowns(arr,dataObject,dd1,uq1,uiObject,dd2,uq2)
+            const firstTSAFields = this.getUomFields(UOM_KEY_FIRST_TSA, UNIT_QTY_FIRST_TSA, uiObject);
+            const secondTSAFields = this.getUomFields(UOM_KEY_SECOND_TSA, UNIT_QTY_SECOND_TSA, uiObject);
+
+            await Promise.all([arr,...firstTSAFields, ...secondTSAFields]).then(async (uomsTsaFields) => {
+                const fieldsObject = this.buildFieldsObjectFromArray(uomsTsaFields);
+                await this.updateUOMDropDowns(fieldsObject.arr,dataObject,fieldsObject.dd1,fieldsObject.uq1,uiObject,fieldsObject.dd2,fieldsObject.uq2)
                 const itemConfig = await this.getItemConfig(dataObject!);
                 
                 const uomConfig = this.getUomConfigByKey(dataObject, UOM_KEY_FIRST_TSA, itemConfig);
                 const otherUomConfig = this.getUomConfigByKey(dataObject, UOM_KEY_SECOND_TSA, itemConfig);
 
-                await Promise.all([uomConfig,otherUomConfig]).then((uomConfigArry) => this.fixUomValueAndTsas(uomConfigArry, dataObject, uiObject, uq1, uq2));
-                await this.setUnitQuantityReadOnlyIfHasUom(uiObject, uq1,uq2)
+                await Promise.all([uomConfig,otherUomConfig]).then((uomConfigArry) => this.fixUomValueAndTsas(uomConfigArry, dataObject, uiObject, fieldsObject.uq1, fieldsObject.uq2));
+                await this.setUnitQuantityReadOnlyIfHasUom(uiObject, fieldsObject.uq1,fieldsObject.uq2)
             })       
-            const end = performance.now();
-            console.log(`recalculateOrderCenterItem itertaion number ${iter} took ${end - start} ms`)
-
-            iter++;
         }     
         catch (err) {
             console.log('Error recalculating UQ field');
