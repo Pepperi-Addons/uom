@@ -290,61 +290,35 @@ class UOMManager {
             // Get the keys of the UOM from integration
             before = performance.now();
             let arr: string[] = await this.getItemUOMs(dataObject);
-            // const get_item_uoms = performance.now() - before;
-            // get the UIFields
-            // before = performance.now();
             const dd1 = await uiObject.getField(UOM_KEY_FIRST_TSA);
-            // const get_dd1 = performance.now() - before;
-            // before = performance.now();
             const dd2 = await uiObject.getField(UOM_KEY_SECOND_TSA);
-            // const get_dd2 = performance.now() - before;
-            // before = performance.now();
             let uq1 = await uiObject.getField(UNIT_QTY_FIRST_TSA);
-            // const get_uq1 = performance.now() - before;
-            // before = performance.now();
             let uq2 = await uiObject.getField(UNIT_QTY_SECOND_TSA);
             const getFields = performance.now() - before;
-            // const get_uq2 = performance.now() - before;
             before = performance.now();
             this.updateUOMTSAs(arr,dataObject,dd1,uq1,uiObject,dd2,uq2);
             const updateUomTime = performance.now() - before;
             const uomValue = await dataObject?.getFieldValue(UOM_KEY_FIRST_TSA);
-            // const get_uom_value = performance.now() - before;
-            // before = performance.now();
             const otherUomValue = await dataObject?.getFieldValue(UOM_KEY_SECOND_TSA);
-            // const get_other_uom_value = performance.now() - before;
-            // before = performance.now();
             const uom = uomValue ? uoms.get(uomValue) : undefined;
             const otherUom = otherUomValue ? uoms.get(otherUomValue) : undefined;
-            // before = performance.now();
             const itemConfig = await this.getItemConfig(dataObject!);
-            // const get_item_config = performance.now() - before;
             const uomConfig = this.getUomConfig(uom, itemConfig);
             const otherUomConfig = this.getUomConfig(otherUom, itemConfig);
-            // const beforeFix = performance.now();
             before = performance.now();
             this.fixUOMValue(uq1,uq2,dataObject,uomConfig,otherUomConfig,uiObject);
             const fixUomValTime = performance.now() - before;
-            // const afterFixUomValue = performance.now() - beforeFix;
-            // run uom logic only when current item has available uoms. otherwise, hide uom fields and continue with regular UQ logic
-            // before = performance.now();
             const realUQ = await uiObject.getField(UNIT_QUANTITY);
-            // const get_units_quantity = performance.now() - get_item_config; 
             if (realUQ && (uq1 || uq2)) {
                 realUQ.readonly = true;
             }
             //update the TSA Field 
-            // const beforeUpdateTSA = performance.now();
             this.updateTSAField(uomConfig, uq1);
             this.updateTSAField(otherUomConfig, uq2);
-            // const afterUpdateTSA = performance.now() - beforeUpdateTSA;
             const end = performance.now();
             console.log(`recalculateOrderCenterItem itertaion number ${iter} took ${end - start} ms , get dd and uq took: ${getFields} ms, update uom tsa's took ${updateUomTime} ms
             , fix uom value took ${fixUomValTime} ms `)
-            // console.log(`recalculateOrderCenterItem iteration number ${iter} took ${end - start} ms, get_item_uoms took: ${get_item_uoms}, get_dd1 took: ${get_dd1},
-            //  get_dd2 took: ${get_dd2}, get_uq1 took: ${get_uq1}, get_uq2 took: ${get_uq2}, get_uom_value took: ${get_uom_value},
-            //   get_other_uom_value took: ${get_other_uom_value}, get_item_config took: ${get_item_config}, get_units_quantity took: ${get_units_quantity} ,
-            //   fix uom values took ${afterFixUomValue}, update TSA to 29 took ${afterUpdateTSA}`);
+
             iter++;
         }     
         catch (err) {
