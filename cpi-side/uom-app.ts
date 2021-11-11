@@ -398,27 +398,41 @@ class UOMManager {
         return caseQuantity;
     }
 }
+
+async function getUomArray(tableName:string): Promise<Uom[]>
+{
+    return (await pepperi.api.adal.getList({
+        table: tableName,
+        addon: config.AddonUUID
+    })).objects as Uom[];
+    
+}
+
+async function getAtdConfigurationArray(): Promise<AtdConfiguration[]>
+{
+    return (await pepperi.api.adal.getList({
+        table: 'AtdConfig',
+        addon: config.AddonUUID
+    })).objects as AtdConfiguration[];
+}
+
+function createUOMMangers(atdConfigurations: AtdConfiguration[])
+{
+ atdConfigurations.map((atdConfiguration) => {
+     new UOMManager(atdConfiguration).load()
+ })   
+}
+
+
 export async function load() {
     // const start = window.performance.now();
     // get UOM table
     const start = new Date().getTime();
-    const list: Uom[] = (await pepperi.api.adal.getList({
-        table: `${uomsScheme.Name}`,
-        addon: config.AddonUUID
-    })).objects as Uom[];
+    const list: Uom[] = await getUomArray(uomsScheme.Name)
     uoms = new UOMMap(list);
     // get config table
-    const configs = (await pepperi.api.adal.getList({
-        table: 'AtdConfig',
-        addon: config.AddonUUID
-    })).objects as AtdConfiguration[];
+    const atdConfigurations = await getAtdConfigurationArray();
     // create manager for each config
-    for (const config of configs) {
-        const manager = new UOMManager(config);
-        // load the manager
-        manager.load();
-    }
-    const end = new Date().getTime();
-    // const end = window.performance.now();
-    console.log(`loading time is ${end - start}ms`);
+    createUOMMangers(atdConfigurations)
+
 }
