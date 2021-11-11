@@ -190,7 +190,7 @@ class UOMManager {
             uq['customField'].type = 28;
             uq['customField'].decimalDigits = 0;
         }
-        else if (uomConfig.Decimal && uomConfig.Decimal > 0 && uq['customField'].type === 28 ) {
+        else if(uomConfig.Decimal  && uq['customField'].type === 28 ) {
             uq['customField'].decimalDigits = uomConfig.Decimal;
             uq['customField'].type = 29;
         }
