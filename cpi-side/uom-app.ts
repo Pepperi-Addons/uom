@@ -175,8 +175,8 @@ class UOMManager {
             // add quantity to total
             total += quantityResult.total;
             let resultValue = quantityResult.curr.toString();
-            await dataObject?.setFieldValue(UNIT_QUANTITY, total.toString(), true);
             await uiObject.setFieldValue(uqField, resultValue, true);
+            await dataObject?.setFieldValue(UNIT_QUANTITY, total.toString(), true);
         }
         catch (err) {
             console.log('Error setting UQ field');

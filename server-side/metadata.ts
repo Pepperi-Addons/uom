@@ -108,3 +108,22 @@ export const uomsScheme: AddonDataScheme = {
     Name: "Uoms",
     Type: "cpi_meta_data",
 }
+
+
+export const psaAddToCartRule = {
+Type: 'Boolean',
+Format: 'Boolean',
+CalculatedRuleEngine: {
+    JSFormula: "TSAAOQMQuantity1 > 0 || TSAAOQMQuantity2 > 0",
+    ParticipatingFields: [
+        "UnitsQuantity",
+        "TSAAOQMQuantity1",
+        "TSAAOQMQuantity2"
+    ],
+    CalculatedOn: {
+        ID: 1,
+        Name: "Always"
+    },
+    Temporary: false
+},
+}
