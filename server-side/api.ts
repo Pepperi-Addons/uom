@@ -7,6 +7,7 @@ import { ApiFieldObject, PapiClient } from '@pepperi-addons/papi-sdk';
 import { ConfigurationService } from './services/configuration.service';
 import { UomTSAFields } from './metadata';
 import { AtdConfiguration } from '../shared/entities';
+import { request } from 'http';
 
 export async function uoms(client: Client, request: Request) {
     const service = new UomsService(client);
@@ -147,8 +148,10 @@ export async function remove_tsa_fields(client: Client, request: Request): Promi
     {
         atdID = 'atdID' in request.body? Number(request.body.atdID): -1;
     }
+    await service.removePSAField(atdID);
     return await service.removeTSAFields(atdID);
 }
+
 export async function create_tsa_fields(client: Client, request:Request) {
     let created = false;
     const papiClient = new PapiClient({
@@ -180,13 +183,16 @@ export async function create_tsa_fields(client: Client, request:Request) {
     {
         throw new Error('expected to recive GET/POST method, but instead recived ' + request.method);
     }
+    await service.createAddToCartToRulePSAIfNotExist(atdID);
     const field = await service.getField(atdID, UOM_KEY_FIRST_TSA);
     if(field == undefined)
     {
         created = await service.createAtdTransactionLinesFields(atdID, UomTSAFields);
     }
+
     return created;
 }
+
 export async function is_installed(client:Client, request:Request):Promise<boolean>{
     const papiClient = new PapiClient({
         baseURL: client.BaseURL,
@@ -302,5 +308,5 @@ export async function remove_tsa_and_atd(client: Client, request:Request)
 export async function foo(client: Client, request: Request) {
     const service = new MyService(client)
     const res = await service.getAddons()
-    return res
+    return res;
 };

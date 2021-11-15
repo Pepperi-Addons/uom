@@ -113,6 +113,13 @@ export const uomsScheme: AddonDataScheme = {
 export const psaAddToCartRule = {
 Type: 'Boolean',
 Format: 'Boolean',
+FieldID: 'PSAAddToCartRule',
+Label: 'PSAAddToCartRule',
+Hidden: false,
+UIType: {
+    "ID": 10,
+    "Name": "Boolean"
+},
 CalculatedRuleEngine: {
     JSFormula: "TSAAOQMQuantity1 > 0 || TSAAOQMQuantity2 > 0",
     ParticipatingFields: [

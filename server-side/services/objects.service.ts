@@ -1,11 +1,17 @@
 import { PepperiObject, ApiFieldObject, PapiClient } from "@pepperi-addons/papi-sdk";
-import { UomTSAFields } from "../metadata";
+import { UomTSAFields, psaAddToCartRule } from "../metadata";
+
 
 export class ObjectsService {
     private pepperiObjects: PepperiObject[] = []
     private fields: { [key: number]: ApiFieldObject[] } = {}
 
     constructor(private papiClient: PapiClient) {
+    }
+
+    async removePSAField(atdID: number){
+        psaAddToCartRule.Hidden = true;
+        return await this.papiClient.post(`/meta_data/transaction_lines/types/${atdID}/fields`, psaAddToCartRule);
     }
     async getField(atdId: number, fieldId: string): Promise<ApiFieldObject | undefined> {
         const fields = await this.getAtdFields(atdId);
@@ -42,7 +48,21 @@ export class ObjectsService {
         const createdField: ApiFieldObject = await this.papiClient.post(`/meta_data/transaction_lines/types/${atdId}/fields`, field);
         return createdField != undefined;
     }
-
+    async createAddToCartToRulePSAIfNotExist(atdID:number) {
+        debugger;
+        const transaction_lines =  await this.papiClient.metaData.type("transaction_lines").types.subtype(atdID.toString()).fields.get();
+        const psaCartArray =transaction_lines.filter((transaction_line) => {
+            return transaction_line.FieldID === 'PSAAddToCartRule' && transaction_line.Hidden == false;
+        })
+        if(psaCartArray.length <= 0)
+        {
+            await  this.papiClient.post(`/meta_data/transaction_lines/types/${atdID}/fields`,psaAddToCartRule);
+        }
+    //     return (await this.getAtdFields(atdID)).filter((transactionLineField) => {
+    //        return transactionLineField.FieldID === 'PSAAddToCartRule'
+    //    }).length > 0? await  this.papiClient.post(`/meta_data/transaction_lines/types/${atdID}/fields`, psaAddToCartRule): undefined;
+        
+    }
     async removeTSAFields(atdID: number){
         const tsaFields =  await Promise.all(UomTSAFields.map(async (field) => {
             return await this.getField(atdID, field.FieldID);
