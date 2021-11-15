@@ -186,13 +186,17 @@ class UOMManager {
     updateTSAField(uomConfig: UomItemConfiguration, uq: UIField | undefined) {
         if(!uq || !uomConfig)
             return;
+
+        if(uomConfig.Decimal  && uomConfig.Decimal != uq['customField'].decimalDigits)
+        {
+            uq['customField'].decimalDigits = uomConfig.Decimal;
+        }
+
         if (!uomConfig.Decimal && uq['customField'].type === 29) {
             uq['customField'].type = 28;
-            uq['customField'].decimalDigits = 0;
         }
-        else if(uomConfig.Decimal  && uq['customField'].type === 28 ) {
+        else if(uomConfig.Decimal  && uq['customField'].type === 28) {
             uq['customField'].decimalDigits = uomConfig.Decimal;
-            uq['customField'].type = 29;
         }
     }
     async fixUOMValue(uq1: UIField | undefined, uq2: UIField | undefined, dataObject: TransactionLine, uomConfig, otherUomConfig, uiObject: UIObject)
