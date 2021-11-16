@@ -187,8 +187,7 @@ class UOMManager {
         if(!uq || !uomConfig)
             return;
 
-        if(uomConfig.Decimal  && uomConfig.Decimal != uq['customField'].decimalDigits)
-        {
+        if(uomConfig.Decimal  && uomConfig.Decimal != uq['customField'].decimalDigits) {
             uq['customField'].decimalDigits = uomConfig.Decimal;
         }
 
