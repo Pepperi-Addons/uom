@@ -79,25 +79,8 @@ class UOMManager {
                 }
             }
         }
-
-        
-        // subscribe to Order center & cart data views
-        // for (const dataView of [...OC_DATA_VIEWS, ...CART_DATA_VIEWS]) {
-        //     const filter = {
-        //         UIObject: {
-        //             context: {
-        //                 Name: dataView
-        //             }  
-        //         },
-        //         DataObject: {
-        //             typeDefinition: {
-        //                 internalID: Number(this.config.Key)
-        //             }
-        //         }
-        //     }
             // recalc event
             pepperi.events.intercept('RecalculateUIObject', filter, async (data, next, main) => {
-                // const view = dataView;
                 const dataView = data.UIObject?.context?.Name;
                 if(dataView && dataView in [...CART_DATA_VIEWS,...OC_DATA_VIEWS])
                 {
