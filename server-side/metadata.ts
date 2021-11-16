@@ -110,7 +110,7 @@ export const uomsScheme: AddonDataScheme = {
 }
 
 
-export const psaAddToCartRule = {
+export const PSAAddToCartRule = {
 Type: 'Boolean',
 Format: 'Boolean',
 FieldID: 'PSAAddToCartRule',

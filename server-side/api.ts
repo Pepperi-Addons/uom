@@ -1,5 +1,4 @@
 import { UOM_KEY_FIRST_TSA } from './../shared/entities';
-import MyService from './my.service'
 import { Client, Request } from '@pepperi-addons/debug-server'
 import { UomsService } from './services/uom.service'
 import { ObjectsService } from './services/objects.service';
@@ -7,7 +6,7 @@ import { ApiFieldObject, PapiClient } from '@pepperi-addons/papi-sdk';
 import { ConfigurationService } from './services/configuration.service';
 import { UomTSAFields } from './metadata';
 import { AtdConfiguration } from '../shared/entities';
-import { request } from 'http';
+
 
 export async function uoms(client: Client, request: Request) {
     const service = new UomsService(client);
@@ -303,10 +302,4 @@ export async function remove_tsa_and_atd(client: Client, request:Request)
     await remove_tsa_fields(client,request);
     return;
 }
-// this function will run on the 'api/foo' endpoint
-// the real function is runnning on another typescript file
-export async function foo(client: Client, request: Request) {
-    const service = new MyService(client)
-    const res = await service.getAddons()
-    return res;
-};
+

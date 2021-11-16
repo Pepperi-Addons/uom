@@ -1,5 +1,5 @@
 import { PepperiObject, ApiFieldObject, PapiClient } from "@pepperi-addons/papi-sdk";
-import { UomTSAFields, psaAddToCartRule } from "../metadata";
+import { UomTSAFields, PSAAddToCartRule } from "../metadata";
 
 
 export class ObjectsService {
@@ -10,8 +10,8 @@ export class ObjectsService {
     }
 
     async removePSAField(atdID: number){
-        psaAddToCartRule.Hidden = true;
-        return await this.papiClient.post(`/meta_data/transaction_lines/types/${atdID}/fields`, psaAddToCartRule);
+        PSAAddToCartRule.Hidden = true;
+        return await this.papiClient.post(`/meta_data/transaction_lines/types/${atdID}/fields`, PSAAddToCartRule);
     }
     async getField(atdId: number, fieldId: string): Promise<ApiFieldObject | undefined> {
         const fields = await this.getAtdFields(atdId);
@@ -48,21 +48,22 @@ export class ObjectsService {
         const createdField: ApiFieldObject = await this.papiClient.post(`/meta_data/transaction_lines/types/${atdId}/fields`, field);
         return createdField != undefined;
     }
-    async createAddToCartToRulePSAIfNotExist(atdID:number) {
-        debugger;
-        const transaction_lines =  await this.papiClient.metaData.type("transaction_lines").types.subtype(atdID.toString()).fields.get();
-        const psaCartArray =transaction_lines.filter((transaction_line) => {
+
+     async isPSAExist(atdID: number): Promise<boolean> {
+        const transactionLinesFields =  await this.papiClient.metaData.type("transaction_lines").types.subtype(atdID.toString()).fields.get();
+        const psaCartArray =transactionLinesFields.filter((transaction_line) => {
             return transaction_line.FieldID === 'PSAAddToCartRule' && transaction_line.Hidden == false;
         })
-        if(psaCartArray.length <= 0)
+        return psaCartArray.length > 0;
+    }
+    async createAddToCartToRulePSAIfNotExist(atdID:number) {
+        const psaDoesNotExist = !(await this.isPSAExist(atdID));
+        if(psaDoesNotExist)
         {
-            psaAddToCartRule.Hidden = false;
-            await  this.papiClient.post(`/meta_data/transaction_lines/types/${atdID}/fields`,psaAddToCartRule);
+            PSAAddToCartRule.Hidden = false;
+            await  this.papiClient.post(`/meta_data/transaction_lines/types/${atdID}/fields`,PSAAddToCartRule);
         }
-    //     return (await this.getAtdFields(atdID)).filter((transactionLineField) => {
-    //        return transactionLineField.FieldID === 'PSAAddToCartRule'
-    //    }).length > 0? await  this.papiClient.post(`/meta_data/transaction_lines/types/${atdID}/fields`, psaAddToCartRule): undefined;
-        
+        return;
     }
     async removeTSAFields(atdID: number){
         const tsaFields =  await Promise.all(UomTSAFields.map(async (field) => {
