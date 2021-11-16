@@ -121,11 +121,9 @@ UIType: {
     "Name": "Boolean"
 },
 CalculatedRuleEngine: {
-    JSFormula: "TSAAOQMQuantity1 > 0 || TSAAOQMQuantity2 > 0",
+    JSFormula: "return UnitsQuantity != 0",
     ParticipatingFields: [
-        "UnitsQuantity",
-        "TSAAOQMQuantity1",
-        "TSAAOQMQuantity2"
+        "UnitsQuantity"
     ],
     CalculatedOn: {
         ID: 1,

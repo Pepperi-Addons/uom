@@ -56,6 +56,7 @@ export class ObjectsService {
         })
         if(psaCartArray.length <= 0)
         {
+            psaAddToCartRule.Hidden = false;
             await  this.papiClient.post(`/meta_data/transaction_lines/types/${atdID}/fields`,psaAddToCartRule);
         }
     //     return (await this.getAtdFields(atdID)).filter((transactionLineField) => {
