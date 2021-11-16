@@ -72,30 +72,26 @@ class UOMManager {
         }
     }
     subscribe() {
-        // subscribe to Order center & cart data views
-        for (const dataView of [...OC_DATA_VIEWS, ...CART_DATA_VIEWS]) {
-            const filter = {
-                UIObject: {
-                    context: {
-                        Name: dataView
-                    }  
-                },
-                DataObject: {
-                    typeDefinition: {
-                        internalID: Number(this.config.Key)
-                    }
+        const filter = {
+            DataObject: {
+                typeDefinition: {
+                    internalID: Number(this.config.Key)
                 }
             }
+        }
             // recalc event
             pepperi.events.intercept('RecalculateUIObject', filter, async (data, next, main) => {
-                const view = dataView;
-                await this.recalculateOrderCenterItem(data);
+                const dataView = data.UIObject?.context?.Name;
+                if(dataView && dataView in [...CART_DATA_VIEWS,...OC_DATA_VIEWS])
+                {
+                    await this.recalculateOrderCenterItem(data);
+                }
                 await next(main);
             })
             for (const uqField of [UNIT_QTY_FIRST_TSA, UNIT_QTY_SECOND_TSA]) {
                 pepperi.events.intercept('IncrementFieldValue', { FieldID: uqField, ...filter }, async (data, next, main) => {
                     await next(async () => {
-                        if (data && data.UIObject && data.UIObject.dataObject && data.FieldID) {
+                        if (data && data.UIObject && data.UIObject.dataObject && data.FieldID && data.UIObject.context.Name in [...CART_DATA_VIEWS,...OC_DATA_VIEWS]) {
                             let oldValue = await data.UIObject.dataObject.getFieldValue(uqField) || 0;
                             await this.setUQField(data.UIObject, data.FieldID, oldValue, ItemAction.Increment);
                         }
@@ -104,7 +100,7 @@ class UOMManager {
                 // Increment UNIT_QTY_TSA
                 pepperi.events.intercept('DecrementFieldValue', { FieldID: uqField, ...filter }, async (data, next, main) => {
                     await next(async () => {
-                        if (data && data.UIObject && data.UIObject.dataObject && data.FieldID) {
+                        if (data && data.UIObject && data.UIObject.dataObject && data.FieldID && data.UIObject.context.Name in [...CART_DATA_VIEWS,...OC_DATA_VIEWS]) {
                             let oldValue = await data.UIObject.dataObject.getFieldValue(uqField) || 0;
                             await this.setUQField(data.UIObject, data.FieldID, oldValue, ItemAction.Decrement);
                         }
@@ -113,7 +109,7 @@ class UOMManager {
                 // Set UNIT_QTY_TSA   
                 pepperi.events.intercept('SetFieldValue', { FieldID: uqField, ...filter }, async (data, next, main) => {
                     await next(async () => {
-                        if (data && data.UIObject && data.UIObject && data.FieldID) {
+                        if (data && data.UIObject && data.UIObject && data.FieldID && data.UIObject.context.Name in [...CART_DATA_VIEWS,...OC_DATA_VIEWS]) {
                             await this.setUQField(data.UIObject, data.FieldID, parseFloat(data.Value), ItemAction.Set);
                         }
                     });
@@ -129,7 +125,7 @@ class UOMManager {
                     await this.setUQField(data.UIObject!, uqFieldId, quantity, ItemAction.Set);
                 })
             }
-        }
+        
     }
     async setUQField(uiObject: UIObject, fieldId: string, value: number, itemAction: ItemAction) {
         try {
@@ -388,27 +384,37 @@ class UOMManager {
         return caseQuantity;
     }
 }
-export async function load() {
-    // const start = window.performance.now();
-    // get UOM table
-    const start = new Date().getTime();
-    const list: Uom[] = (await pepperi.api.adal.getList({
-        table: `${uomsScheme.Name}`,
+
+async function getUomArray(tableName:string): Promise<Uom[]>
+{
+    return (await pepperi.api.adal.getList({
+        table: tableName,
         addon: config.AddonUUID
     })).objects as Uom[];
-    uoms = new UOMMap(list);
-    // get config table
-    const configs = (await pepperi.api.adal.getList({
+    
+}
+
+async function getAtdConfigurationArray(): Promise<AtdConfiguration[]>
+{
+    return (await pepperi.api.adal.getList({
         table: 'AtdConfig',
         addon: config.AddonUUID
     })).objects as AtdConfiguration[];
-    // create manager for each config
-    for (const config of configs) {
-        const manager = new UOMManager(config);
-        // load the manager
-        manager.load();
-    }
-    const end = new Date().getTime();
-    // const end = window.performance.now();
-    console.log(`loading time is ${end - start}ms`);
+}
+
+function createUOMMangers(atdConfigurations: AtdConfiguration[])
+{
+ atdConfigurations.map((atdConfiguration) => {
+     new UOMManager(atdConfiguration).load()
+ })   
+}
+
+
+export async function load() {
+    const start = new Date().getTime();
+    const list: Uom[] = await getUomArray(uomsScheme.Name)
+    uoms = new UOMMap(list);
+    const atdConfigurations = await getAtdConfigurationArray();
+    createUOMMangers(atdConfigurations)
+
 }
