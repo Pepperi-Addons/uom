@@ -1,0 +1,49 @@
+.wrapper {
+    position: relative; 
+	width: 150%;
+}
+h1{
+	float: left;
+}
+.pep-button{
+	float: right;
+	 padding-top: 1.3em;
+}
+.pep-menu{
+	float: right;
+	padding-top: 1.3em;
+}
+.centerize{
+	width:80%;
+	margin-left:auto;
+	margin-right:auto;
+}
+.halfscreen{
+	width: 50%;
+}
+.left
+{
+	float:left;
+	width:50%;
+}
+.allscreen
+{
+	width: 100%;
+}
+li{
+	padding: 0.2%;
+}
+br{
+	padding: 5%;
+}
+.container{
+	max-height: calc(100vh - 230px) !important;
+	float: left;
+}
+.header{
+		position: relative;
+		// border-bottom:solid 1px #000;
+		padding:3px;
+		// vertical-align: text-bottom #000;
+		width: 150%
+}

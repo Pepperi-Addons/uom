@@ -3,46 +3,91 @@ import MyService from './my.service'
 import { Client, Request } from '@pepperi-addons/debug-server'
 import { UomsService } from './services/uom.service'
 import { ObjectsService } from './services/objects.service';
-import { PapiClient } from '@pepperi-addons/papi-sdk';
+import { ApiFieldObject, PapiClient } from '@pepperi-addons/papi-sdk';
 import { ConfigurationService } from './services/configuration.service';
 import { UomTSAFields } from './metadata';
 import { AtdConfiguration } from '../shared/entities';
-import { config } from 'process';
 
 export async function uoms(client: Client, request: Request) {
     const service = new UomsService(client);
 
-    if (request.method == 'POST') {
+    if (request.method == 'POST') 
+    {
         return service.upsert(request.body);
     }
-    else if (request.method == 'GET') {
+    else if (request.method == 'GET')
+    {
         return await service.find(request.query);
     }
+    else
+    {
+        throw new Error('expected to recive GET/POST method, but instead recived ' + request.method);
+    }
 };
+export async function  get_atd_id(client: Client, request: Request) {
+    if(request.method != 'GET')
+    {
+        throw new Error('expected to recive GET method, but instead recived ' + request.method);
+    }
+    const papiClient = new PapiClient({
+        baseURL: client.BaseURL,
+        token: client.OAuthAccessToken,
+        addonUUID: client.AddonUUID,
+        addonSecretKey: client.AddonSecretKey,
+        actionUUID: client.ActionUUID
+    });
+    const service = new ObjectsService(papiClient);
+    let uuid = '';
+    if('uuid' in request?.query)
+    {
+        uuid = request.query.uuid
+    }
+    const atdID = await service.getAtdId(uuid);
+    const isInstalled = await service.getField(atdID, 'TSAAOQMQuantity1').then((field: ApiFieldObject | undefined) => {
+        return field === undefined? false: !field.Hidden;
+    });
+    return {'atdID': atdID, 'isInstalled': isInstalled};
+    // return await service.getAtdId(uuid)
+};
+export async function remove_atd_configurations(client: Client, request: Request){
+    if(request.method !=  'POST')
+    {
+        throw new Error('expected to recive POST method, but instead recived ' + request.method);
+    }
+        
+   const service = new ConfigurationService(client);
+   return await service.uninstall(request.body);
 
-export async function getUomByKey(client: Client, request: Request) {
+}
+export async function get_uom_by_key(client: Client, request: Request) {
+    if(request.method != 'GET')
+    {
+        throw new Error('expected to recive GET method, but instead recived ' + request.method);
+    }
     const service = new UomsService(client);
     let uomKey = ''
-
-    if (request.method == 'GET' && request?.query) {
+    if (request?.query)
+    {
         uomKey = 'uomKey' in request.query ? request.query.uomKey : '';
     }        
-
     return await service.getByKey(uomKey);
 }
-
-export async function atdConfiguration(client: Client, request: Request) {
+export async function atd_configuration(client: Client, request: Request) {
     const service = new ConfigurationService(client)
-
-    if (request.method == 'POST') {
+    if (request.method == 'POST')
+    {
         return service.upsert(request.body);
     }
-    else if (request.method == 'GET') {
+    else if (request.method == 'GET')
+    {
         return await service.find(request.query);
     }
+    else
+    {
+        throw new Error('expected to recive GET/POST method, but instead recived ' + request.method);
+    }
 };
-
-export async function getAtdFields(client: Client, request: Request) {
+export async function get_atd_fields(client: Client, request: Request) {
     const papiClient = new PapiClient({
         baseURL: client.BaseURL,
         token: client.OAuthAccessToken,
@@ -53,25 +98,58 @@ export async function getAtdFields(client: Client, request: Request) {
     const service = new ObjectsService(papiClient)
     let atdID = -1;
 
-    if (request.method == 'POST') {
-        if(request?.body) {
+    if (request.method == 'POST')
+    {
+        if(request?.body)
+        {
             atdID = 'atdID' in request.body ? Number(request.body.atdID) : -1;
         }
     }
-    else if (request.method == 'GET') {
-        if(request?.query) {
+    else if (request.method == 'GET')
+    {
+        if(request?.query)
+        {
             atdID = 'atdID' in request.query ? Number(request.query.atdID) : -1;
         }        
     }
-
+    else
+    {
+        throw new Error('expected to recive GET/POST method, but instead recived ' + request.method);
+    }
+    if(atdID === -1)
+    {
+        return [{}];
+    }
     const items = await service.getItemsFields();
     items.forEach(item => item['FieldID'] = `Item.${item.FieldID}`);
-
     return [...await service.getAtdFields(atdID), ...items];
-};
+}
+export async function remove_tsa_fields(client: Client, request: Request): Promise<boolean> {
+    if(request.method !=  'POST')
+    {
+        throw new console.error("expected to recive POST method but instead recived " + request.method );
+    }
+    const papiClient = new PapiClient({
+        baseURL: client.BaseURL,
+        token: client.OAuthAccessToken,
+        addonUUID: client.AddonUUID,
+        addonSecretKey: client.AddonSecretKey,
+        actionUUID: client.ActionUUID
 
-export async function createTSAFields(client: Client, request:Request) {
-    debugger;
+    });
+    const service = new ObjectsService(papiClient);
+    let atdID = -1;
+    if(request?.query)
+    {
+        atdID = 'atdID' in request.query? Number(request.query.atdID) : -1;
+    }
+    if(request?.body)
+    {
+        atdID = 'atdID' in request.body? Number(request.body.atdID): -1;
+    }
+    return await service.removeTSAFields(atdID);
+}
+export async function create_tsa_fields(client: Client, request:Request) {
     let created = false;
     const papiClient = new PapiClient({
         baseURL: client.BaseURL,
@@ -84,27 +162,51 @@ export async function createTSAFields(client: Client, request:Request) {
     const service = new ObjectsService(papiClient)
     let atdID = -1;
 
-    if (request.method == 'POST') {
-        if(request?.body) {
+    if (request.method == 'POST')
+    {
+        if(request?.body)
+        {
             atdID = 'atdID' in request.body ? Number(request.body.atdID) : -1;
         }
     }
-    else if (request.method == 'GET') {
-        if(request?.query) {
+    else if (request.method == 'GET')
+    {
+        if(request?.query)
+        {
             atdID = 'atdID' in request.query ? Number(request.query.atdID) : -1;
         }        
     }
-
+    else
+    {
+        throw new Error('expected to recive GET/POST method, but instead recived ' + request.method);
+    }
     const field = await service.getField(atdID, UOM_KEY_FIRST_TSA);
-
-    if(field == undefined) {
+    if(field == undefined)
+    {
         created = await service.createAtdTransactionLinesFields(atdID, UomTSAFields);
     }
-
     return created;
 }
+export async function is_installed(client:Client, request:Request):Promise<boolean>{
+    const papiClient = new PapiClient({
+        baseURL: client.BaseURL,
+        token: client.OAuthAccessToken,
+        addonUUID: client.AddonUUID,
+        addonSecretKey: client.AddonSecretKey,
+        actionUUID: client.ActionUUID
 
-export async function importUom(client: Client, request:Request) {
+    });
+    if(request.method != 'GET')
+    {
+        throw new Error('expected to recive GET method, but instead recived ' + request.method);
+    }
+    const service = new ObjectsService(papiClient);
+    let atdID = 'atdID' in request.query ? Number(request.query.atdID): -1;
+    return  await service.getField(atdID, 'TSAAOQMQuantity1').then((field: ApiFieldObject | undefined) => {
+        return field === undefined? false: !field.Hidden;
+    });
+}
+export async function import_uom(client: Client, request:Request) {
     const papiClient = new PapiClient({
         baseURL: client.BaseURL,
         token: client.OAuthAccessToken,
@@ -112,13 +214,11 @@ export async function importUom(client: Client, request:Request) {
         addonUUID: client.AddonUUID, 
         addonSecretKey: client.AddonSecretKey
     });
-
     const service = new ConfigurationService(client);
     const objService = new ObjectsService(papiClient);
-
     try {
-        console.log('importUOM is called, data got from call:', request.body);
-        if (request.body && request.body.Resource == 'transactions') {
+        if (request.body && request.body.Resource == 'transactions')
+        {
             const config:AtdConfiguration = {
                 Key:request.body.InternalID,
                 ...request.body.DataFromExport 
@@ -138,18 +238,17 @@ export async function importUom(client: Client, request:Request) {
         }
     }
 }
-
-export async function exportUom(client: Client, request:Request) {
+export async function export_uom(client: Client, request:Request) {
     const service = new ConfigurationService(client);
-
     try {
         let config;
-        console.log('exportUOM is called, data got from call:', request.query);
-        if (request.query && request.query.resource  == 'transactions') {
+        if (request.query && request.query.resource  == 'transactions')
+        {
             config = await service.find({
                 where: `Key= ${request.query.internal_id}`,
             });
-            if(config && config.length > 0) {
+            if(config && config.length > 0)
+            {
                 return {
                     success:true,
                     DataForImport: {
@@ -159,7 +258,8 @@ export async function exportUom(client: Client, request:Request) {
                     },
                 }
             }
-            else {
+            else
+            {
                 return {
                     success:true,
                     DataForImport: {
@@ -182,7 +282,21 @@ export async function exportUom(client: Client, request:Request) {
     }
 }
 
-// add functions here
+export async function remove_tsa_and_atd(client: Client, request:Request)
+{
+    if(request.method != 'POST')
+    {
+        throw new Error('expected to recive POST method, but instead recived ' + request.method);   
+    }
+    if(!('key' in request.body))
+    {
+        throw new Error('remove_tsa_and_atd: must include key inside request.body');
+    }
+    await remove_atd_configurations(client,request);
+    request.body.atdID = request.body.key;
+    await remove_tsa_fields(client,request);
+    return;
+}
 // this function will run on the 'api/foo' endpoint
 // the real function is runnning on another typescript file
 export async function foo(client: Client, request: Request) {
@@ -190,4 +304,3 @@ export async function foo(client: Client, request: Request) {
     const res = await service.getAddons()
     return res
 };
-

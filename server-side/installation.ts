@@ -9,8 +9,10 @@ The error Message is importent! it will be written in the audit log and help the
 */
 
 import { Client, Request } from '@pepperi-addons/debug-server'
-import { PapiClient } from '@pepperi-addons/papi-sdk'
+import { ApiFieldObject, PapiClient } from '@pepperi-addons/papi-sdk'
+import { Fields } from '@pepperi-addons/papi-sdk/dist/endpoints';
 import { atdConfigScheme, uomsScheme, relations } from './metadata';
+import { ObjectsService } from './services/objects.service';
 
 export async function install(client: Client, request: Request): Promise<any> {
     const papiClient = new PapiClient({
@@ -27,12 +29,52 @@ export async function install(client: Client, request: Request): Promise<any> {
     
     return retVal;
 }
-
 export async function uninstall(client: Client, request: Request): Promise<any> {
+    const papiClient = new PapiClient({
+        baseURL: client.BaseURL,
+        token: client.OAuthAccessToken,
+        addonUUID: client.AddonUUID,
+        addonSecretKey: client.AddonSecretKey
+    });
+    try {
+        // const headers =
+        // {
+        //     'X-Pepperi-SecretKey' : client.AddonSecretKey,
+        //     'X-Pepperi-OwnerID': client.AddonUUID
+        // } 
+        
+        const service = new ObjectsService(papiClient)
+        //get all transactions
+        const transactions = await papiClient.get('/types');
+        //remove all transactions that are not transaction lines
+        transactions.filter((transaction) => {
+            if(transaction.Type === 2)
+            {
+                return true;
+            }
+            return false;
+            }).map((transaction) => {
+                //if uom is installed on that transaction then remove the relavant TSA fields
+                service.getField(transaction.InternalID, 'TSAAOQMQuantity1').then((field: ApiFieldObject | undefined) => {
+                         if(field != undefined  && !field.Hidden)
+                         {
+                            service.removeTSAFields(transaction.InternalID)
+                         }
+            })
+            //delete the TSA's that uom created from those transaction.
+        })
+        
+    } catch (error) {
+        throw new error('error in uninstall addonn ' + error )
+    }
+    return {success:true,resultObject:{}} 
+
+
+    //remove_TSA_fields
     
+
     return {success:true,resultObject:{}}
 }
-
 export async function upgrade(client: Client, request: Request): Promise<any> {
     const papiClient = new PapiClient({
         baseURL: client.BaseURL,
@@ -48,11 +90,9 @@ export async function upgrade(client: Client, request: Request): Promise<any> {
     
     return retVal;
 }
-
 export async function downgrade(client: Client, request: Request): Promise<any> {
     return {success:true,resultObject:{}}
 }
-
 async function createRelations(papiClient: PapiClient, relations) {
     try {
         relations.forEach(async (singleRelation) => {
@@ -70,7 +110,6 @@ async function createRelations(papiClient: PapiClient, relations) {
         }
     }
 }
-
 async function createADALSchemes(papiClient: PapiClient) {
     try {
         await papiClient.addons.data.schemes.post(atdConfigScheme);

@@ -1,0 +1,46 @@
+<div  class="addon-page-container">
+    <div header-start-content>
+        <div class="header-uom">
+            <h1> UOM</h1>
+            <pep-button style="padding-top: 1.3em"
+                value = "install"
+                styleType="strong"
+                styleStateType="system"
+                sizeType="lg"
+                classNames=""
+                [disabled]="false"
+                iconPosition="end"
+                [visible]="true"
+                (buttonClick)="onInstall($event)"
+        ></pep-button>
+    </div>
+    <hr>
+</div> 
+    <div class="content" style="margin-top: 20px;">
+        <p class="body-md">
+            This module add support in multiple UOMs per item
+            <br>
+            As part of the installation, the following will take place:
+        </p>
+        <ul>
+            <li>
+                <p class="body-md">
+                The Units Quantity field will be read only and will contain the total in singles.
+                </p>
+            </li>
+            <li>
+                <p class="body-md">
+                Two new drop down fields and two new Units Quantity fields (with the AQQM prefix) will be added to the 
+                <br>
+                transaction to allow the user select the required UOM and define the quantity.
+                </p>
+            </li>
+        </ul>
+            <p class="body-md">
+                Place these fields in the relevant order center and cart views.
+                <br>
+                Note: You can use both sets (to allow the user order in two UOMs) or only the first one (to allow the user order in one UOM).
+            </p>
+    </div>
+</div>
+

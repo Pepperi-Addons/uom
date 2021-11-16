@@ -5,17 +5,17 @@ import 'mocha'
 import { expect } from 'chai'
 
 describe('Quantity Calculator', () => {
-    let inc = (result: number, calc: QuantityCalculator,value: number) => {
+    const inc = (result: number, calc: QuantityCalculator,value: number) => {
         return () => {
             expect(calc.getIncrementValue(value)).that.is.eql({'curr': result, 'total' : result*calc.getFactor()});
         }
     }
-    let dec = (result: number, calc: QuantityCalculator, value: number) => {
+    const dec = (result: number, calc: QuantityCalculator, value: number) => {
         return () => {
             expect(calc.getDecrementValue(value)).is.eql({'curr': result, 'total' : result*calc.getFactor()});
         }
     }
-    let set = (result: number, calc: QuantityCalculator, input:number) => {
+    const set = (result: number, calc: QuantityCalculator, input:number) => {
         return () => {
             expect(calc.setValue(input)).that.is.eql({'curr': result, 'total' : result*calc.getFactor()});
         }
@@ -1078,6 +1078,79 @@ describe('Quantity Calculator', () => {
                     it('1: increment should stay on 0 ', inc(12,calc,0));
                     it('1: set to 27 should set to 0', inc(24,calc,12));
                 });
+            });
+            describe ('CASE 2:inv = 9, min = 1.5, case = 0.5, factor = 1', () => {
+                let  config: UomItemConfiguration = {'UOMKey': "", 'Case':0.5, 'Min': 1.5, 'Factor': 1, 'Decimal': 1};
+                let inventory: number = 9;
+                let calc = new QuantityCalculator(config,inventory,caseBehavior,minBehavior,invBehavior);
+                describe ('1: combine tests:', () => {
+                    it('1: increment go to 1.5 ', inc(1.5,calc,0));
+                    it('2:inc should go to 2', inc(2,calc,1.5));
+                    it('3:inc should go to 2.5', inc(2.5,calc,2));
+                    it('4:dec should go to 2', dec(2,calc,2.5));
+                    it('4:set to 7.2 shuld go to 7.5', set(7.5,calc,7.2));
+                });
+            })
+            describe ('CASE 3:inv = 9, min = 1.5, case = 0.5, factor = 1', () => {
+                let  config: UomItemConfiguration = {'UOMKey': "", 'Case':0.5, 'Min': 1.5, 'Factor':1, 'Decimal': 1, 'Negative': true};
+                let inventory: number = 9;
+                let calc = new QuantityCalculator(config,inventory,caseBehavior,minBehavior,invBehavior);
+                describe ('1: combine tests:', () => {
+                    it('1: dec should go to -0.5', dec(-0.5,calc,0));
+                    it('2:dec should go to -1', dec(-1,calc,-0.5));
+                    it('3:dec should go to -1.5', dec(-1.5,calc,-1));
+                    it('3:inc should go to -1', inc(-1,calc,-1.5));
+                    // it('4:dec should go to 2', dec(2,calc,2.5));
+                    it('4:set to -909.4 shuld go to -909.4', set(-909,calc,-909));
+                    it('4:set to -0 shuld go to 0', set(0,calc,0));
+                });
+            });
+            describe ('CASE 4:inv = 9, min = 3.33, case = 0.11, factor = 1', () => {
+                let  config: UomItemConfiguration = {'UOMKey': "", 'Case':0.11, 'Min': 3.33, 'Factor':1, 'Decimal': 2, 'Negative': true};
+                let inventory: number = 9;
+                let calc = new QuantityCalculator(config,inventory,caseBehavior,minBehavior,invBehavior);
+                describe ('1: combine tests:', () => {
+                    it('1: inc should go to 3.33', inc(3.41,calc,0));
+                    it('2: inc should go to 3.52', inc(3.52,calc,3.41));
+                    it('3: inc should go to 3.63', inc(3.63,calc,3.52));
+                    it('4: inc should go to 3.74', inc(3.74,calc,3.63));
+                    it('5: inc should go to 3.85', inc(3.85,calc,3.74));
+                    it('6: inc should go to 3.96', inc(3.96,calc,3.85));
+                    it('7: inc should go to 4.07', inc(4.07,calc,3.96));
+                    it('8:set to 7 should set to 7.04', set(7.04,calc,7));
+                    it('9:set to 9 should set to 8.91 ', set(8.91,calc,9));
+                    it('10:set to -10 should set to -9.90', set(-9.90,calc,-10));
+                    it('11:dec should go to -10.01', dec(-10.01,calc,-10));
+                    it('12:set to -1 should set to - 0.99 ', set(-0.99,calc,-1));
+                    it('13: inc should go to -0.88', inc(-0.88,calc,-0.99));
+                    it('14: inc should go to -0.77', inc(-0.77,calc,-0.88));
+                    it('15: inc should go to -0.66', inc(-0.66,calc,-0.77));
+                    it('16: inc should go to -0.55', inc(-0.55,calc,-0.66));
+                    it('17: inc should go to -0.44', inc(-0.44,calc,-0.55));
+                    it('18: inc should go to -0.33', inc(-0.33,calc,-0.44));
+                    it('19: inc should go to -0.22', inc(-0.22,calc,-0.33));
+                    it('19: inc should go to -0.11', inc(-0.11,calc,-0.22));
+                    it('19: inc should go to 0', inc(0.00,calc,-0.11));
+                    it('19: inc should go to 3.41', inc(3.41,calc,-0.00));
+                });
+            })
+        });
+    });
+
+    describe('Test 15: Inv= DoNothing, Case = DoNothing, Min = DoNothing', ()=>{
+        let invBehavior:InventoryAction = 'DoNothing';
+        let caseBehavior: InventoryAction = 'DoNothing';
+        let minBehavior: InventoryAction = 'DoNothing';
+  
+        describe ('CASE 1:inv = 70, min = 0.333, case = 0.111, factor = 1.5, Decimal = 3', () => {
+            let  config: UomItemConfiguration = {'UOMKey': "", 'Case':0.111, 'Min': 0.333, 'Factor':1.5, 'Decimal':3};
+            let inventory: number = 70;
+            let calc = new QuantityCalculator(config,inventory,caseBehavior,minBehavior,invBehavior);
+            describe ('1: combine tests:', () => {
+                it('1: set to 5 should set to 5', set(5,calc,5));
+                it('2: inc should go to 5.106', inc(5.106,calc,5));
+                it('3: inc should go to 5.217', inc(5.217,calc,5.106));
+                it('4: inc should go to 5.328', inc(5.328,calc,5.217));
             });
         });
     });

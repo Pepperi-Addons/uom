@@ -1,6 +1,6 @@
 import { TranslateModule } from '@ngx-translate/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Component, OnInit, Inject, OnDestroy, Injectable, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, Inject, OnDestroy, Injectable, ViewEncapsulation, ChangeDetectorRef } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { Uom } from '../../../../../shared/entities';
 @Injectable({ providedIn: 'root' })
@@ -31,9 +31,9 @@ export class AddUomDialogComponent implements OnInit, OnDestroy {
     isTitleValid: boolean = false;
     isKeyValid: boolean = false;
 
-    constructor( public dialogRef: MatDialogRef<AddUomDialogComponent>,
+    constructor( public dialogRef: MatDialogRef<AddUomDialogComponent>, private ref: ChangeDetectorRef,
         @Inject(MAT_DIALOG_DATA) public incoming: any) {
-
+        // this.ref.detach();
         this.title = incoming.title;
         this.dialogData = incoming.data;
         if (incoming.data.selectedUom){
@@ -54,7 +54,6 @@ export class AddUomDialogComponent implements OnInit, OnDestroy {
     ngOnDestroy(){
         this.dialogData = null;
     }
-
     onValueChanged(element, $event) {
         switch(element) {
             case 'ID': {

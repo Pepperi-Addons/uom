@@ -3,77 +3,47 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { MaterialModule } from './../../modules/material.module';
-import { PepSelectModule } from '@pepperi-addons/ngx-lib/select';
-import { PepButtonModule } from '@pepperi-addons/ngx-lib/button';
 import { TranslateLoader, TranslateModule, TranslateService, TranslateStore } from '@ngx-translate/core';
-import { PepHttpService, PepFileService, PepNgxLibModule, PepAddonService, PepCustomizationService } from '@pepperi-addons/ngx-lib';
-import { MultiTranslateHttpLoader } from 'ngx-translate-multi-http-loader';
+import { PepHttpService, PepFileService, PepAddonService, PepCustomizationService } from '@pepperi-addons/ngx-lib';
 import { AtdConfigComponent } from './index';
+import { PepDialogService } from '@pepperi-addons/ngx-lib/dialog';
+import {InstallationComponent} from './../installation/installation.component'
+import { AtdConfigService } from './atd-config.service';
 
-export function createTranslateLoader(http: HttpClient, fileService: PepFileService, addonService: PepAddonService) {
-    const translationsPath: string = fileService.getAssetsTranslationsPath();
-    const translationsSuffix: string = fileService.getAssetsTranslationsSuffix();
-    const addonStaticFolder = addonService.getAddonStaticFolder();
-
-    return new MultiTranslateHttpLoader(http, [
-        {
-            prefix:
-                addonStaticFolder.length > 0
-                    ? addonStaticFolder + translationsPath
-                    : translationsPath,
-            suffix: translationsSuffix,
-        },
-        {
-            prefix:
-                addonStaticFolder.length > 0
-                    ? addonStaticFolder + "assets/i18n/"
-                    : "/assets/i18n/",
-            suffix: ".json",
-        },
-    ]);
-}
 @NgModule({
     declarations: [
-        AtdConfigComponent
+        AtdConfigComponent,
+        InstallationComponent,
     ],
     imports: [
         CommonModule,
         MaterialModule,
         HttpClientModule,
-        PepUIModule
-        // TranslateModule.forRoot({
-        //     loader: {
-        //         provide: TranslateLoader,
-        //         useFactory: createSubAddonTranslateLoader,
-        //         deps: [HttpClient, PepFileService]
-        //     }
-        // })
+        PepUIModule,
+        TranslateModule.forChild({
+            loader: {
+                provide: TranslateLoader,
+                useFactory: (http: HttpClient, fileService: PepFileService, addonService: PepAddonService) => 
+                    PepAddonService.createDefaultMultiTranslateLoader(http, fileService, addonService, "1238582e-9b32-4d21-9567-4e17379f41bb"),
+                deps: [HttpClient, PepFileService, PepAddonService],
+            }, isolate: false
+        }),
     ],
     exports:[AtdConfigComponent],
     providers: [
         TranslateStore,
         PepHttpService,
         PepAddonService,
-        PepCustomizationService
+        PepCustomizationService,
+        PepDialogService,
+        AtdConfigService
     ]
 })
-
-
 export class AtdConfigModule {
     constructor(
-          translate: TranslateService
-      ) {
-
-        let userLang = 'en';
-        translate.setDefaultLang(userLang);
-        userLang = translate.getBrowserLang().split('-')[0]; // use navigator lang if available
-
-        if (location.href.indexOf('userLang=en') > -1) {
-            userLang = 'en';
-        }
-        // the lang to use, if the lang isn't available, it will use the current loader to get them
-        translate.use(userLang).subscribe((res: any) => {
-            // In here you can put the code you want. At this point the lang will be loaded
-        });
+        translate: TranslateService,
+        private addonService: PepAddonService,
+    ) {
+        this.addonService.setDefaultTranslateLang(translate);
     }
 }

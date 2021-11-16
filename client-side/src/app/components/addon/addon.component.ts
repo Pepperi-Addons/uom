@@ -1,5 +1,5 @@
 import { UomListComponent } from './../uom-list/uom-list.component';
-import { Uom } from './../../../../../shared/entities';
+import { AtdConfiguration, Uom } from './../../../../../shared/entities';
 import { AddUomDialogComponent } from './../../dialogs/add-uom-dialog/add-uom-dialog.component';
 import {
     Component,
@@ -18,7 +18,6 @@ import { KeyValuePair, PepLayoutService, PepScreenSizeType } from '@pepperi-addo
 import { AddonService } from './addon.service';
 import { PepDialogActionButton } from "@pepperi-addons/ngx-lib/dialog";
 
-
 @Component({
   selector: 'addon-addon',
   templateUrl: './addon.component.html',
@@ -28,17 +27,14 @@ import { PepDialogActionButton } from "@pepperi-addons/ngx-lib/dialog";
 export class AddonComponent implements OnInit {
     screenSize: PepScreenSizeType;
     @ViewChild(UomListComponent, { static: false }) uomListComp: UomListComponent;
-
-
     constructor(
         public pluginService: AddonService,
         private translate: TranslateService,
         public routeParams: ActivatedRoute,
         public router: Router,
         public compiler: Compiler,
-        public layoutService: PepLayoutService,
+        public layoutService: PepLayoutService
     ) {
-
         // Parameters sent from url
         this.pluginService.pluginUUID = this.routeParams.snapshot.params['addon_uuid'];
         let userLang = "en";
@@ -48,37 +44,30 @@ export class AddonComponent implements OnInit {
         this.layoutService.onResize$.subscribe(size => {
             this.screenSize = size;
         });
-
     }
-
-    ngOnInit(): void {
-        
+    ngOnInit(): void {   
     }
-
     onActionClicked(event) {
         const self = this;
-            switch (event.ApiName) {
-                case "Add": {
-                    self.openConfigDialog(event.ApiName, event.SelectedItem);
-                    break;
-                }
-                case "Edit": {
-                    self.openConfigDialog(event.ApiName, event.SelectedItem);
-                    break;
-                }
-                case "Delete": {
-                    self.deleteConfigDialog(event.SelectedItem);
-                    break;
-                }
-                default: {
-                    alert("not supported");
-                }
+        switch (event.ApiName) {
+            case "Add": {
+                self.openConfigDialog(event.ApiName, event.SelectedItem);
+                break;
             }
+            case "Edit": {
+                self.openConfigDialog(event.ApiName, event.SelectedItem);
+                break;
+            }
+            case "Delete": {
+                self.deleteConfigDialog(event.SelectedItem);
+                break;
+            }
+            default: {
+                alert("not supported");
+            }
+        }
     }
-
-  
     openConfigDialog(operation, selectedObj = undefined) {
-        debugger;
         const self = this;
         const dialogTitle = operation == 'Add' ? this.translate.instant('Uom_ConfigModalTitle_Add') : this.translate.instant('Uom_ConfigModalTitle_Edit');
         self.pluginService.openDialog(
@@ -108,7 +97,6 @@ export class AddonComponent implements OnInit {
             }
         );
     }
-
     modalCallback(data) {
         const uomObj: Uom = {
             Key: data.Key,
@@ -119,7 +107,6 @@ export class AddonComponent implements OnInit {
             this.uomListComp ? this.uomListComp.loadlist() : null;
         }));
     }
-
     deleteConfigDialog(selectedObj) {
         const self = this;
         const actionButton = [
@@ -138,7 +125,6 @@ export class AddonComponent implements OnInit {
         const content = this.translate.instant("Uom_DeleteModal_Paragraph");
         this.pluginService.openTextDialog(title, content, actionButton, 'custom');
     }
-
     deleteUomConfig(selectedObj) {
         if (selectedObj) {
             selectedObj.Hidden = true;
@@ -147,10 +133,6 @@ export class AddonComponent implements OnInit {
             }));
         }
     }
-
-
-    selectedRowsChanged(event) {
-        
+    selectedRowsChanged(event) {   
     }
-
 }
