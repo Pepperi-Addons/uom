@@ -408,14 +408,10 @@ function createUOMMangers(atdConfigurations: AtdConfiguration[])
 
 
 export async function load() {
-    // const start = window.performance.now();
-    // get UOM table
     const start = new Date().getTime();
     const list: Uom[] = await getUomArray(uomsScheme.Name)
     uoms = new UOMMap(list);
-    // get config table
     const atdConfigurations = await getAtdConfigurationArray();
-    // create manager for each config
     createUOMMangers(atdConfigurations)
 
 }
