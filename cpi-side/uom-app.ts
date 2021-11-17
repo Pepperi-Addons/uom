@@ -71,6 +71,8 @@ class UOMManager {
             uq1 ? uq1.textColor = "#FF0000" : null;
         }
     }
+
+    
     subscribe() {
         const filter = {
             DataObject: {
@@ -79,54 +81,56 @@ class UOMManager {
                 }
             }
         }
-            // recalc event
-            pepperi.events.intercept('RecalculateUIObject', filter, async (data, next, main) => {
-                const dataView = data.UIObject?.context?.Name;
-                if(dataView && dataView in [...CART_DATA_VIEWS,...OC_DATA_VIEWS])
-                {
-                    await this.recalculateOrderCenterItem(data);
-                }
-                await next(main);
-            })
-            for (const uqField of [UNIT_QTY_FIRST_TSA, UNIT_QTY_SECOND_TSA]) {
-                pepperi.events.intercept('IncrementFieldValue', { FieldID: uqField, ...filter }, async (data, next, main) => {
-                    await next(async () => {
-                        if (data && data.UIObject && data.UIObject.dataObject && data.FieldID && data.UIObject.context.Name in [...CART_DATA_VIEWS,...OC_DATA_VIEWS]) {
-                            let oldValue = await data.UIObject.dataObject.getFieldValue(uqField) || 0;
-                            await this.setUQField(data.UIObject, data.FieldID, oldValue, ItemAction.Increment);
-                        }
-                    });
+        // recalc event
+        pepperi.events.intercept('RecalculateUIObject', filter, async (data, next, main) => {
+            const dataView = data.UIObject?.context?.Name;
+            if(dataView && dataView in [...CART_DATA_VIEWS,...OC_DATA_VIEWS])
+            {
+                await this.recalculateOrderCenterItem(data);
+            }
+            await next(main);
+        })
+        for (const uqField of [UNIT_QTY_FIRST_TSA, UNIT_QTY_SECOND_TSA]) {
+            pepperi.events.intercept('IncrementFieldValue', { FieldID: uqField, ...filter }, async (data, next, main) => {
+                await next(async () => {
+                    if (data && data.UIObject && data.UIObject.dataObject && data.FieldID && data.UIObject.context.Name in [...CART_DATA_VIEWS,...OC_DATA_VIEWS]) {
+                        let oldValue = await data.UIObject.dataObject.getFieldValue(uqField) || 0;
+                        await this.setUQField(data.UIObject, data.FieldID, oldValue, ItemAction.Increment);
+                    }
                 });
-                // Increment UNIT_QTY_TSA
-                pepperi.events.intercept('DecrementFieldValue', { FieldID: uqField, ...filter }, async (data, next, main) => {
-                    await next(async () => {
-                        if (data && data.UIObject && data.UIObject.dataObject && data.FieldID && data.UIObject.context.Name in [...CART_DATA_VIEWS,...OC_DATA_VIEWS]) {
-                            let oldValue = await data.UIObject.dataObject.getFieldValue(uqField) || 0;
-                            await this.setUQField(data.UIObject, data.FieldID, oldValue, ItemAction.Decrement);
-                        }
-                    });
-                })
-                // Set UNIT_QTY_TSA   
-                pepperi.events.intercept('SetFieldValue', { FieldID: uqField, ...filter }, async (data, next, main) => {
-                    await next(async () => {
-                        if (data && data.UIObject && data.UIObject && data.FieldID && data.UIObject.context.Name in [...CART_DATA_VIEWS,...OC_DATA_VIEWS]) {
-                            await this.setUQField(data.UIObject, data.FieldID, parseFloat(data.Value), ItemAction.Set);
-                        }
-                    });
-                })
-            }
-            for (const ddField of [UOM_KEY_FIRST_TSA, UOM_KEY_SECOND_TSA]) {
-                // Drop Down Change
-                pepperi.events.intercept('SetFieldValue', { FieldID: ddField, ...filter }, async (data, next, main) => {
-                    await next(main);
-                    // update the UQ field
-                    const uqFieldId = data.FieldID === UOM_KEY_FIRST_TSA ? UNIT_QTY_FIRST_TSA : UNIT_QTY_SECOND_TSA;
-                    const quantity = await data.DataObject?.getFieldValue(uqFieldId);
-                    await this.setUQField(data.UIObject!, uqFieldId, quantity, ItemAction.Set);
-                })
-            }
+            });
+            // Increment UNIT_QTY_TSA
+            pepperi.events.intercept('DecrementFieldValue', { FieldID: uqField, ...filter }, async (data, next, main) => {
+                await next(async () => {
+                    if (data && data.UIObject && data.UIObject.dataObject && data.FieldID && data.UIObject.context.Name in [...CART_DATA_VIEWS,...OC_DATA_VIEWS]) {
+                        let oldValue = await data.UIObject.dataObject.getFieldValue(uqField) || 0;
+                        await this.setUQField(data.UIObject, data.FieldID, oldValue, ItemAction.Decrement);
+                    }
+                });
+             })
+            // Set UNIT_QTY_TSA   
+            pepperi.events.intercept('SetFieldValue', { FieldID: uqField, ...filter }, async (data, next, main) => {
+                await next(async () => {
+                    if (data && data.UIObject && data.UIObject && data.FieldID && data.UIObject.context.Name in [...CART_DATA_VIEWS,...OC_DATA_VIEWS]) {
+                        await this.setUQField(data.UIObject, data.FieldID, parseFloat(data.Value), ItemAction.Set);
+                    }
+                });
+            })
+        }
+        for (const ddField of [UOM_KEY_FIRST_TSA, UOM_KEY_SECOND_TSA]) {
+            // Drop Down Change
+            pepperi.events.intercept('SetFieldValue', { FieldID: ddField, ...filter }, async (data, next, main) => {
+                await next(main);
+                // update the UQ field
+                const uqFieldId = data.FieldID === UOM_KEY_FIRST_TSA ? UNIT_QTY_FIRST_TSA : UNIT_QTY_SECOND_TSA;
+                const quantity = await data.DataObject?.getFieldValue(uqFieldId);
+                await this.setUQField(data.UIObject!, uqFieldId, quantity, ItemAction.Set);
+            })
+        }
         
     }
+
+
     async setUQField(uiObject: UIObject, fieldId: string, value: number, itemAction: ItemAction) {
         try {
             const dataObject = uiObject.dataObject;
