@@ -78,7 +78,6 @@ class UOMManager {
         }
         // recalc event
         pepperi.events.intercept('RecalculateUIObject', filter, async (data, next, main) => {
-            debugger;
             const dataView = data.UIObject?.context?.Name;
             if(dataView && [...CART_DATA_VIEWS,...OC_DATA_VIEWS].includes(dataView))
             {
