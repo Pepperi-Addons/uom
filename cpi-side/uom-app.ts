@@ -14,17 +14,12 @@ import { QuantityCalculator } from './quantity-calculator';
 import { ItemAction, QuantityResult, UomItemConfiguration } from './../shared/entities';
 import {uomsScheme, UomTSAFields} from '../server-side/metadata'
 
-// const { JSDOM } = require("jsdom");
-// const { window } = new JSDOM();
-
 /** The Real UQ Field - Holds the quantity in Baseline */
 const UNIT_QUANTITY = 'UnitsQuantity';
 /** A list of Order Center Data Views */
 const OC_DATA_VIEWS = ['OrderCenterGrid', 'OrderCenterView1', 'OrderCenterView2', 'OrderCenterView3', 'OrderCenterItemFullPage', 'OrderCenterVariant', 'OrderCenterBarcodeGridline', 'OrderCenterBarcodeLinesView', 'OrderCenterItemDetails', 'OrderCenterMatrix', 'OrderCenterFlatMatrixGrid', 'OrderCenterFlatMatrixLine'];
 /** A list of Cart Data Views */
 const CART_DATA_VIEWS = ['OrderCartGrid', 'OrderCartView1'];
-
-let iter = 0;
 
 class UOMMap {
     private hashMap: { [key: string]: Uom };
@@ -412,7 +407,6 @@ function createUOMMangers(atdConfigurations: AtdConfiguration[])
 
 
 export async function load() {
-    const start = new Date().getTime();
     const list: Uom[] = await getUomArray(uomsScheme.Name)
     uoms = new UOMMap(list);
     const atdConfigurations = await getAtdConfigurationArray();

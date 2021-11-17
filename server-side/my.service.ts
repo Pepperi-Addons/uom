@@ -13,9 +13,6 @@ class MyService {
             actionUUID: client.ExecutionUUID
         });
     }
-    doSomething() {
-        console.log("doesn't really do anything....");
-    }
     getAddons(): Promise<InstalledAddon[]> {
         return this.papiClient.addons.installedAddons.find({});
     }

@@ -147,7 +147,6 @@ export async function remove_tsa_fields(client: Client, request: Request): Promi
     {
         atdID = 'atdID' in request.body? Number(request.body.atdID): -1;
     }
-    await service.removePSAField(atdID);
     return await service.removeTSAFields(atdID);
 }
 
@@ -182,7 +181,11 @@ export async function create_tsa_fields(client: Client, request:Request) {
     {
         throw new Error('expected to recive GET/POST method, but instead recived ' + request.method);
     }
-    await service.createAddToCartToRulePSAIfNotExist(atdID);
+    const papiClientWithoudUUID = new PapiClient({
+        token: client.OAuthAccessToken,
+        baseURL: client.BaseURL
+    })
+    await service.createAddToCartToRulePSAIfNotExist(atdID, papiClientWithoudUUID);
     const field = await service.getField(atdID, UOM_KEY_FIRST_TSA);
     if(field == undefined)
     {
