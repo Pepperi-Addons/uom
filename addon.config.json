@@ -37,7 +37,7 @@
       }
     ],
     "Dependencies": {
-      "cpi_node": "0.2.7"
+      "cpi_node": "0.2.8"
     },
     "CPISide": [
       "uom-app.ts"
