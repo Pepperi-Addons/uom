@@ -12,7 +12,7 @@ import { DataObject, EventData, UIObject, TransactionLine, UIField } from '@pepp
 import config from '../addon.config.json';
 import { QuantityCalculator } from './quantity-calculator';
 import { ItemAction, QuantityResult, UomItemConfiguration } from './../shared/entities';
-import {uomsScheme, UomTSAFields} from '../server-side/metadata'
+import {uomsScheme} from '../server-side/metadata'
 
 /** The Real UQ Field - Holds the quantity in Baseline */
 const UNIT_QUANTITY = 'UnitsQuantity';
