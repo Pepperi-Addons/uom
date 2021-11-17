@@ -83,8 +83,9 @@ class UOMManager {
         }
         // recalc event
         pepperi.events.intercept('RecalculateUIObject', filter, async (data, next, main) => {
+            debugger;
             const dataView = data.UIObject?.context?.Name;
-            if(dataView && dataView in [...CART_DATA_VIEWS,...OC_DATA_VIEWS])
+            if(dataView && [...CART_DATA_VIEWS,...OC_DATA_VIEWS].includes(dataView))
             {
                 await this.recalculateOrderCenterItem(data);
             }
@@ -93,7 +94,7 @@ class UOMManager {
         for (const uqField of [UNIT_QTY_FIRST_TSA, UNIT_QTY_SECOND_TSA]) {
             pepperi.events.intercept('IncrementFieldValue', { FieldID: uqField, ...filter }, async (data, next, main) => {
                 await next(async () => {
-                    if (data && data.UIObject && data.UIObject.dataObject && data.FieldID && data.UIObject.context.Name in [...CART_DATA_VIEWS,...OC_DATA_VIEWS]) {
+                    if (data && data.UIObject && data.UIObject.dataObject && data.FieldID) {
                         let oldValue = await data.UIObject.dataObject.getFieldValue(uqField) || 0;
                         await this.setUQField(data.UIObject, data.FieldID, oldValue, ItemAction.Increment);
                     }
@@ -102,7 +103,7 @@ class UOMManager {
             // Increment UNIT_QTY_TSA
             pepperi.events.intercept('DecrementFieldValue', { FieldID: uqField, ...filter }, async (data, next, main) => {
                 await next(async () => {
-                    if (data && data.UIObject && data.UIObject.dataObject && data.FieldID && data.UIObject.context.Name in [...CART_DATA_VIEWS,...OC_DATA_VIEWS]) {
+                    if (data && data.UIObject && data.UIObject.dataObject && data.FieldID && data.UIObject.context.Name) {
                         let oldValue = await data.UIObject.dataObject.getFieldValue(uqField) || 0;
                         await this.setUQField(data.UIObject, data.FieldID, oldValue, ItemAction.Decrement);
                     }
@@ -111,7 +112,7 @@ class UOMManager {
             // Set UNIT_QTY_TSA   
             pepperi.events.intercept('SetFieldValue', { FieldID: uqField, ...filter }, async (data, next, main) => {
                 await next(async () => {
-                    if (data && data.UIObject && data.UIObject && data.FieldID && data.UIObject.context.Name in [...CART_DATA_VIEWS,...OC_DATA_VIEWS]) {
+                    if (data && data.UIObject && data.UIObject && data.FieldID) {
                         await this.setUQField(data.UIObject, data.FieldID, parseFloat(data.Value), ItemAction.Set);
                     }
                 });
