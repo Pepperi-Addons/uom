@@ -158,7 +158,10 @@ export class QuantityCalculator {
             setValue(num: number):QuantityResult{
                 if(num <= 0 && this.negative)
                 {
-                    return this.resultBuilder(num);
+                    
+                    const newNum = Math.trunc(num * Math.pow(10, this.decimal))/Math.pow(10,this.decimal)
+                    return this.resultBuilder(newNum);
+
                 }
                 if(!this.alreadyConverted)
                 {
