@@ -137,6 +137,10 @@ export class QuantityCalculator {
                 return result.curr < value ? this.resultBuilder(value): result;
             }
             getDecrementValue(value: number):QuantityResult{
+                // if(value <= 0 && this.negative)
+                // {
+                //     return this.resultBuilder(value - 1);
+                // }
                 if(!this.alreadyConverted)
                 {
                     this.convertFieldsToInteger();
@@ -154,8 +158,10 @@ export class QuantityCalculator {
             setValue(num: number):QuantityResult{
                 if(num <= 0 && this.negative)
                 {
-                    const newNum = Number(num.toFixed(this.decimal));   
+                    
+                    const newNum = Math.trunc(num * Math.pow(10, this.decimal))/Math.pow(10,this.decimal)
                     return this.resultBuilder(newNum);
+
                 }
                 if(!this.alreadyConverted)
                 {
