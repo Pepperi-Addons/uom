@@ -215,6 +215,7 @@ export async function is_installed(client:Client, request:Request):Promise<boole
     });
 }
 export async function import_uom(client: Client, request:Request) {
+
     const papiClient = new PapiClient({
         baseURL: client.BaseURL,
         token: client.OAuthAccessToken,
@@ -227,12 +228,22 @@ export async function import_uom(client: Client, request:Request) {
     try {
         if (request.body && request.body.Resource == 'transactions')
         {
+            if(!request.body.DataFromExport)
+            {
+                return{
+                    success: true
+                }
+
+            }
             const config:AtdConfiguration = {
                 Key:request.body.InternalID,
-                ...request.body.DataFromExport 
+                ...request.body.DataFromExport.AtdConfiguration 
             }
             await service.upsert(config);
-            await objService.createAtdTransactionLinesFields(request.body.InternalID, UomTSAFields);
+            if(request.body.DataFromExport.IsInstalled)
+            {
+                await objService.createAtdTransactionLinesFields(request.body.InternalID, UomTSAFields);
+            }
         }
         return {
             success:true
@@ -248,6 +259,14 @@ export async function import_uom(client: Client, request:Request) {
 }
 export async function export_uom(client: Client, request:Request) {
     const service = new ConfigurationService(client);
+    const papiClient = new PapiClient({
+        baseURL: client.BaseURL,
+        token: client.OAuthAccessToken,
+        actionUUID: client.ActionUUID,
+        addonUUID: client.AddonUUID, 
+        addonSecretKey: client.AddonSecretKey
+    });
+    const objService = new ObjectsService(papiClient);
     try {
         let config;
         if (request.query && request.query.resource  == 'transactions')
@@ -258,11 +277,20 @@ export async function export_uom(client: Client, request:Request) {
             if(config && config.length > 0)
             {
                 return {
+                    // {"UOMFieldID":"TSAUomOptions","InventoryFieldID":"TSAInventory","InventoryType":"Color","ItemConfigFieldID":"TSAUomItemConfig","CaseQuantityType":"Color","MinQuantityType":"Color"}
                     success:true,
                     DataForImport: {
+                        AtdConfiguration: {
                         UOMFieldID: config[0].UOMFieldID,
                         InventoryFieldID: config[0].InventoryFieldID,
-                        InventoryType: config[0].InventoryType
+                        InventoryType: config[0].InventoryType,
+                        ItemConfigFieldID: config[0].ItemConfigFieldID || undefined,
+                        CaseQuantityType: config[0].CaseQuantityType || undefined,
+                        MinQuantityType: config[0].MinQuantityType || undefined
+                        },
+                    IsInstalled: await objService.getField(request.query.internal_id, 'TSAAOQMQuantity1').then((field: ApiFieldObject | undefined) => {
+                        return field === undefined? false: !field.Hidden;
+                    }),
                     },
                 }
             }
