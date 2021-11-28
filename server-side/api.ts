@@ -228,13 +228,6 @@ export async function import_uom(client: Client, request:Request) {
     try {
         if (request.body && request.body.Resource == 'transactions')
         {
-            if(!request.body.DataFromExport)
-            {
-                return{
-                    success: true
-                }
-
-            }
             const config:AtdConfiguration = {
                 Key:request.body.InternalID,
                 ...request.body.DataFromExport.AtdConfiguration 
