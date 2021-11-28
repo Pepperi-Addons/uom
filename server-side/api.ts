@@ -270,7 +270,6 @@ export async function export_uom(client: Client, request:Request) {
             if(config && config.length > 0)
             {
                 return {
-                    // {"UOMFieldID":"TSAUomOptions","InventoryFieldID":"TSAInventory","InventoryType":"Color","ItemConfigFieldID":"TSAUomItemConfig","CaseQuantityType":"Color","MinQuantityType":"Color"}
                     success:true,
                     DataForImport: {
                         AtdConfiguration: {
