@@ -210,9 +210,8 @@ export async function is_installed(client:Client, request:Request):Promise<boole
     }
     const service = new ObjectsService(papiClient);
     let atdID = 'atdID' in request.query ? Number(request.query.atdID): -1;
-    return  await service.getField(atdID, 'TSAAOQMQuantity1').then((field: ApiFieldObject | undefined) => {
-        return field === undefined? false: !field.Hidden;
-    });
+    //isUomInstalled
+    return await service.isUomInstalled(atdID);
 }
 export async function import_uom(client: Client, request:Request) {
 
@@ -258,10 +257,8 @@ export async function export_uom(client: Client, request:Request) {
     });
     const objService = new ObjectsService(papiClient);
     try {
-        const isInstalled = await objService.getField(request.query.internal_id, 'TSAAOQMQuantity1').then((field: ApiFieldObject | undefined) => {
-            return field === undefined? false: !field.Hidden;
-        })
-        if(!isInstalled)
+        const isUOMInstalled = await objService.isUomInstalled(request.query.internal_id);
+        if(!isUOMInstalled)
         {
             return {
                 success:true,
