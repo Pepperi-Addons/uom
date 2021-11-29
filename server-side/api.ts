@@ -257,23 +257,27 @@ export async function export_uom(client: Client, request:Request) {
     });
     const objService = new ObjectsService(papiClient);
     try {
-        const isUOMInstalled = await objService.isUomInstalled(request.query.internal_id);
-        if(!isUOMInstalled)
-        {
-            return {
-                success:true,
-                DataForImport: {}
-            }
+        let result = {
+            success: true,
+            DataForImport: {}
         }
+        const isUOMInstalled = await objService.isUomInstalled(request.query.internal_id);
+        // if(!isUOMInstalled)
+        // {
+        //     return {
+        //         success:true,
+        //         DataForImport: {}
+        //     }
+        // }
         let config;
-        if (request.query && request.query.resource  == 'transactions')
+        if (request.query && request.query.resource  == 'transactions' && isUOMInstalled)
         {
             config = await service.find({
                 where: `Key= ${request.query.internal_id}`,
             });
             if(config && config.length > 0)
             {
-                return {
+                result = {
                     success:true,
                     DataForImport: {
                         UOMFieldID: config[0].UOMFieldID,
@@ -282,23 +286,19 @@ export async function export_uom(client: Client, request:Request) {
                         ItemConfigFieldID: config[0].ItemConfigFieldID || undefined,
                         CaseQuantityType: config[0].CaseQuantityType || undefined,
                         MinQuantityType: config[0].MinQuantityType || undefined
-                        }
                     }
                 }
-            else
-            {
-                return {
-                    success:true,
-                    DataForImport: {
-                    },
-                }
             }
+            // else
+            // {
+            //     return {
+            //         success:true,
+            //         DataForImport: {
+            //         },
+            //     }
+            // }
         }
-        return {
-            success:true,
-            DataForImport: {
-            },
-        }
+        return result;
     }
     catch(err) {
         console.log('importUom Failed with error:', err);
