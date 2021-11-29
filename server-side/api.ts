@@ -282,14 +282,6 @@ export async function export_uom(client: Client, request:Request) {
                     }
                 }
             }
-            // else
-            // {
-            //     return {
-            //         success:true,
-            //         DataForImport: {
-            //         },
-            //     }
-            // }
         }
         return result;
     }
