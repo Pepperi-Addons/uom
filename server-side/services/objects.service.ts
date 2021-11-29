@@ -11,6 +11,12 @@ export class ObjectsService {
         const fields = await this.getAtdFields(atdId);
         return fields ? fields.find(field => field.FieldID === fieldId) : undefined;
     }
+
+    async isUomInstalled(atdId: number){
+        return await this.getField(atdId, 'TSAAOQMQuantity1').then((field: ApiFieldObject | undefined) => {
+            return field === undefined? false: !field.Hidden;
+        })
+    }
     async getAtdId(uuid: string){
         return  await this.papiClient.types.find({
             where: `UUID='${uuid}'`

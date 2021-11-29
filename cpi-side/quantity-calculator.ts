@@ -158,7 +158,12 @@ export class QuantityCalculator {
             setValue(num: number):QuantityResult{
                 if(num <= 0 && this.negative)
                 {
-                    return this.resultBuilder(num);
+                    //DI-18918 
+                    //when  we insert a negative number the only limitation we have is that the number will be with at most this.decimal digits after the decimal separator.
+                    //so n = this.decimal we cut the number so the number will be  with at most n digits after the separator.
+                    const newNum = Math.trunc(num * Math.pow(10, this.decimal))/Math.pow(10,this.decimal)
+                    return this.resultBuilder(newNum);
+
                 }
                 if(!this.alreadyConverted)
                 {

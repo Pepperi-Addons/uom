@@ -210,11 +210,11 @@ export async function is_installed(client:Client, request:Request):Promise<boole
     }
     const service = new ObjectsService(papiClient);
     let atdID = 'atdID' in request.query ? Number(request.query.atdID): -1;
-    return  await service.getField(atdID, 'TSAAOQMQuantity1').then((field: ApiFieldObject | undefined) => {
-        return field === undefined? false: !field.Hidden;
-    });
+    //isUomInstalled
+    return await service.isUomInstalled(atdID);
 }
 export async function import_uom(client: Client, request:Request) {
+
     const papiClient = new PapiClient({
         baseURL: client.BaseURL,
         token: client.OAuthAccessToken,
@@ -225,7 +225,7 @@ export async function import_uom(client: Client, request:Request) {
     const service = new ConfigurationService(client);
     const objService = new ObjectsService(papiClient);
     try {
-        if (request.body && request.body.Resource == 'transactions')
+        if (request.body && request.body.Resource == 'transactions' && Object.keys(request.body.DataFromExport).length > 0 )
         {
             const config:AtdConfiguration = {
                 Key:request.body.InternalID,
@@ -248,38 +248,42 @@ export async function import_uom(client: Client, request:Request) {
 }
 export async function export_uom(client: Client, request:Request) {
     const service = new ConfigurationService(client);
+    const papiClient = new PapiClient({
+        baseURL: client.BaseURL,
+        token: client.OAuthAccessToken,
+        actionUUID: client.ActionUUID,
+        addonUUID: client.AddonUUID, 
+        addonSecretKey: client.AddonSecretKey
+    });
+    const objService = new ObjectsService(papiClient);
     try {
+        let result = {
+            success: true,
+            DataForImport: {}
+        }
+        const isUOMInstalled = await objService.isUomInstalled(request.query.internal_id);
         let config;
-        if (request.query && request.query.resource  == 'transactions')
+        if (request.query && request.query.resource  == 'transactions' && isUOMInstalled)
         {
             config = await service.find({
                 where: `Key= ${request.query.internal_id}`,
             });
             if(config && config.length > 0)
             {
-                return {
+                result = {
                     success:true,
                     DataForImport: {
                         UOMFieldID: config[0].UOMFieldID,
                         InventoryFieldID: config[0].InventoryFieldID,
-                        InventoryType: config[0].InventoryType
-                    },
-                }
-            }
-            else
-            {
-                return {
-                    success:true,
-                    DataForImport: {
-                    },
+                        InventoryType: config[0].InventoryType,
+                        ItemConfigFieldID: config[0].ItemConfigFieldID || undefined,
+                        CaseQuantityType: config[0].CaseQuantityType || undefined,
+                        MinQuantityType: config[0].MinQuantityType || undefined
+                    }
                 }
             }
         }
-        return {
-            success:true,
-            DataForImport: {
-            },
-        }
+        return result;
     }
     catch(err) {
         console.log('importUom Failed with error:', err);
