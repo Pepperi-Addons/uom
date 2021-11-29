@@ -262,13 +262,6 @@ export async function export_uom(client: Client, request:Request) {
             DataForImport: {}
         }
         const isUOMInstalled = await objService.isUomInstalled(request.query.internal_id);
-        // if(!isUOMInstalled)
-        // {
-        //     return {
-        //         success:true,
-        //         DataForImport: {}
-        //     }
-        // }
         let config;
         if (request.query && request.query.resource  == 'transactions' && isUOMInstalled)
         {
