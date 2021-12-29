@@ -280,12 +280,12 @@ class UOMManager {
         return this.getUomConfig(uom, itemConfig);
 
     }
-    fixUomValueAndTsas(uomConfigAraay:UomItemConfiguration[], dataObject:TransactionLine, uiObject: UIObject, uq1, uq2)
+    async fixUomValueAndTsas(uomConfigAraay:UomItemConfiguration[], dataObject:TransactionLine, uiObject: UIObject, uq1, uq2)
     {
-        this.fixUOMValue(uq1,uq2,dataObject,uomConfigAraay[0],uomConfigAraay[1],uiObject);
+        await this.fixUOMValue(uq1,uq2,dataObject,uomConfigAraay[0],uomConfigAraay[1],uiObject);
         //update the TSA Field 
-        this.updateTSAField(uomConfigAraay[0], uq1);
-        this.updateTSAField(uomConfigAraay[1], uq2);
+        await this.updateTSAField(uomConfigAraay[0], uq1);
+        await this.updateTSAField(uomConfigAraay[1], uq2);
     }
     async setUnitQuantityReadOnlyIfHasUom(uiObject: UIObject, uq1,uq2)
     {
@@ -326,8 +326,9 @@ class UOMManager {
                 const uomConfig = this.getUomConfigByKey(dataObject, UOM_KEY_FIRST_TSA, itemConfig);
                 const otherUomConfig = this.getUomConfigByKey(dataObject, UOM_KEY_SECOND_TSA, itemConfig);
 
-                await Promise.all([uomConfig,otherUomConfig]).then((uomConfigArry) => this.fixUomValueAndTsas(uomConfigArry, dataObject, uiObject, fieldsObject.uq1, fieldsObject.uq2));
-                await this.setUnitQuantityReadOnlyIfHasUom(uiObject, fieldsObject.uq1,fieldsObject.uq2)
+                const uomConfigArray = await Promise.all([uomConfig,otherUomConfig])
+                await this.fixUomValueAndTsas(uomConfigArray, dataObject, uiObject, fieldsObject.uq1, fieldsObject.uq2);
+                await this.setUnitQuantityReadOnlyIfHasUom(uiObject,fieldsObject.uq1,fieldsObject.uq2);
             })       
         }     
         catch (err) {
