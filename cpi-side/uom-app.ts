@@ -67,7 +67,6 @@ class UOMManager {
         }
     }
 
-    
     subscribe() {
         const filter = {
             DataObject: {
@@ -218,26 +217,30 @@ class UOMManager {
     }
     async updateUOMDropDowns(arr:string[],dataObject: TransactionLine, dd1: UIField | undefined, uq1: UIField | undefined, uiObject: UIObject, dd2: UIField | undefined, uq2: UIField | undefined )
     {
+        debugger
         const optionalValues = this.getOptionalValues(arr);
         if (optionalValues.length > 0 && dataObject.children.length == 0) {
             if (dd1 && uq1) {
                 this.makeEditableAndVisibleWithMenu(dd1,optionalValues);
+                const optionalValue = dd1.value === ''?  optionalValues[0].Key : optionalValues[0].Value;
                 if (dd1.value === '') {
-                    await uiObject.setFieldValue(UOM_KEY_FIRST_TSA, optionalValues[0].Key, true);
-                }
+                    await uiObject.setFieldValue(UOM_KEY_FIRST_TSA, optionalValue, true);
+                    }
                 // readonly if there is only one, or if there are 2 and this isn't the only configured
                 if (optionalValues.length === 1 || (optionalValues.length === 2 && dd2)) {
-                    dd1.readonly = true;
+                    dd1.readonly = true;                  
                 }
             }
             if (dd2 && uq2) {
                 this.makeEditableAndVisibleWithMenu(dd2,optionalValues);
+                const firstOptionalValue = dd2.value === '' ?  optionalValues[0].Key : optionalValues[0].Value;
+                const secondOptionalValue = dd2.value === '' ? optionalValues[1].Key :  optionalValues[1].Value;
                 if (dd2.value === '') {
                     if (dd1 && optionalValues.length > 1) {
-                        await uiObject.setFieldValue(UOM_KEY_SECOND_TSA, optionalValues[1].Key, true);
+                        await uiObject.setFieldValue(UOM_KEY_SECOND_TSA, secondOptionalValue, true);
                     }
                     else {
-                        await uiObject.setFieldValue(UOM_KEY_SECOND_TSA, optionalValues[0].Key, true);
+                        await uiObject.setFieldValue(UOM_KEY_SECOND_TSA, firstOptionalValue, true);
                     }
                 }
                 // hide
@@ -295,7 +298,7 @@ class UOMManager {
         }
     }
 
-    getUomFields(uomKey: string, unitQuantityKey:string, uiObject)
+    getUomFields(uomKey: string, unitQuantityKey:string, uiObject: UIObject)
     {
         return [uiObject.getField(uomKey),uiObject.getField(unitQuantityKey)]
     }
@@ -311,25 +314,36 @@ class UOMManager {
 
     async recalculateOrderCenterItem(data: EventData) {
         try {
+            debugger
             const uiObject = data.UIObject!;
             const dataObject = data.DataObject! as TransactionLine;
             // Get the keys of the UOM from integration
-            let arr =  this.getItemUOMs(dataObject);
-            const firstTSAFields = this.getUomFields(UOM_KEY_FIRST_TSA, UNIT_QTY_FIRST_TSA, uiObject);
-            const secondTSAFields = this.getUomFields(UOM_KEY_SECOND_TSA, UNIT_QTY_SECOND_TSA, uiObject);
+            // let arr =  this.getItemUOMs(dataObject);
+            // const firstTSAFie\elds = this.getUomFields(UOM_KEY_SECOND_TSA, UNIT_QTY_SECOND_TSA, uiObject);
 
-            await Promise.all([arr,...firstTSAFields, ...secondTSAFields]).then(async (uomsTsaFields) => {
-                const fieldsObject = this.buildFieldsObjectFromArray(uomsTsaFields);
-                await this.updateUOMDropDowns(fieldsObject.arr,dataObject,fieldsObject.dd1,fieldsObject.uq1,uiObject,fieldsObject.dd2,fieldsObject.uq2)
-                const itemConfig = await this.getItemConfig(dataObject!);
-                
-                const uomConfig = this.getUomConfigByKey(dataObject, UOM_KEY_FIRST_TSA, itemConfig);
-                const otherUomConfig = this.getUomConfigByKey(dataObject, UOM_KEY_SECOND_TSA, itemConfig);
+            const [
+                arr,
+                dd1,
+                uq1,
+                dd2, 
+                uq2
+            ] = await Promise.all([
+                this.getItemUOMs(dataObject),
+                uiObject.getField(UOM_KEY_FIRST_TSA),
+                uiObject.getField(UNIT_QTY_FIRST_TSA),
+                uiObject.getField(UOM_KEY_SECOND_TSA),
+                uiObject.getField(UNIT_QTY_SECOND_TSA)
+            ])
+            // const fieldsObject = this.buildFieldsObjectFromArray(uomsTsaFields);
+            await this.updateUOMDropDowns(arr,dataObject,dd1,uq1,uiObject,dd2,uq2)
+            const itemConfig = await this.getItemConfig(dataObject!);
+            
+            const uomConfig = this.getUomConfigByKey(dataObject, UOM_KEY_FIRST_TSA, itemConfig);
+            const otherUomConfig = this.getUomConfigByKey(dataObject, UOM_KEY_SECOND_TSA, itemConfig);
 
-                const uomConfigArray = await Promise.all([uomConfig,otherUomConfig])
-                await this.fixUomValueAndTsas(uomConfigArray, dataObject, uiObject, fieldsObject.uq1, fieldsObject.uq2);
-                await this.setUnitQuantityReadOnlyIfHasUom(uiObject,fieldsObject.uq1,fieldsObject.uq2);
-            })       
+            const uomConfigArray = await Promise.all([uomConfig,otherUomConfig])
+            await this.fixUomValueAndTsas(uomConfigArray, dataObject, uiObject, uq1, uq2);
+            await this.setUnitQuantityReadOnlyIfHasUom(uiObject,uq1,uq2);
         }     
         catch (err) {
             console.log('Error recalculating UQ field');
