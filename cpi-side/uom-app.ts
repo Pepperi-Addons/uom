@@ -215,6 +215,14 @@ class UOMManager {
         dd.visible = true;
         dd.optionalValues = optionalValues;
     }
+
+    getFormattedValue(optionalValues: {'Key' : string, 'Value': string}[], key: string){
+        const result =  optionalValues.find((optionalValue) => {
+            return (key == optionalValue.Key || optionalValue.Value == key)
+        })
+        return result != undefined? result.Value : ''
+    }
+
     async updateUOMDropDowns(arr:string[],dataObject: TransactionLine, dd1: UIField | undefined, uq1: UIField | undefined, uiObject: UIObject, dd2: UIField | undefined, uq2: UIField | undefined )
     {
         const optionalValues = this.getOptionalValues(arr);
@@ -225,7 +233,8 @@ class UOMManager {
                     await uiObject.setFieldValue(UOM_KEY_FIRST_TSA, optionalValues[0].Key, true);
                     }
                 else{
-                    dd1.formattedValue = optionalValues[0].Value
+                    const formattedValue = this.getFormattedValue(optionalValues, dd1.value)
+                    dd1.formattedValue = formattedValue
                 }
                 // readonly if there is only one, or if there are 2 and this isn't the only configured
                 if (optionalValues.length === 1 || (optionalValues.length === 2 && dd2)) {
@@ -243,7 +252,8 @@ class UOMManager {
                     }
                 }
                 else{
-                    dd2.formattedValue = dd1 && optionalValues.length > 1? optionalValues[1].Value: optionalValues[0].Value        
+                    const formattedValue = this.getFormattedValue(optionalValues, dd2.value)
+                    dd2.formattedValue = formattedValue    
                 }        
                 // hide
                 if (optionalValues.length < 2) {
