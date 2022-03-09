@@ -218,7 +218,7 @@ class UOMManager {
 
     getFormattedValue(optionalValues: {'Key' : string, 'Value': string}[], key: string){
         const result =  optionalValues.find((optionalValue) => {
-            return (key == optionalValue.Key || optionalValue.Value == key)
+            return (key == optionalValue.Key)
         })
         return result != undefined? result.Value : ''
     }
