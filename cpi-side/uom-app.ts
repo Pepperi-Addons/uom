@@ -191,9 +191,11 @@ class UOMManager {
     async fixUOMValue(uq1: UIField | undefined, uq2: UIField | undefined, dataObject: TransactionLine, uomConfig, otherUomConfig, uiObject: UIObject)
     {
         const unitsQuantity = await dataObject?.getFieldValue(UNIT_QUANTITY);
-        const firstUomTsaValue = Number(uq1?.value) * uomConfig.Factor;
-        const otherUomTsaValue = Number(uq2?.value) * otherUomConfig.Factor;
-        const suomOfUoms = firstUomTsaValue + otherUomTsaValue 
+        const firstUomTsaValue = Number(uq1?.value || await dataObject?.getFieldValue(UNIT_QTY_FIRST_TSA) || 0);
+        const otherUomTsaValue = Number(uq2?.value || await dataObject?.getFieldValue(UNIT_QTY_SECOND_TSA) || 0);
+        const sumFromFirstTSA = firstUomTsaValue * uomConfig.Factor;
+        const sumFromOtherTSA = otherUomTsaValue * otherUomConfig.Factor;
+        const suomOfUoms = sumFromFirstTSA + sumFromOtherTSA;
         const suomOfUomsMinusUnitQuantity = suomOfUoms - unitsQuantity;
         //if suomOfUomsMinusUnitQuantity so there might be change in cart.(delete or inc/dec the amount)
         if(suomOfUomsMinusUnitQuantity != 0 && (uq1 || uq2) )
