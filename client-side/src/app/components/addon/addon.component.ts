@@ -1,22 +1,13 @@
-import { UomListComponent } from './../uom-list/uom-list.component';
-import { AtdConfiguration, Uom } from './../../../../../shared/entities';
-import { AddUomDialogComponent } from './../../dialogs/add-uom-dialog/add-uom-dialog.component';
-import {
-    Component,
-    EventEmitter,
-    Input,
-    Output,
-    OnInit,
-    ViewEncapsulation,
-    Compiler,
-    ViewChild,
-    OnDestroy,
-} from "@angular/core";
+import { Component,OnInit, ViewChild } from "@angular/core";
 import { TranslateService } from "@ngx-translate/core";
-import { Router, ActivatedRoute } from "@angular/router";
-import { KeyValuePair, PepLayoutService, PepScreenSizeType } from '@pepperi-addons/ngx-lib';
-import { AddonService } from './addon.service';
+import { Router, ActivatedRoute,  } from "@angular/router";
+import { PepLayoutService, PepScreenSizeType } from '@pepperi-addons/ngx-lib';
 import { PepDialogActionButton } from "@pepperi-addons/ngx-lib/dialog";
+import { AddonService } from './addon.service';
+import { UomListComponent } from './../uom-list/uom-list.component';
+import { AddUomDialogComponent } from './../../dialogs/add-uom-dialog/add-uom-dialog.component';
+import { config } from '../../addon.config'
+import { Uom } from "../../../../../shared/entities";
 
 @Component({
   selector: 'addon-addon',
@@ -32,11 +23,10 @@ export class AddonComponent implements OnInit {
         private translate: TranslateService,
         public routeParams: ActivatedRoute,
         public router: Router,
-        public compiler: Compiler,
         public layoutService: PepLayoutService
     ) {
         // Parameters sent from url
-        this.pluginService.pluginUUID = this.routeParams.snapshot.params['addon_uuid'];
+        this.pluginService.pluginUUID = config.AddonUUID;
         let userLang = "en";
         translate.setDefaultLang(userLang);
         userLang = translate.getBrowserLang().split("-")[0]; // use navigator lang if available

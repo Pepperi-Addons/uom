@@ -1,10 +1,18 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { PepUIModule } from '../../modules/pepperi.module';
-import { MaterialModule } from '../../modules/material.module';
+import { MatDialogModule } from '@angular/material/dialog';
+import { TranslateModule } from '@ngx-translate/core';
+
+import { PepButtonModule } from '@pepperi-addons/ngx-lib/button';
+import { PepDialogModule } from '@pepperi-addons/ngx-lib/dialog';
+import { PepListModule } from '@pepperi-addons/ngx-lib/list';
+import { PepTextboxModule } from '@pepperi-addons/ngx-lib/textbox';
+import { PepTopBarModule } from '@pepperi-addons/ngx-lib/top-bar';
+
 import { AddonComponent } from './addon.component';
 import { UomListComponent } from '../uom-list/uom-list.component';
 import { AddUomDialogComponent } from '../../dialogs/add-uom-dialog/add-uom-dialog.component'
+
 @NgModule({
     declarations: [
         AddonComponent,
@@ -13,9 +21,13 @@ import { AddUomDialogComponent } from '../../dialogs/add-uom-dialog/add-uom-dial
     ],
     imports: [
         CommonModule,
-        PepUIModule,
-        MaterialModule,
-
+        PepListModule,
+        PepDialogModule,
+        PepTextboxModule,
+        PepTopBarModule,
+        MatDialogModule,
+        PepButtonModule,
+        TranslateModule
     ],
     providers: []
 })

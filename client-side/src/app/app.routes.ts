@@ -5,13 +5,9 @@ import { AddonComponent } from './components/addon/addon.component';
 
 const routes: Routes = [
     {
-        path: `settings/:addon_uuid`,
-        children: [
-            {
-                path: 'uom',
-                component: AddonComponent
-            },
-        ]
+        path: '',
+        loadChildren: ()=> import('./components/settings/settings.module').then(m => m.SettingsModule),
+        
     },
     {
         path: '**',
@@ -20,7 +16,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-    imports: [RouterModule.forRoot(routes, { relativeLinkResolution: 'legacy' })],
+    imports: [RouterModule.forRoot(routes)],
     exports: [RouterModule]
 })
 export class AppRoutingModule { }

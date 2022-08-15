@@ -1,14 +1,17 @@
-import { PepUIModule } from './../../modules/pepperi.module';
 import { CommonModule } from '@angular/common';
+import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { MaterialModule } from './../../modules/material.module';
-import { TranslateLoader, TranslateModule, TranslateService, TranslateStore } from '@ngx-translate/core';
-import { PepHttpService, PepFileService, PepAddonService, PepCustomizationService } from '@pepperi-addons/ngx-lib';
-import { AtdConfigComponent } from './index';
+import { TranslateModule, TranslateService, TranslateStore } from '@ngx-translate/core';
+
+import { PepHttpService, PepAddonService, PepCustomizationService } from '@pepperi-addons/ngx-lib';
+import { PepButtonModule } from '@pepperi-addons/ngx-lib/button';
 import { PepDialogService } from '@pepperi-addons/ngx-lib/dialog';
-import {InstallationComponent} from './../installation/installation.component'
+import { PepMenuModule } from '@pepperi-addons/ngx-lib/menu';
+import { PepSelectModule } from '@pepperi-addons/ngx-lib/select';
+
+import { AtdConfigComponent } from '.';
 import { AtdConfigService } from './atd-config.service';
+import { InstallationComponent } from '../installation/installation.component'
 
 @NgModule({
     declarations: [
@@ -17,17 +20,11 @@ import { AtdConfigService } from './atd-config.service';
     ],
     imports: [
         CommonModule,
-        MaterialModule,
         HttpClientModule,
-        PepUIModule,
-        TranslateModule.forChild({
-            loader: {
-                provide: TranslateLoader,
-                useFactory: (http: HttpClient, fileService: PepFileService, addonService: PepAddonService) => 
-                    PepAddonService.createDefaultMultiTranslateLoader(http, fileService, addonService, "1238582e-9b32-4d21-9567-4e17379f41bb"),
-                deps: [HttpClient, PepFileService, PepAddonService],
-            }, isolate: false
-        }),
+        PepSelectModule,
+        PepButtonModule,
+        PepMenuModule,
+        TranslateModule.forChild(),
     ],
     exports:[AtdConfigComponent],
     providers: [

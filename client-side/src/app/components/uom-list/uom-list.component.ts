@@ -11,6 +11,7 @@ import { PepMenuItem } from '@pepperi-addons/ngx-lib/menu';
 import { UomListService } from './uom-list.service';
 import { ActivatedRoute } from '@angular/router';
 
+import { config } from '../../addon.config'
 
 export interface PepperiListService {
   getDataView(translates): GridDataView;
@@ -63,7 +64,7 @@ export class UomListComponent implements OnInit {
         userLang = translate.getBrowserLang().split('-')[0]; // use navigator lang if available
         translate.use(userLang);
         this.service.uomService = this.pluginService;
-        this.pluginService.pluginUUID = this.routeParams.snapshot.params['addon_uuid'];
+        this.pluginService.pluginUUID = config.AddonUUID;
 
     }
 

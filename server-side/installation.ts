@@ -65,7 +65,7 @@ export async function uninstall(client: Client, request: Request): Promise<any> 
         })
         
     } catch (error) {
-        throw new error('error in uninstall addonn ' + error )
+        throw new Error('error in uninstall addonn ' + error )
     }
     return {success:true,resultObject:{}} 
 
@@ -95,19 +95,20 @@ export async function downgrade(client: Client, request: Request): Promise<any> 
 }
 async function createRelations(papiClient: PapiClient, relations) {
     try {
-        relations.forEach(async (singleRelation) => {
+        await Promise.all(relations.map(async (singleRelation) => {
             await papiClient.post('/addons/data/relations', singleRelation);
-        });
+        }));
         return {
             success: true,
             errorMessage: ""
         }
     }
     catch (err) {
-        return {
-            success: false,
-            errorMessage: ('message' in err) ? err.message : 'Unknown Error Occured',
-        }
+        return { 
+            success: false, 
+            resultObject: err , 
+            errorMessage: `Error in creating necessary objects . error - ${err}`
+        };
     }
 }
 async function createADALSchemes(papiClient: PapiClient) {
@@ -120,9 +121,10 @@ async function createADALSchemes(papiClient: PapiClient) {
         }
     }
     catch (err) {
-        return {
-            success: false,
-            errorMessage: ('message' in err) ? err.message : 'Unknown Error Occured',
-        }
+        return { 
+            success: false, 
+            resultObject: err , 
+            errorMessage: `Error in creating necessary objects . error - ${err}`
+        };
     }
 }

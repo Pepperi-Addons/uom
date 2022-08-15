@@ -1,6 +1,6 @@
 {
   "AddonUUID": "1238582e-9b32-4d21-9567-4e17379f41bb",
-  "AddonVersion": "1.2.251",
+  "AddonVersion": "1.3.115",
   "DebugPort": 4500,
   "WebappBaseUrl": "https://app.sandbox.pepperi.com",
   "DefaultEditor": "main",
@@ -11,24 +11,8 @@
   "Editors": [
     "main"
   ],
-  "Assets": [
-    "de.json",
-    "en.json",
-    "en.ngx-lib.json",
-    "es.json",
-    "fr.json",
-    "he.json",
-    "hu.json",
-    "it.json",
-    "ja.json",
-    "nl.json",
-    "pl.json",
-    "pt.json",
-    "ru.json",
-    "zh.json"
-  ],
   "PublishConfig": {
-    "ClientStack": "ng10",
+    "ClientStack": "ng14",
     "Editors": [
       {
         "ParentPackageName": "Quantity Module",

@@ -1,19 +1,14 @@
-import { AddonDataScheme, ApiFieldObject } from "@pepperi-addons/papi-sdk"
+import { AddonDataScheme, ApiFieldObject, Relation } from "@pepperi-addons/papi-sdk"
 import { UNIT_QTY_FIRST_TSA, UNIT_QTY_SECOND_TSA, UOM_KEY_FIRST_TSA, UOM_KEY_SECOND_TSA } from "../shared/entities"
+import config from '../addon.config.json'
 
-export interface relation {
-    RelationName: string;
-    AddonUUID: string;
-    Name: string;
-    Description: string;
-    Type: "AddonAPI" | "NgComponent" | "Navigation";
-    [key:string]:string;
-}
+const fileName = 'uom_file'
+const relationName = 'addon'
 //relation array that needed for uom
-export const relations: relation[] = [
+export const relations: Relation[] = [
     {
         RelationName: "ATDImport",
-        AddonUUID: "1238582e-9b32-4d21-9567-4e17379f41bb",
+        AddonUUID: config.AddonUUID,
         Name:"UomRelations",
         Description:"Relation from Uom addon to ATD Import addon",
         Type:"AddonAPI",
@@ -21,7 +16,7 @@ export const relations: relation[] = [
     },
     {
         RelationName: "ATDExport",
-        AddonUUID: "1238582e-9b32-4d21-9567-4e17379f41bb",
+        AddonUUID: config.AddonUUID,
         Name:"UomRelations",
         Description:"Relation from Uom addon to ATD Export addon",
         Type:"AddonAPI",
@@ -29,14 +24,31 @@ export const relations: relation[] = [
     },
     {   //meta data for realtion of type NgComponent
         RelationName: "TransactionTypeListTabs",
-        AddonUUID: "1238582e-9b32-4d21-9567-4e17379f41bb",
+        AddonUUID: config.AddonUUID,
         Name:"UomRelations",
         Description:"UOM",
-        SubType: "NG11",
+        SubType: "NG14",
         ModuleName: "AtdConfigModule",
         ComponentName: "AtdConfigComponent",
         Type:"NgComponent",
-        AddonRelativeURL:"atd_config"
+        AddonRelativeURL: fileName,
+        ElementsModule: 'WebComponents',
+        ElementName: `transactions-element-${config.AddonUUID}`
+    },
+    {
+        RelationName: "SettingsBlock",
+        GroupName: 'Quantity Module',
+        SlugName: 'uom',
+        Name: relationName,
+        Description: 'Quantity Module List',
+        Type: "NgComponent",
+        SubType: "NG14",
+        AddonUUID: config.AddonUUID,
+        AddonRelativeURL: fileName,
+        ComponentName: `${relationName}Component`,
+        ModuleName: `${relationName}Module`,
+        ElementsModule: 'WebComponents',
+        ElementName: `settings-element-${config.AddonUUID}`
     },
 ]
 //the TSAs that should be created for the uom
