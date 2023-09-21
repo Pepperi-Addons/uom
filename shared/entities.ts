@@ -53,3 +53,6 @@ export const UNIT_QTY_SECOND_TSA = 'TSAAOQMQuantity2';
 export const UOM_KEY_FIRST_TSA = 'TSAAOQMUOM1';
 export const UOM_KEY_SECOND_TSA = 'TSAAOQMUOM2';
 
+//we limit decimal to be at most 4 because UIObject.getValue support only numbers with 4 digits after the dot.
+export const MAX_DECIMAL_DIGITS = 4;
+

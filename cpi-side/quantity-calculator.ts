@@ -1,4 +1,4 @@
-import { InventoryAction, UomItemConfiguration, ItemAction, QuantityResult } from './../shared/entities';
+import { InventoryAction, UomItemConfiguration, ItemAction, QuantityResult, MAX_DECIMAL_DIGITS } from './../shared/entities';
 
 export class QuantityCalculator { 
             private normalizedInv:number;
@@ -9,7 +9,7 @@ export class QuantityCalculator {
             private decimal: number
             private alreadyConverted = false;
             constructor(itemConfig: UomItemConfiguration, private inventory: number, private caseBehavior: InventoryAction ,private minBehavior: InventoryAction,private invBehavior: InventoryAction){  
-                this.decimal = 6 // DI-25249 we have disconnected the relation between the factor and the number of decimal digits appear on the itemConfig
+                this.decimal = MAX_DECIMAL_DIGITS // DI-25249 we have disconnected the relation between the factor and the number of decimal digits appear on the itemConfig
                 this.negative = !!itemConfig.Negative;
                 this.originalMin = Number(Math.max(itemConfig.Min,0).toFixed(this.decimal));
                 this.factor = itemConfig.Factor > 0 ? Number(itemConfig.Factor.toFixed(this.decimal)): 1;
