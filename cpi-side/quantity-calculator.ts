@@ -9,7 +9,7 @@ export class QuantityCalculator {
             private decimal: number
             private alreadyConverted = false;
             constructor(itemConfig: UomItemConfiguration, private inventory: number, private caseBehavior: InventoryAction ,private minBehavior: InventoryAction,private invBehavior: InventoryAction){  
-                this.decimal = itemConfig.Decimal? itemConfig.Decimal : 0;
+                this.decimal = 6 // DI-25249 we have disconnected the relation between the factor and the number of decimal digits appear on the itemConfig
                 this.negative = !!itemConfig.Negative;
                 this.originalMin = Number(Math.max(itemConfig.Min,0).toFixed(this.decimal));
                 this.factor = itemConfig.Factor > 0 ? Number(itemConfig.Factor.toFixed(this.decimal)): 1;
@@ -146,7 +146,7 @@ export class QuantityCalculator {
                     this.convertFieldsToInteger();
                 }
                 const newVal = this.convertToInteger(value);
-                if(newVal <=0 && this.negative)
+                if(newVal <= 0 && this.negative)
                 {
                     const shiftedOne = this.convertToInteger(1);
                     const resultOfNegativeBehavior = newVal - shiftedOne;
