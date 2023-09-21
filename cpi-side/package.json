@@ -6,7 +6,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "prepare": "tsc",
-    "build": "rollup -c rollup.config.js",
+    "build": "rollup -c rollup.config.js && npm run test",
     "test": "ts-mocha *.spec.ts -R mochawesome",
     "prepublishOnly": "npm version patch",
     "build:debug": "tsc && rollup -c debug.rollup.config.js"

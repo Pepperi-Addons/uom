@@ -6,7 +6,8 @@ import {
     UNIT_QTY_FIRST_TSA,
     UNIT_QTY_SECOND_TSA,
     UOM_KEY_FIRST_TSA,
-    UOM_KEY_SECOND_TSA
+    UOM_KEY_SECOND_TSA,
+    MAX_DECIMAL_DIGITS
 } from './../shared/entities';
 import { DataObject, EventData, UIObject, TransactionLine, UIField } from '@pepperi-addons/cpi-node';
 import config from '../addon.config.json';
@@ -377,7 +378,7 @@ class UOMManager {
             Min: Number(config?.Min || 0),
             Case: Number(config?.Case || 1),
             //we limit decimal to be at most 4 because UIObject.getValue support only numbers with 4 digits after the dot.
-            Decimal: Number(config?.Decimal || 0) < 4? Number(config?.Decimal || 0): 4,
+            Decimal: Number(config?.Decimal || 0) < MAX_DECIMAL_DIGITS ? Number(config?.Decimal || 0): MAX_DECIMAL_DIGITS,
             Negative: Boolean(!!config?.Negative)
         };
     }
