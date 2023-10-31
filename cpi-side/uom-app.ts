@@ -348,12 +348,15 @@ export async function load() {
         RelationName: "AfterSync",
         Name: "uom_after_sync_registration",
     }
- 
-   await pepperi.addons.data.relations.upsert(relation);
+    
+    await pepperi.addons.data.relations.upsert(relation);
+    await loadData();
+    subscribe();
 }
 
 router.post('/after_sync_registration_success', async (req, res) => {
-    await performSomeAction(req.body)
+    await loadData()
+    res.json({});
 })
 
 function subscribe() {
@@ -361,7 +364,7 @@ function subscribe() {
     pepperi.events.intercept('RecalculateUIObject', {} , async (data, next, main) => {
         const manager = getUomManager(data.DataObject?.typeDefinition?.internalID!, data.FieldID)
         const dataView = data.UIObject?.context?.Name;
-        if(manager && dataView && [...CART_DATA_VIEWS,...OC_DATA_VIEWS].includes(dataView))
+        if(manager && [...CART_DATA_VIEWS,...OC_DATA_VIEWS].includes(dataView))
         {
             await manager.recalculateOrderCenterItem(data);
         }
