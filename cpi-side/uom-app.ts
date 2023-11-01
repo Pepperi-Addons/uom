@@ -1,5 +1,8 @@
 
-import '@pepperi-addons/cpi-node'
+import { DataObject, EventData, UIObject, TransactionLine, UIField } from '@pepperi-addons/cpi-node';
+import { Relation } from '@pepperi-addons/papi-sdk'
+
+import config from '../addon.config.json'
 import {
     AtdConfiguration,
     Uom,
@@ -7,13 +10,13 @@ import {
     UNIT_QTY_SECOND_TSA,
     UOM_KEY_FIRST_TSA,
     UOM_KEY_SECOND_TSA,
-    MAX_DECIMAL_DIGITS
+    MAX_DECIMAL_DIGITS,
+    ItemAction,
+    QuantityResult,
+    UomItemConfiguration
 } from './../shared/entities';
-import { DataObject, EventData, UIObject, TransactionLine, UIField } from '@pepperi-addons/cpi-node';
-import config from '../addon.config.json';
 import { QuantityCalculator } from './quantity-calculator';
-import { ItemAction, QuantityResult, UomItemConfiguration } from './../shared/entities';
-import {uomsScheme} from '../server-side/metadata'
+import { DataService } from './data.service';
 
 /** The Real UQ Field - Holds the quantity in Baseline */
 const UNIT_QUANTITY = 'UnitsQuantity';
@@ -22,19 +25,9 @@ const OC_DATA_VIEWS = ['OrderCenterGrid', 'OrderCenterView1', 'OrderCenterView2'
 /** A list of Cart Data Views */
 const CART_DATA_VIEWS = ['OrderCartGrid', 'OrderCartView1'];
 
-class UOMMap {
-    private hashMap: { [key: string]: Uom };
-    constructor(uoms: Uom[]) {
-        this.hashMap = {};
-        for (const uom of uoms) {
-            this.hashMap[uom.Key] = uom;
-        }
-    }
-    get(key): Uom | undefined {
-        return this.hashMap[key];
-    }
-}
-let uoms: UOMMap;
+const dataService = new DataService()
+export const router = Router()
+
 /**
  * Manage UOM logic within a ATD
  */
@@ -43,9 +36,6 @@ class UOMManager {
         this.config = config;
     }
 
-    load() {
-        this.subscribe()
-    }
     async colorField(dd1: UIField | undefined, dd2: UIField | undefined, uq1: UIField | undefined, uq2: UIField | undefined, uiObject: UIObject) {
         const dataObject = uiObject.dataObject!;
         const itemConfig = await this.getItemConfig(dataObject!);
@@ -61,70 +51,12 @@ class UOMManager {
     }
     colorFields(dd1: UIField, uq1: UIField, uom: Uom | undefined, itemConfig: UomItemConfiguration[], inventory: number, total: number) {
         //get relevant data build calc and check if he needs to color
-        uom = dd1.value ? uoms.get(dd1.value) : undefined;
+        uom = dd1.value ? dataService.getUomByKey(dd1.value) : undefined;
         const calc = new QuantityCalculator(this.getUomConfig(uom, itemConfig), inventory, this.config.CaseQuantityType, this.config.MinQuantityType, this.config.InventoryType);
         if (calc.toColor(Number(uq1.value), total, inventory)) {
             uq1 ? uq1.textColor = "#FF0000" : null;
         }
     }
-
-    subscribe() {
-        const filter = {
-            DataObject: {
-                typeDefinition: {
-                    internalID: Number(this.config.Key)
-                }
-            }
-        }
-        // recalc event
-        pepperi.events.intercept('RecalculateUIObject', filter, async (data, next, main) => {
-            const dataView = data.UIObject?.context?.Name;
-            if(dataView && [...CART_DATA_VIEWS,...OC_DATA_VIEWS].includes(dataView))
-            {
-                await this.recalculateOrderCenterItem(data);
-            }
-            await next(main);
-        })
-        for (const uqField of [UNIT_QTY_FIRST_TSA, UNIT_QTY_SECOND_TSA]) {
-            pepperi.events.intercept('IncrementFieldValue', { FieldID: uqField, ...filter }, async (data, next, main) => {
-                await next(async () => {
-                    if (data && data.UIObject && data.UIObject.dataObject && data.FieldID) {
-                        let oldValue = await data.UIObject.dataObject.getFieldValue(uqField) || 0;
-                        await this.setUQField(data.UIObject, data.FieldID, oldValue, ItemAction.Increment);
-                    }
-                });
-            });
-            // Increment UNIT_QTY_TSA
-            pepperi.events.intercept('DecrementFieldValue', { FieldID: uqField, ...filter }, async (data, next, main) => {
-                await next(async () => {
-                    if (data && data.UIObject && data.UIObject.dataObject && data.FieldID && data.UIObject.context.Name) {
-                        let oldValue = await data.UIObject.dataObject.getFieldValue(uqField) || 0;
-                        await this.setUQField(data.UIObject, data.FieldID, oldValue, ItemAction.Decrement);
-                    }
-                });
-             })
-            // Set UNIT_QTY_TSA   
-            pepperi.events.intercept('SetFieldValue', { FieldID: uqField, ...filter }, async (data, next, main) => {
-                await next(async () => {
-                    if (data && data.UIObject && data.UIObject && data.FieldID) {
-                        await this.setUQField(data.UIObject, data.FieldID, parseFloat(data.Value), ItemAction.Set);
-                    }
-                });
-            })
-        }
-        for (const ddField of [UOM_KEY_FIRST_TSA, UOM_KEY_SECOND_TSA]) {
-            // Drop Down Change
-            pepperi.events.intercept('SetFieldValue', { FieldID: ddField, ...filter }, async (data, next, main) => {
-                await next(main);
-                // update the UQ field
-                const uqFieldId = data.FieldID === UOM_KEY_FIRST_TSA ? UNIT_QTY_FIRST_TSA : UNIT_QTY_SECOND_TSA;
-                const quantity = await data.DataObject?.getFieldValue(uqFieldId);
-                await this.setUQField(data.UIObject!, uqFieldId, quantity, ItemAction.Set);
-            })
-        }
-        
-    }
-
 
     async setUQField(uiObject: UIObject, fieldId: string, value: number, itemAction: ItemAction) {
         try {
@@ -137,9 +69,9 @@ class UOMManager {
             const otherUOMField = otherUQField === UNIT_QTY_SECOND_TSA ? UOM_KEY_SECOND_TSA : UOM_KEY_FIRST_TSA;
             // get the UOM
             const uomValue = await dataObject?.getFieldValue(uomField);
-            const uom = uomValue ? uoms.get(uomValue) : undefined;
+            const uom = uomValue ? dataService.getUomByKey(uomValue) : undefined;
             const otherUomValue = await dataObject?.getFieldValue(otherUOMField);
-            const otherUom = otherUomValue ? uoms.get(otherUomValue) : undefined;
+            const otherUom = otherUomValue ? dataService.getUomByKey(otherUomValue) : undefined;
             const itemConfig = await this.getItemConfig(dataObject!);
             const uomConfig = this.getUomConfig(uom, itemConfig);
             const otherUomConfig = this.getUomConfig(otherUom, itemConfig);
@@ -284,7 +216,7 @@ class UOMManager {
     }
     getOptionalValues(arr:string[])
     {
-        return arr.map(key => uoms.get(key)).filter(Boolean).map(uom => {
+        return arr.map(key => dataService.getUomByKey(key)).filter(Boolean).map(uom => {
             return {
                 Key: uom!.Key,
                 Value: uom!.Title
@@ -294,7 +226,7 @@ class UOMManager {
     async getUomConfigByKey(dataObject: DataObject, uomKey: string, itemConfig: UomItemConfiguration[])
     {
         const uomValue = await dataObject?.getFieldValue(uomKey);
-        const uom = uomValue ? uoms.get(uomValue) : undefined;
+        const uom = uomValue ? dataService.getUomByKey(uomValue) : undefined;
         return this.getUomConfig(uom, itemConfig);
 
     }
@@ -400,35 +332,91 @@ class UOMManager {
     }
 }
 
-async function getUomArray(tableName:string): Promise<Uom[]>
-{
-    return (await pepperi.api.adal.getList({
-        table: tableName,
-        addon: config.AddonUUID
-    })).objects as Uom[];
-    
-}
+// export async function load() {
+//     const list: Uom[] = await getUomArray(uomsScheme.Name)
+//     uoms = new UOMMap(list);
+//     const atdConfigurations = await getAtdConfigurationArray();
+//     createUOMMangers(atdConfigurations)
 
-async function getAtdConfigurationArray(): Promise<AtdConfiguration[]>
-{
-    return (await pepperi.api.adal.getList({
-        table: 'AtdConfig',
-        addon: config.AddonUUID
-    })).objects as AtdConfiguration[];
-}
-
-function createUOMMangers(atdConfigurations: AtdConfiguration[])
-{
- atdConfigurations.map((atdConfiguration) => {
-     new UOMManager(atdConfiguration).load()
- })   
-}
-
+// }
 
 export async function load() {
-    const list: Uom[] = await getUomArray(uomsScheme.Name)
-    uoms = new UOMMap(list);
-    const atdConfigurations = await getAtdConfigurationArray();
-    createUOMMangers(atdConfigurations)
+    let relation: Relation = {
+        Type: "CPIAddonAPI",
+        AddonRelativeURL: "/uom-app/after_sync_registration",
+        AddonUUID: config.AddonUUID,
+        RelationName: "AfterSync",
+        Name: "uom_after_sync_registration",
+    }
+    
+    await pepperi.addons.data.relations.upsert(relation);
+    await loadData();
+    subscribe();
+}
 
+router.post('/after_sync_registration_success', async (req, res) => {
+    await loadData()
+    res.json({});
+})
+
+function subscribe() {
+        // recalc event
+    pepperi.events.intercept('RecalculateUIObject', {} , async (data, next, main) => {
+        const manager = getUomManager(data.DataObject?.typeDefinition?.internalID!, data.FieldID)
+        const dataView = data.UIObject?.context?.Name;
+        if(manager && [...CART_DATA_VIEWS,...OC_DATA_VIEWS].includes(dataView))
+        {
+            await manager.recalculateOrderCenterItem(data);
+        }
+        await next(main);
+    })
+
+    pepperi.events.intercept('IncrementFieldValue', {} , async (data, next, main) => {
+        const manager = getUomManager(data.DataObject?.typeDefinition?.internalID!, data.FieldID)
+        if (manager) {
+            await next(async () => {
+                let oldValue = await data.UIObject?.dataObject?.getFieldValue(data.FieldID!) || 0;
+                await manager.setUQField(data.UIObject!, data.FieldID!, oldValue, ItemAction.Increment);
+            });
+        }
+    });
+    // Increment UNIT_QTY_TSA
+    pepperi.events.intercept('DecrementFieldValue', {}, async (data, next, main) => {
+        const manager = getUomManager(data.DataObject?.typeDefinition?.internalID!, data.FieldID)
+        if (manager) {
+            await next(async () => {
+                let oldValue = await data.UIObject?.dataObject?.getFieldValue(data.FieldID!) || 0;
+                await manager.setUQField(data.UIObject!, data.FieldID!, oldValue, ItemAction.Decrement);
+            });
+        }
+    })
+    // Set UNIT_QTY_TSA   
+    pepperi.events.intercept('SetFieldValue', {}, async (data, next, main) => {
+        const manager = getUomManager(data.DataObject?.typeDefinition?.internalID!, data.FieldID)
+        if (manager) {
+            if ([UNIT_QTY_FIRST_TSA, UNIT_QTY_SECOND_TSA].includes(data.FieldID!)) { // if we're setting the value of the UQ, we need to override the main function.
+                await next(async () => {
+                    await manager.setUQField(data.UIObject!, data.FieldID!, parseFloat(data.Value), ItemAction.Set);
+                });
+            }
+            else { // because the getUomManager check the fieldID, we can assume that here the fieldID is one of the UOM drop downs.
+                await next(main);
+                // update the UQ field
+                const uqFieldId = data.FieldID === UOM_KEY_FIRST_TSA ? UNIT_QTY_FIRST_TSA : UNIT_QTY_SECOND_TSA;
+                const quantity = await data.DataObject?.getFieldValue(uqFieldId);
+                await manager.setUQField(data.UIObject!, uqFieldId, quantity, ItemAction.Set);
+            }
+        }
+    })
+}
+
+function getUomManager(typeDefinitionID: number, fieldID: string | undefined): UOMManager | undefined {
+    const config = dataService.getConfigObject(typeDefinitionID);
+    const isUOMField = fieldID === undefined || [UNIT_QTY_FIRST_TSA, UNIT_QTY_SECOND_TSA,UOM_KEY_FIRST_TSA, UOM_KEY_SECOND_TSA].includes(fieldID)
+    return (config && isUOMField) ? new UOMManager(config) : undefined;
+
+}
+
+async function loadData() {
+    return await dataService.initData();
 }
