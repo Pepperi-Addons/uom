@@ -354,7 +354,7 @@ export async function load() {
     subscribe();
 }
 
-router.post('/after_sync_registration_success', async (req, res) => {
+router.post('/after_sync_registration', async (req, res) => {
     await loadData()
     res.json({});
 })
