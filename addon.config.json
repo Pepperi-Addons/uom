@@ -26,5 +26,8 @@
     "CPISide": [
       "uom-app.ts"
     ]
+  },
+  "AddonPackage": {
+    "ClientZip": false,
   }
 }
