@@ -15,7 +15,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@pepperi-addons/scripts": "^2.0.13"
+    "@pepperi-addons/scripts": "^2.0.16"
   },
   "devDependencies": {
     "dynamic-container-path-webpack-plugin": "^1.1.6",
